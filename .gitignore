@@ -16,3 +16,6 @@
 # NuGet
 NuGet.exe
 [Pp]ackages
+
+# Git
+*.orig
