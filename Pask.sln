@@ -5,6 +5,44 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F5034706-568F-408A-B7B3-4D38C6DB8A32}") = "Pask", "Pask\Pask.pssproj", "{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{A64F8593-819B-43C7-A500-916C46ABC2C1}"
+	ProjectSection(SolutionItems) = preProject
+		.build\build.ps1 = .build\build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{084A43CE-1B17-4A28-A55F-B1D03F2812FE}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pask.Extension.ProjectTemplate", "Pask.Extension.ProjectTemplate\Pask.Extension.ProjectTemplate.csproj", "{591779B7-5476-45E0-AD87-FC4D3D591A6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pask.Extension.ProjectTemplateWizard", "Pask.Extension.ProjectTemplateWizard\Pask.Extension.ProjectTemplateWizard.csproj", "{9DD2F0C6-989F-4A36-AF00-0A18B0E14D8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{416DB2AE-FB67-4D78-A02F-C81EB4E1A912}"
+	ProjectSection(SolutionItems) = preProject
+		.build\tasks\SimultaneousTask1.ps1 = .build\tasks\SimultaneousTask1.ps1
+		.build\tasks\SimultaneousTask2.ps1 = .build\tasks\SimultaneousTask2.ps1
+		.build\tasks\Test-PackageInstallation.ps1 = .build\tasks\Test-PackageInstallation.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{9CAD6729-4D84-4421-AF54-C943CB0992FF}"
+	ProjectSection(SolutionItems) = preProject
+		.build\scripts\Pask.Tests.Infrastructure.ps1 = .build\scripts\Pask.Tests.Infrastructure.ps1
+		.build\scripts\Pask.Utilities.ps1 = .build\scripts\Pask.Utilities.ps1
+		.build\scripts\Pask.Utilities.Tests.ps1 = .build\scripts\Pask.Utilities.Tests.ps1
+		.build\scripts\Properties.ps1 = .build\scripts\Properties.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1CAAB678-0A58-4797-8D42-E27F05F855E7}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		go.bat = go.bat
+		LICENSE = LICENSE
+		pask.png = pask.png
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,8 +51,20 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{591779B7-5476-45E0-AD87-FC4D3D591A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{591779B7-5476-45E0-AD87-FC4D3D591A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{591779B7-5476-45E0-AD87-FC4D3D591A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{591779B7-5476-45E0-AD87-FC4D3D591A6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD2F0C6-989F-4A36-AF00-0A18B0E14D8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD2F0C6-989F-4A36-AF00-0A18B0E14D8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD2F0C6-989F-4A36-AF00-0A18B0E14D8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD2F0C6-989F-4A36-AF00-0A18B0E14D8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{416DB2AE-FB67-4D78-A02F-C81EB4E1A912} = {A64F8593-819B-43C7-A500-916C46ABC2C1}
+		{9CAD6729-4D84-4421-AF54-C943CB0992FF} = {A64F8593-819B-43C7-A500-916C46ABC2C1}
 	EndGlobalSection
 EndGlobal

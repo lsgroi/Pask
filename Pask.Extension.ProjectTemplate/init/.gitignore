@@ -1,0 +1,21 @@
+# User-specific files
+*.suo
+*.user
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# Windows image file caches
+[Tt]humbs.db
+
+# NuGet
+NuGet.exe
+[Pp]ackages
+
+# Git
+*.orig

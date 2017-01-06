@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>$id$</id>
+        <version>$version$</version>
+        <title>$id$</title>
+        <authors>$registeredorganization$</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <summary>$projectname$</summary>
+        <description>$projectname$</description>
+        <developmentDependency>true</developmentDependency>
+        <tags>Pask Invoke-Build PowerShell BuildAutomation</tags>
+        <dependencies>
+            <!--<dependency id="Pask" version="0.1.0" />-->
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="init\**" target="init" />
+        <file src="..\.build\scripts\*.ps1" target="scripts" exclude="..\.build\scripts\*.Tests.ps1" />
+        <file src="..\.build\tasks\*.ps1" target="tasks" exclude="..\.build\tasks\*.Tests.ps1" />
+        <file src="tools\*.ps1" target="tools" />
+        <file src="readme.txt" />
+    </files>
+</package>

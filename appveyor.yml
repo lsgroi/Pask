@@ -1,0 +1,32 @@
+# configuration for "master" branch
+# build, test and push to NuGet
+-
+  branches:
+    only:
+      - master
+  skip_tags: true
+  version: '{build}'
+  environment:
+    NuGetApiKey:
+      secure: zA+kpGYRXyC/b/zfaoeGec4jTl+Ahc6hLbIeOoZL2hPjp/3M5jPhyD8awfjU5s+6
+  build_script:
+    - ps: .\Pask.ps1 Release
+  artifacts:
+    - path: .build\output\*.nupkg
+  deploy: off
+  test: off
+
+# configuration for branches
+# build amd test
+-
+  branches:
+    except:
+      - master
+  skip_tags: true
+  version: '{build}'
+  build_script:
+    - ps: .\Pask.ps1 PreRelease
+  artifacts:
+    - path: .build\output\*.nupkg
+  deploy: off
+  test: off
