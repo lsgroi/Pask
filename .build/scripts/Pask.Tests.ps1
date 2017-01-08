@@ -5,13 +5,19 @@ $Sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace "\.Tests\.", "."
 Describe "Set-BuildProperty" {
     Context "Set a build property with name null" {
         It "should error" {
-            { Set-BuildProperty -Name $null -Value "the value" } | Should Throw
+            { Set-BuildProperty $null -Value "the value" } | Should Throw
         }
     }
 
     Context "Set a build property with static value and default value" {
         It "should error" {
-            { Set-BuildProperty -Name ([System.IO.Path]::GetRandomFileName()) -Value "the value" -Default "the default value" } | Should Throw
+            { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) -Value "the value" -Default "the default value" } | Should Throw
+        }
+    }
+
+    Context "Set a new build property with value of session which does not exist" {
+        It "should error" {
+            { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) } | Should Throw
         }
     }
 
@@ -102,7 +108,7 @@ Describe "Set-BuildProperty" {
             [Environment]::SetEnvironmentVariable($PropertyName, "the value", "Process")
 
             # Act
-            Set-BuildProperty $PropertyName -Default "the default value"
+            Set-BuildProperty $PropertyName
         }
 
         It "a local variable should have the value of session" {
@@ -117,6 +123,47 @@ Describe "Set-BuildProperty" {
     }
 
     Context "Set an existing build property with existing value of session" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+            Set-Variable -Name $PropertyName -Value "the value" -Scope Script
+
+            # Act
+            Set-BuildProperty $PropertyName
+        }
+
+        It "a local variable should have the value of session" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        AfterAll {
+            # Cleanup
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
+    Context "Set a new build property with existing value of session specifying a default" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+            [Environment]::SetEnvironmentVariable($PropertyName, "the value", "Process")
+
+            # Act
+            Set-BuildProperty $PropertyName -Default "the default value"
+        }
+
+        It "a local variable should have the value of session" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        AfterAll {
+            # Cleanup
+            [Environment]::SetEnvironmentVariable($PropertyName, $null, "Process")
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
+    Context "Set an existing build property with existing value of session specifying a default" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()

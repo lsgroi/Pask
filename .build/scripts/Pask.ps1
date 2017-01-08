@@ -39,6 +39,7 @@ if (-not (Test-Path variable:!Files!)) { [System.Collections.ArrayList] ${script
     None
 #>
 function script:Set-BuildProperty {
+    [CmdletBinding(DefaultParameterSetName="ValueOfSession")]
     param(
         [Parameter(Mandatory=$true,Position=0)][ValidateNotNullOrEmpty()][string]$Name,
         [Parameter(ParameterSetName="ExplicitValue")]$Value,
@@ -48,7 +49,7 @@ function script:Set-BuildProperty {
     $private:PropertyValue = switch ($PsCmdlet.ParameterSetName) {
         "ExplicitValue" { $Value }
         "ValueOfSessionOrDefault" { Get-BuildProperty $Name $Default }
-        default { Get-BuildProperty $Name }
+        "ValueOfSession" { Get-BuildProperty $Name }
     }
 
     $private:VariableValue = if ($private:PropertyValue.GetType() -eq [ScriptBlock]) { 
