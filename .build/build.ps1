@@ -62,18 +62,23 @@ Task Pack-Nuspec {
 Task Push {
     Import-Script Pask.Utilities
 
-    $NuGetApiKey = (property NuGetApiKey "")
-    $NuGetPushSource = (property NuGetPushSource "")
+    Set-Property NuGetApiKey
+    
+    # Starting with NuGet 3.4.2, the push source is a mandatory parameter
+    $NuGet = Get-NuGetExe
+    try {
+        Push-Location -Path (Split-Path $NuGet)
+        $NuGetDefaultPushSource = Invoke-Command -ScriptBlock { & $NuGet config DefaultPushSource 2>$1 }
+    } catch {
+    } finally {
+        Pop-Location
+        $NuGetDefaultPushSource = $PSCmdlet.GetVariableValue("private:NuGetDefaultPushSource", "https://www.nuget.org/api/v2/package")
+        Set-Property NuGetPushSource -Default $NuGetDefaultPushSource
+    }
 
 	$Packages = Get-ChildItem -Path "$(Join-Path "$BuildOutputFullPath" "*")" -Include *.nupkg
 
-	if ($NuGetApiKey -and $NuGetPushSource) {
-		Exec { Push-Package -Packages $Packages -ApiKey $NuGetApiKey -Source "$NuGetPushSource" }
-	} elseif ($NuGetApiKey) {
-		Exec { Push-Package -Packages $Packages -ApiKey $NuGetApiKey }
-	} else {
-        throw "Cannot Push without NuGetPushSource or NuGetApiKey"
-    }
+    Exec { Push-Package -Packages $Packages -ApiKey "$NuGetApiKey" -Source "$NuGetPushSource" }
 }
 
 # Synopsis: Push the NuGet package(s) to a local NuGet feed
