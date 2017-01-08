@@ -10,7 +10,7 @@
         <developmentDependency>true</developmentDependency>
         <licenseUrl>https://github.com/lsgroi/Pask/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/lsgroi/Pask</projectUrl>
-        <iconUrl>https://raw.githubusercontent.com/lsgroi/Pask/master/pask.png</iconUrl>
+        <iconUrl>https://raw.githubusercontent.com/lsgroi/Pask/master/Pask.png</iconUrl>
         <summary>Modular task-oriented PowerShell build automation for .NET</summary>
         <description>Pask provides a set of predefined PowerShell build automation tasks for .NET and the ability to create custom ones. It relies on Invoke-Build DSL.</description>
         <tags>Invoke-Build PowerShell BuildAutomation</tags>

@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/lsgroi/Pask/master/pask.png" align="right"/>
+<img src="https://raw.githubusercontent.com/lsgroi/Pask/master/Pask.png" align="right"/>
 
 # Pask
 Task-oriented PowerShell build automation for .NET based on a set of conventions.
