@@ -52,6 +52,8 @@
     <Compile Include="scripts\Pask.Tests.Infrastructure.ps1" />
     <Compile Include="scripts\Properties.ps1" />
     <Compile Include="scripts\Show-BuildTree.ps1" />
+    <Compile Include="tasks\Clean.ps1" />
+    <Compile Include="tasks\Clean.Tests.ps1" />
     <Compile Include="tasks\Restore-NuGetPackages.ps1" />
     <Compile Include="tasks\Test-Pester.ps1" />
     <Compile Include="tasks\Version-BuildServer.ps1" />

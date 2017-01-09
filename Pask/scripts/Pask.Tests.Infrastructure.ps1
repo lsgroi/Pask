@@ -2,24 +2,29 @@
 .SYNOPSIS 
    Installs a NuGet package found in $BuildOutputFullPath with a custom version
 
-.PARAMETER PackageName <string> = Pask
+.PARAMETER Name <string> = Pask
+   The package name
 
-.PARAMETER PackageVersion <string> = 0.1.0
+.PARAMETER Version <string> = 0.1.0
+   The package version
+
+.PARAMETER InstallDir <string> = (Get-PackagesDir)
+   The directory in which the package should be installed
 
 .OUTPUTS
    None
 #>
-function script:Install-FakePackage {
+function script:Install-NuGetPackage {
     param(
-        [string]$PackageName = "Pask",
-        [string]$PackageVersion = "0.1.0",
-        [switch]$PassThru
+        [string]$Name = "Pask",
+        [string]$Version = "0.1.0",
+        [string]$InstallDir = (Get-PackagesDir)
     )
 
-    $StubPackageName = "$PackageName.$PackageVersion"
-    $PackageFullPath = Join-Path (Get-PackagesDir) "$StubPackageName"
-    $PackageFullName = Join-Path $PackageFullPath "$StubPackageName.nupkg"
-    $ArtifactFullPath = (Get-ChildItem -Path (Join-Path $BuildOutputFullPath "*") -File -Include "$PackageName*.nupkg" | Select-Object -Last 1).FullName
+    $PackageBaseName = "$Name.$Version"
+    $PackageFullPath = Join-Path $InstallDir $PackageBaseName
+    $PackageFullName = Join-Path $PackageFullPath "$PackageBaseName.nupkg"
+    $ArtifactFullPath = (Get-ChildItem -Path (Join-Path $BuildOutputFullPath "*") -File -Include "$Name*.nupkg" | Select-Object -Last 1).FullName
 
     Remove-ItemSilently "$PackageFullPath"
     New-Directory -Path "$PackageFullPath" | Out-Null

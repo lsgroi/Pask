@@ -60,11 +60,31 @@ function script:Remove-File {
     }
 }
 
-# Copy the files installed automatically by Pask into a given solution
-function script:Copy-PaskFiles {
-    param([parameter(ValueFromPipeline)][string]$TestSolutionFullPath)
+<#
+.SYNOPSIS
+   Installs Pask package found in $BuildOutputFullPath into a target solution
 
-    Exec { Robocopy "$(Join-Path $BuildFullPath "scripts")" "$(Join-Path $TestSolutionFullPath ".build\scripts")" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
-    Exec { Robocopy "$SolutionFullPath" "$TestSolutionFullPath" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
-    Exec { Robocopy "$(Join-Path $SolutionFullPath ".nuget")" "$(Join-Path $TestSolutionFullPath ".nuget")" "NuGet.exe" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
+.PARAMETER Version <string> = 0.1.0
+   Pask package version
+
+.PARAMETER SolutionFullPath <string>
+   The target solution's directory
+
+.OUTPUTS
+   None
+#>
+function script:Install-Pask {
+    param(
+        [string]$Version = "0.1.0",
+        [string]$SolutionFullPath
+    )
+
+    $InstallDir = Get-PackagesDir
+    $PackageFullPath = (Join-Path $InstallDir "Pask.$Version")
+
+    Install-NuGetPackage -Name "Pask" -Version $Version -InstallDir $InstallDir
+
+    Exec { Robocopy "$(Join-Path $PackageFullPath "scripts")" "$(Join-Path $SolutionFullPath ".build\scripts")" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
+    Exec { Robocopy "$(Join-Path $PackageFullPath "init")" "$SolutionFullPath" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
+    Exec { Robocopy "$(Split-Path (Get-NuGetExe))" "$(Join-Path $SolutionFullPath ".nuget")" "NuGet.exe" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
 }
