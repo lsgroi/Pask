@@ -76,7 +76,7 @@ function script:Remove-File {
 function script:Install-Pask {
     param(
         [string]$Version = "0.1.0",
-        [string]$SolutionFullPath
+        [alias(“SolutionFullPath”)][string]$TargetSolutionFullPath
     )
 
     $InstallDir = Get-PackagesDir
@@ -84,7 +84,7 @@ function script:Install-Pask {
 
     Install-NuGetPackage -Name "Pask" -Version $Version -InstallDir $InstallDir
 
-    Exec { Robocopy "$(Join-Path $PackageFullPath "scripts")" "$(Join-Path $SolutionFullPath ".build\scripts")" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
-    Exec { Robocopy "$(Join-Path $PackageFullPath "init")" "$SolutionFullPath" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
-    Exec { Robocopy "$(Split-Path (Get-NuGetExe))" "$(Join-Path $SolutionFullPath ".nuget")" "NuGet.exe" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
+    Exec { Robocopy "$(Join-Path $PackageFullPath "scripts")" "$(Join-Path $TargetSolutionFullPath ".build\scripts")" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
+    Exec { Robocopy "$(Join-Path $PackageFullPath "init")" "$TargetSolutionFullPath" "Pask.ps1" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
+    Exec { Robocopy "$(Split-Path (Get-NuGetExe))" "$(Join-Path $TargetSolutionFullPath ".nuget")" "NuGet.exe" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
 }
