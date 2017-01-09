@@ -9,28 +9,30 @@ Describe "Clean" {
     }
 
     Context "Clean the solution" {
-        ## Arrange
-        ## Create dummy files that the Clean task should clear
-        #New-Directory -Path (Join-Path "$TestSolutionFullPath" ".build\output") | Out-Null
-        #Set-Content -Path (Join-Path "$TestSolutionFullPath" ".build\output\test.txt") -Value "" -Force
-        #New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin") | Out-Null
-        #New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj") | Out-Null
-        #Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin\test.txt") -Value "" -Force
-        #Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj\test.txt") -Value "" -Force
+        BeforeAll {
+            # Arrange
+            # Create dummy files that the Clean task should clear
+            New-Directory -Path (Join-Path "$TestSolutionFullPath" ".build\output") | Out-Null
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" ".build\output\test.txt") -Value "" -Force
+            New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin") | Out-Null
+            New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj") | Out-Null
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin\test.txt") -Value "" -Force
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj\test.txt") -Value "" -Force
 
-        ## Act
-        #Invoke-TestBuild -TestSolutionFullPath $TestSolutionFullPath -Task Clean
+            # Act
+            Invoke-Pask $TestSolutionFullPath -Task Clean
+        }
 
-        #It "should clean the build output directory" {
-        #    Test-Path (Join-Path $TestSolutionFullPath ".build\output\*") | Should Be $false
-        #}
+        It "should clean the build output directory" {
+            Test-Path (Join-Path $TestSolutionFullPath ".build\output\*") | Should Be $false
+        }
 
-        #It "should clean the bin directory" {
-        #    Test-Path (Join-Path $TestSolutionFullPath "ClassLibrary\bin") | Should Be $false
-        #}
+        It "should clean the bin directory" {
+            Test-Path (Join-Path $TestSolutionFullPath "ClassLibrary\bin") | Should Be $false
+        }
 
-        #It "should clean the obj directory" {
-        #    Test-Path (Join-Path $TestSolutionFullPath "ClassLibrary\obj") | Should Be $false
-        #}
+        It "should clean the obj directory" {
+            Test-Path (Join-Path $TestSolutionFullPath "ClassLibrary\obj") | Should Be $false
+        }
     }
 }

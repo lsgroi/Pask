@@ -76,7 +76,7 @@ function script:Remove-File {
 function script:Install-Pask {
     param(
         [string]$Version = "0.1.0",
-        [alias(“SolutionFullPath”)][string]$TargetSolutionFullPath
+        [Alias(“SolutionFullPath”)][string]$TargetSolutionFullPath
     )
 
     $InstallDir = Get-PackagesDir

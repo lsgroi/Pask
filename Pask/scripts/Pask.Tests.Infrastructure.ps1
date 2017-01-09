@@ -35,6 +35,32 @@ function script:Install-NuGetPackage {
 
 <#
 .SYNOPSIS 
+   Invokes a Pask build on a target solution
+
+.PARAMETER SolutionFullPath <string>
+   The target solution's directory
+
+.PARAMETER Tasks <string[]>
+   One or more tasks to be invoked
+
+.PARAMETER Properties
+   A set of properties passed to the build script
+
+.OUTPUTS
+   The build output
+#>
+function script:Invoke-Pask {
+    param(
+        [Parameter(Mandatory=$true,Position=0)][Alias(“SolutionFullPath”)][string]$TargetSolutionFullPath,
+        [string[]]$Task,
+        [Parameter(ValueFromRemainingArguments=$true)]$Properties
+    )
+
+    Exec { & "$(Join-Path $TargetSolutionFullPath "Pask.ps1")" -Task $Task -Properties $Properties }
+}
+
+<#
+.SYNOPSIS 
    Creates a solution in Visual Studio 2015
    It consists of a ConsoleApplication and a ClassLibrary
 
