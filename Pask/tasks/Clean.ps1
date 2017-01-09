@@ -1,7 +1,5 @@
 # Synopsis: Delete all intermediate and build output files
 Task Clean {
-    Import-Properties -Project Pask
-
     if (Test-Path $BuildOutputFullPath) {
         Write-BuildMessage "Cleaning '$BuildOutputFullPath'"
         Remove-ItemSilently (Join-Path $BuildOutputFullPath "*")
