@@ -4,4 +4,5 @@ https://github.com/lsgroi/Pask/wiki
 Version 0.3.0
 -------------------------------------------------------------------------------------
 - Add Build task
+- Easily refresh all build properties after setting one
 - Update logo

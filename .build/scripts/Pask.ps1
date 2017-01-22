@@ -30,6 +30,9 @@ param(
 .PARAMETER Default <ScriptBlock>
     The default value
 
+.PARAMETER Refresh <switch>
+    After setting the property, refreshes all build properties with script block value
+
 .EXAMPLE
     Set a build property with explicit value
     Set-Property -Name Configuration -Value Debug
@@ -50,7 +53,8 @@ function script:Set-BuildProperty {
     param(
         [Parameter(Mandatory=$true,Position=0)][ValidateNotNullOrEmpty()][string]$Name,
         [Parameter(ParameterSetName="ExplicitValue")]$Value,
-        [Parameter(ParameterSetName="ValueOfSessionOrDefault")]$Default
+        [Parameter(ParameterSetName="ValueOfSessionOrDefault")]$Default,
+        [switch]$Refresh
     )
 
     $private:PropertyValue = switch ($PsCmdlet.ParameterSetName) {
@@ -72,6 +76,10 @@ function script:Set-BuildProperty {
         Set-Variable -Name $Name -Value $private:VariableValue -Scope Script -Force
         ${!BuildProperties!}.Set_Item($Name, $private:PropertyValue)
         ${script:!BuildProperties!} = ${!BuildProperties!}
+    }
+
+    if ($Refresh) {
+        Refresh-BuildProperties
     }
 }
 Set-Alias Set-Property Set-BuildProperty -Scope Script

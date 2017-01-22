@@ -3,9 +3,17 @@ $Sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace "\.Tests\.", "."
 . "$Here\$Sut" -BuildProperties (Get-BuildProperties) -Files (Get-Files)
 
 Describe "Set-BuildProperty" {
+    BeforeAll {
+        Mock Refresh-BuildProperties { }
+    }
+
     Context "Set a build property with name null" {
         It "should error" {
             { Set-BuildProperty $null -Value "the value" } | Should Throw
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
     }
 
@@ -13,11 +21,19 @@ Describe "Set-BuildProperty" {
         It "should error" {
             { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) -Value "the value" -Default "the default value" } | Should Throw
         }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
     }
 
     Context "Set a new build property with value of session which does not exist" {
         It "should error" {
             { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) } | Should Throw
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
     }
 
@@ -32,6 +48,33 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the static value" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
+        AfterAll {
+            # Cleanup
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
+    Context "Set a new build property with static value and refresh all the build properties" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+
+            # Act
+            Set-BuildProperty $PropertyName -Value "the value" -Refresh
+        }
+
+        It "a local variable should have the static value" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        It "refreshes all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 1
         }
 
         AfterAll {
@@ -54,6 +97,10 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
         AfterAll {
             # Cleanup
             Remove-BuildProperty -Name $PropertyName
@@ -72,6 +119,10 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the static value" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -95,6 +146,10 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new value"
         }
 
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
         AfterAll {
             # Cleanup
             Remove-BuildProperty -Name $PropertyName
@@ -113,6 +168,10 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the value of session" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -136,6 +195,10 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
         AfterAll {
             # Cleanup
             Remove-BuildProperty -Name $PropertyName
@@ -154,6 +217,10 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the value of session" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -177,6 +244,10 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
         AfterAll {
             # Cleanup
             Remove-BuildProperty -Name $PropertyName
@@ -194,6 +265,10 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the default value" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the default value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -216,6 +291,10 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the default value"
         }
 
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
         AfterAll {
             # Cleanup
             Remove-BuildProperty -Name $PropertyName
@@ -234,6 +313,10 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the existing property value" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -470,7 +553,7 @@ Describe "Initialize-NuGetExe" {
         }
 
         It "does not download the NuGet executable" {
-            Assert-MockCalled New-Object 0
+            Assert-MockCalled New-Object -Exactly 0
         }
     }
 
