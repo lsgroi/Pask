@@ -1,6 +1,6 @@
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace "\.Tests\.", "."
-. "$Here\$Sut"
+. "$Here\$Sut" -BuildProperties (Get-BuildProperties) -Files (Get-Files)
 
 Describe "Set-BuildProperty" {
     Context "Set a build property with name null" {
@@ -318,7 +318,7 @@ Describe "New-Directory" {
         }
 
         It "the directory is created" {
-            Test-Path "$Path" | Should Be $true
+            $Path | Should Exist
         }
 
         It "the directory is returned" {
@@ -337,7 +337,7 @@ Describe "New-Directory" {
         }
 
         It "the directory is created" {
-            Test-Path "$Path" | Should Be $true
+            $Path | Should Exist
         }
 
         It "the directory is returned" {
@@ -358,7 +358,7 @@ Describe "Remove-ItemSilently" {
         }
 
         It "the item is removed" {
-            Test-Path $Item | Should Be $false
+            $Item | Should Not Exist
         }
     }
 
@@ -375,7 +375,7 @@ Describe "Remove-ItemSilently" {
         }
 
         It "the item is removed" {
-            Test-Path $Item | Should Be $false
+            $Item| Should Not Exist
         }
     }
 
@@ -392,11 +392,11 @@ Describe "Remove-ItemSilently" {
         }
 
         It "the item is removed in the sub directory" {
-            Test-Path (Join-Path $TestDrive "solution\bin") | Should Be $false
+            Join-Path $TestDrive "solution\bin" | Should Not Exist
         }
 
         It "the item is removed recursively" {
-            Test-Path (Join-Path $TestDrive "solution\project\bin") | Should Be $false
+            Join-Path $TestDrive "solution\project\bin" | Should Not Exist
         }
     }
 
@@ -414,7 +414,7 @@ Describe "Remove-ItemSilently" {
         }
 
         It "content of the directory is removed" {
-            Test-Path (Join-Path $TestDrive "solution\*") | Should Be $false
+            Join-Path $TestDrive "solution\*" | Should Not Exist
         }
     }
 
@@ -428,7 +428,7 @@ Describe "Remove-ItemSilently" {
         }
 
         It "the item does not exist" {
-            Test-Path $Item | Should Be $false
+            $Item | Should Not Exist
         }
     }
 }
@@ -481,7 +481,7 @@ Describe "Initialize-NuGetExe" {
         }
 
         It "creates the NuGet folder and downloads the NuGet executable" {
-            Test-Path $NuGet | Should Be $true
+            $NuGet | Should Exist
         }
     }
 
@@ -495,7 +495,7 @@ Describe "Initialize-NuGetExe" {
         }
 
         It "downloads the NuGet executable" {
-            Test-Path $NuGet | Should Be $true
+            $NuGet | Should Exist
         }
     }
 }
@@ -1943,15 +1943,15 @@ Describe "Remove-PdbFiles" {
         }
 
         It "removes PDB files in the root path" {
-            Test-Path (Join-Path $TestDrive "foo.pdb") | Should Be $false
+            Join-Path $TestDrive "foo.pdb" | Should Not Exist
         }
 
         It "removes PDB files in a sub-directory" {
-            Test-Path (Join-Path $TestDrive "foo\bar.pdb") | Should Be $false
+            Join-Path $TestDrive "foo\bar.pdb" | Should Not Exist
         }
 
         It "removes PDB files in a sub-sub-directory" {
-            Test-Path (Join-Path $TestDrive "foo\bar\foobar.pdb") | Should Be $false
+            Join-Path $TestDrive "foo\bar\foobar.pdb" | Should Not Exist
         }
     }
 

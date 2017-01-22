@@ -2,13 +2,20 @@
 .SYNOPSIS
    This script defines a collection of code snippets used by Pask
 
+.PARAMETER BuildProperties <hashtable>
+    The build properties in scope
+
+.PARAMETER Files <System.Collections.ArrayList>
+    The files imported in the scope
+
 .NOTE
     DO NOT MODIFY - the script is managed and updated by Pask package
 #>
 
-# Define Pask internal variables
-if (-not (Test-Path variable:!BuildProperties!)) { ${script:!BuildProperties!} = @{} }
-if (-not (Test-Path variable:!Files!)) { [System.Collections.ArrayList] ${script:!Files!} = @() }
+param(
+    [hashtable] [Alias("BuildProperties")] ${!BuildProperties!} = @{},
+    [System.Collections.ArrayList] [Alias("Files")] ${!Files!} = @($MyInvocation.MyCommand.Definition)
+)
 
 <#
 .SYNOPSIS
@@ -243,10 +250,10 @@ function script:Restore-NuGetDevelopmentPackages {
 .PARAMETER Message <string>
 
 .PARAMETER BackgroundColor <System.ConsoleColor>
-   Default to $Host.UI.RawUI.BackgroundColor
+   The background color
 
-.PARAMETER ForegroundColor  <System.ConsoleColor>
-   Default to $Host.UI.RawUI.ForegroundColor 
+.PARAMETER ForegroundColor <System.ConsoleColor>
+   The text color
 
 .OUTPUTS
    None
@@ -254,17 +261,33 @@ function script:Restore-NuGetDevelopmentPackages {
 function script:Write-BuildMessage {
     param(
         [Parameter(ValueFromPipeline=$true,Mandatory=$true)][string]$Message,
-        [string]$BackgroundColor = $Host.UI.RawUI.BackgroundColor,
-        [string]$ForegroundColor = $Host.UI.RawUI.ForegroundColor
+        [string]$BackgroundColor,
+        [string]$ForegroundColor
     )
 
-    $OriginalBackgroundColor = $Host.UI.RawUI.BackgroundColor
-    $OriginalForegroundColor = $Host.UI.RawUI.ForegroundColor
-    $Host.UI.RawUI.BackgroundColor = $BackgroundColor
-    $Host.UI.RawUI.ForegroundColor = $ForegroundColor
-    $Message
-    $Host.UI.RawUI.BackgroundColor = $OriginalBackgroundColor
-    $Host.UI.RawUI.ForegroundColor = $OriginalForegroundColor
+    if ($psISE) {
+        $OriginalBackgroundColor = $psISE.Options.ConsolePaneBackgroundColor
+        $OriginalForegroundColor = $psISE.Options.ConsolePaneForegroundColor
+        try {
+            $psISE.Options.ConsolePaneBackgroundColor = if ($BackgroundColor) { [System.Windows.Media.Colors]::$BackgroundColor } else { $OriginalBackgroundColor }
+            $psISE.Options.ConsolePaneForegroundColor = if ($ForegroundColor) { [System.Windows.Media.Colors]::$ForegroundColor } else { $OriginalForegroundColor }
+            $Message
+        } finally {
+            $psISE.Options.ConsolePaneBackgroundColor = $OriginalBackgroundColor
+            $psISE.Options.ConsolePaneForegroundColor = $OriginalForegroundColor
+        }
+    } else {
+        $OriginalBackgroundColor = $Host.UI.RawUI.BackgroundColor
+        $OriginalForegroundColor = $Host.UI.RawUI.ForegroundColor
+        try {
+            $Host.UI.RawUI.BackgroundColor = if ($BackgroundColor) { $BackgroundColor } else { $OriginalBackgroundColor }
+            $Host.UI.RawUI.ForegroundColor = if ($ForegroundColor) { $ForegroundColor } else { $OriginalForegroundColor }
+            $Message
+        } finally {
+            $Host.UI.RawUI.BackgroundColor = $OriginalBackgroundColor
+            $Host.UI.RawUI.ForegroundColor = $OriginalForegroundColor
+        }
+    }
 }
 
 <#
@@ -921,7 +944,7 @@ function script:Jobs {
         )
 
         # Import Pask script
-        . $private:Files[0]
+        . $private:Files[0] -Files $private:Files
 
         # Set Pask properties
         $private:Properties.Keys | % { Set-BuildProperty -Name $_ -Value $private:Properties.Item($_) }

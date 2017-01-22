@@ -58,8 +58,6 @@ $ErrorActionPreference = "Stop"
 # Include Pask script
 $private:PaskScriptFullName = Join-Path $PSScriptRoot ".build\scripts\Pask.ps1"
 . $PaskScriptFullName
-${!Files!}.Add($PaskScriptFullName) | Out-Null
-${script:!Files!} = ${!Files!}
 
 # Expose properties passed to the script
 for ($i=0; $i -lt $Properties.Count; $i+=2) {

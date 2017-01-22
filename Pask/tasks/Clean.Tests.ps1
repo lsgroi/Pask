@@ -24,15 +24,15 @@ Describe "Clean" {
         }
 
         It "should clean the build output directory" {
-            Test-Path (Join-Path $TestSolutionFullPath ".build\output\*") | Should Be $false
+            Join-Path $TestSolutionFullPath ".build\output\*" | should Not Exist
         }
 
         It "should clean the bin directory" {
-            Test-Path (Join-Path $TestSolutionFullPath "ClassLibrary\bin") | Should Be $false
+            Join-Path $TestSolutionFullPath "ClassLibrary\bin" | Should Not Exist
         }
 
         It "should clean the obj directory" {
-            Test-Path (Join-Path $TestSolutionFullPath "ClassLibrary\obj") | Should Be $false
+            Join-Path $TestSolutionFullPath "ClassLibrary\obj" | Should Not Exist
         }
     }
 }

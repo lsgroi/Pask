@@ -40,6 +40,9 @@ function script:Install-NuGetPackage {
 .PARAMETER SolutionFullPath <string>
    The target solution's directory
 
+.PARAMETER SolutionName <string>
+   The target solution's name
+
 .PARAMETER Tasks <string[]>
    One or more tasks to be invoked
 
@@ -52,11 +55,16 @@ function script:Install-NuGetPackage {
 function script:Invoke-Pask {
     param(
         [Parameter(Mandatory=$true,Position=0)][Alias(“SolutionFullPath”)][string]$TargetSolutionFullPath,
-        [string[]]$Task,
+        [string]$SolutionName,
+        [string[]]$Task = ".",
         [Parameter(ValueFromRemainingArguments=$true)]$Properties
     )
 
-    Exec { & "$(Join-Path $TargetSolutionFullPath "Pask.ps1")" -Task $Task -Properties $Properties }
+    if($SolutionName) {
+        Exec { & "$(Join-Path $TargetSolutionFullPath "Pask.ps1")" -SolutionName $SolutionName -Task $Task -Properties $Properties }
+    } else { 
+        Exec { & "$(Join-Path $TargetSolutionFullPath "Pask.ps1")" -Task $Task -Properties $Properties }
+    }
 }
 
 <#

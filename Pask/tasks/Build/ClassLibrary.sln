@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Tests", "ClassLibrary.Tests\ClassLibrary.Tests.csproj", "{95602B09-90AB-4714-9863-3212D04FD6CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{BA3EF277-A593-49FD-8E48-6B7EEA681581}"
+	ProjectSection(SolutionItems) = preProject
+		.build\build.ps1 = .build\build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{F8A2886F-82CD-44FD-B83B-0C34B77CD2B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{9B22D986-B618-4B18-8CF9-7CCD4CE7EE5C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95602B09-90AB-4714-9863-3212D04FD6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95602B09-90AB-4714-9863-3212D04FD6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95602B09-90AB-4714-9863-3212D04FD6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95602B09-90AB-4714-9863-3212D04FD6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F8A2886F-82CD-44FD-B83B-0C34B77CD2B1} = {BA3EF277-A593-49FD-8E48-6B7EEA681581}
+		{9B22D986-B618-4B18-8CF9-7CCD4CE7EE5C} = {BA3EF277-A593-49FD-8E48-6B7EEA681581}
+	EndGlobalSection
+EndGlobal
