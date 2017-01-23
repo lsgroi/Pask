@@ -27,7 +27,7 @@ Describe "Build" {
 
     Context "Build a class library project only with custom configuration" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionName ClassLibrary -Task Clean, Build -BuildProjectOnly $true -Configuration Release
+        Invoke-Pask $TestSolutionFullPath -SolutionName ClassLibrary -Task Clean, Build -BuildProjectOnly $true -BuildConfiguration Release
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Release\ClassLibrary.dll" | Should Exist
@@ -44,10 +44,14 @@ Describe "Build" {
 
     Context "Build a console application solution with custom configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionName ConsoleApplication -Task Clean, Build -Configuration Release -Platform x86
+        Invoke-Pask $TestSolutionFullPath -SolutionName ConsoleApplication -Task Clean, Build -BuildConfiguration Release -BuildPlatform x86
 
         It "builds the console application executable" {
             Join-Path $TestSolutionFullPath "ConsoleApplication\bin\x86\Release\ConsoleApplication.exe" | Should Exist
+        }
+
+        It "builds other projects" {
+            Join-Path $TestSolutionFullPath "ClassLibrary\bin\Release\ClassLibrary.dll" | Should Exist
         }
     }
 }

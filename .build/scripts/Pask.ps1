@@ -670,12 +670,12 @@ function script:Get-ProjectBuildOutputDir {
     Process {
         $Directory = $SolutionProjects | Where { $_.Name -eq $ProjectName } | Select -First 1 -ExpandProperty Directory
         Assert ($Directory -and (Test-Path $Directory)) "Cannot find project $ProjectName directory"
-        if ($Configuration -and $Platform -and (Test-Path (Join-Path $Directory "bin\$Platform\$Configuration"))) {
+        if ($BuildConfiguration -and $BuildPlatform -and (Test-Path (Join-Path $Directory "bin\$BuildPlatform\$BuildConfiguration"))) {
             # Project directory with build configuration and platform
-            $Result += Join-Path $Directory "bin\$Platform\$Configuration"
-        } elseif ($Configuration -and (Test-Path (Join-Path $Directory "bin\$Configuration"))) {
+            $Result += Join-Path $Directory "bin\$BuildPlatform\$BuildConfiguration"
+        } elseif ($BuildConfiguration -and (Test-Path (Join-Path $Directory "bin\$BuildConfiguration"))) {
             # Project directory with build configuration
-            $Result += Join-Path $Directory "bin\$Configuration"
+            $Result += Join-Path $Directory "bin\$BuildConfiguration"
         } elseif (Test-Path (Join-Path $Directory "bin")) {
             # Project directory with bin folder
             $Result += Join-Path $Directory "bin"

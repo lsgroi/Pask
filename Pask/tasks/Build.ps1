@@ -11,10 +11,10 @@ Task Build {
         $Project = $SolutionFullName
     }
 
-    if($Platform) { 
-        $MSBuildPlatform = "/p:Platform=""$Platform""" 
+    if($BuildPlatform) { 
+        $MSBuildPlatform = "/p:Platform=""$BuildPlatform""" 
     }
 
     "Building '$(Split-Path -Path $Project -Leaf)'`r`n"
-    Exec { MSBuild "$Project" /t:Build /p:Configuration=$Configuration $MSBuildPlatform /Verbosity:quiet }
+    Exec { MSBuild "$Project" /t:Build /p:Configuration=$BuildConfiguration $MSBuildPlatform /Verbosity:quiet }
 }

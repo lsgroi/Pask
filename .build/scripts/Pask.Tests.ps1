@@ -2060,7 +2060,7 @@ Describe "Get-ProjectBuildOutputDir" {
     Context "Get build output directories for three projects" {
         BeforeAll {
             # Arrange
-            $Configuration = "Release"
+            $BuildConfiguration = "Release"
             Get-SolutionProjects | ForEach -Process { New-Directory (Join-Path $_.Directory "bin\Release") | Out-Null }
 
             # Act
@@ -2087,8 +2087,8 @@ Describe "Get-ProjectBuildOutputDir" {
     Context "The project was built specifying configuration and platform" {
         BeforeAll {
             # Arrange
-            $Configuration = "CustomConfiguration"
-            $Platform = "x86"
+            $BuildConfiguration = "CustomConfiguration"
+            $BuildPlatform = "x86"
             New-Directory (Join-Path $TestDrive "Project2\bin\x86\CustomConfiguration") | Out-Null
         }
 
@@ -2100,8 +2100,8 @@ Describe "Get-ProjectBuildOutputDir" {
     Context "The project was built specifying configuration" {
         BeforeAll {
             # Arrange
-            $Configuration = "Release"
-            New-Directory (Join-Path $TestDrive "Project2\bin\$Configuration") | Out-Null
+            $BuildConfiguration = "Release"
+            New-Directory (Join-Path $TestDrive "Project2\bin\$BuildConfiguration") | Out-Null
         }
 
         It "returns the project ouptut directory" {
@@ -2112,7 +2112,7 @@ Describe "Get-ProjectBuildOutputDir" {
     Context "The project is a web application" {
         BeforeAll {
             # Arrange
-            $Configuration = "Release"
+            $BuildConfiguration = "Release"
             New-Directory (Join-Path $TestDrive "Project2\bin") | Out-Null
         }
 

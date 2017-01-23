@@ -11,10 +11,10 @@ Task Build-WebApplication {
         $Project = $SolutionFullName
     }
 
-    if($Platform) { 
-        $MSBuildPlatform = "/p:Platform=""$Platform""" 
+    if($BuildPlatform) { 
+        $MSBuildPlatform = "/p:Platform=""$BuildPlatform""" 
     }
 
     "Building '$(Split-Path -Path $Project -Leaf)'`r`n"
-    Exec { MSBuild "$Project" /t:Build /p:Configuration=$Configuration $MSBuildPlatform /p:WebProjectOutputDir="$WebApplicationOutputPath" /p:OutDir=".\bin\" /p:OutputPath="bin\$Configuration\" /Verbosity:quiet }
+    Exec { MSBuild "$Project" /t:Build /p:Configuration=$BuildConfiguration $MSBuildPlatform /p:WebProjectOutputDir="$WebApplicationOutputPath" /p:OutDir=".\bin\" /p:OutputPath="bin\$BuildConfiguration\" /Verbosity:quiet }
 }

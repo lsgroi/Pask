@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{346494AB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{960FC650-F85A-4DBB-9D14-EEB290C515C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,18 @@ Global
 		{D202CF58-E5F3-40FA-A548-EB31CAA62305}.Release|x64.Build.0 = Release|x64
 		{D202CF58-E5F3-40FA-A548-EB31CAA62305}.Release|x86.ActiveCfg = Release|x86
 		{D202CF58-E5F3-40FA-A548-EB31CAA62305}.Release|x86.Build.0 = Release|x86
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|x64.Build.0 = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Debug|x86.Build.0 = Debug|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|x64.ActiveCfg = Release|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|x64.Build.0 = Release|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|x86.ActiveCfg = Release|Any CPU
+		{78C16DCF-5C9F-4176-8CEB-2BD2DBEB2DED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

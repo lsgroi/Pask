@@ -54,6 +54,8 @@
     <Compile Include="scripts\Show-BuildTree.ps1" />
     <Compile Include="tasks\Build-WebApplication.ps1" />
     <Compile Include="tasks\Build-WebApplication.Tests.ps1" />
+    <Compile Include="tasks\Build-WebDeployPackage.ps1" />
+    <Compile Include="tasks\Build-WebDeployPackage.Tests.ps1" />
     <Compile Include="tasks\Build.ps1" />
     <Compile Include="tasks\Build.Tests.ps1" />
     <Compile Include="tasks\Clean.ps1" />
