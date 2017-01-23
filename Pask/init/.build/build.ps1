@@ -1,4 +1,4 @@
-Import-Task Restore-NuGetPackages
+Import-Task Restore-NuGetPackages, Clean, Build
 
 # Synopsis: Default task
-Task . Restore-NuGetPackages
+Task . Restore-NuGetPackages, Clean, Build
