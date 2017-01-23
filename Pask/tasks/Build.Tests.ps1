@@ -16,7 +16,11 @@ Describe "Build" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Debug\ClassLibrary.dll" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the default build configuration" {
+            Join-Path $TestSolutionFullPath "ClassLibrary\bin\Debug" | Should Exist
+        }
+
+        It "uses the default target platform" {
             [reflection.assemblyname]::GetAssemblyName((Join-Path $TestSolutionFullPath "ClassLibrary\bin\Debug\ClassLibrary.dll")).ProcessorArchitecture | Should Be "MSIL"
         }
 
@@ -33,7 +37,11 @@ Describe "Build" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Release\ClassLibrary.dll" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the custom build configuration" {
+            Join-Path $TestSolutionFullPath "ClassLibrary\bin\Release" | Should Exist
+        }
+
+        It "uses the default target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "ClassLibrary\bin\Release\ClassLibrary.dll")).ProcessorArchitecture | Should Be "MSIL"
         }
 
@@ -48,6 +56,14 @@ Describe "Build" {
 
         It "builds the console application executable" {
             Join-Path $TestSolutionFullPath "ConsoleApplication\bin\x86\Release\ConsoleApplication.exe" | Should Exist
+        }
+
+        It "uses the custom build configuration" {
+            Join-Path $TestSolutionFullPath "ConsoleApplication\bin\x86\Release" | Should Exist
+        }
+
+        It "uses the custom target platform" {
+            [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "ConsoleApplication\bin\x86\Release\ConsoleApplication.exe")).ProcessorArchitecture | Should Be "x86"
         }
 
         It "builds other projects" {

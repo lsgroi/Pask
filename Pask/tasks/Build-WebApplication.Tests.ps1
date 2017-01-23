@@ -16,11 +16,11 @@ Describe "Build-WebApplication" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
         }
 
-        It "uses the default configuration" {
+        It "uses the default build configuration" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\Debug" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the default target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll")).ProcessorArchitecture | Should Be "MSIL"
         }
 
@@ -41,11 +41,11 @@ Describe "Build-WebApplication" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
         }
 
-        It "uses the default configuration" {
+        It "uses the default build configuration" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\Debug" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the default target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll")).ProcessorArchitecture | Should Be "MSIL"
         }
 
@@ -66,11 +66,11 @@ Describe "Build-WebApplication" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
         }
 
-        It "uses the custom configuration" {
+        It "uses the custom build configuration" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\x64\Release" | Should Exist
         }
 
-        It "uses the custom platform" {
+        It "uses the custom target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll")).ProcessorArchitecture | Should Be "Amd64"
         }
 

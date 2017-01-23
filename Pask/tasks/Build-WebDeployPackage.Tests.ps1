@@ -16,11 +16,11 @@ Describe "Build-WebDeployPackage" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
         }
 
-        It "uses the default configuration" {
+        It "uses the default build configuration" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\Debug" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the default target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "WebApplication\obj\Debug\Package\PackageTmp\bin\WebApplication.dll")).ProcessorArchitecture | Should Be "MSIL"
         }
 
@@ -45,11 +45,11 @@ Describe "Build-WebDeployPackage" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
         }
 
-        It "uses the default configuration" {
+        It "uses the default build configuration" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\Debug" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the default target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "WebApplication\obj\Debug\Package\PackageTmp\bin\WebApplication.dll")).ProcessorArchitecture | Should Be "MSIL"
         }
 
@@ -74,11 +74,11 @@ Describe "Build-WebDeployPackage" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
         }
 
-        It "uses the default configuration" {
+        It "uses the default build configuration" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\x64\Release" | Should Exist
         }
 
-        It "uses the default platform" {
+        It "uses the default target platform" {
             [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $TestSolutionFullPath "WebApplication\obj\x64\Release\Package\PackageTmp\bin\WebApplication.dll")).ProcessorArchitecture | Should Be "Amd64"
         }
 
