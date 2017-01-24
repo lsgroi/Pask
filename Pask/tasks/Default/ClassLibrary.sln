@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{73E1BAB2-FBA3-4DC8-8028-AD3B95ACC122}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{90503483-FF1A-4607-AE5B-6C43D06C3823}"
+	ProjectSection(SolutionItems) = preProject
+		.build\build.ps1 = .build\build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{1BFAD4C6-A96F-4B20-82AA-68BCAE80F000}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{E9BD21D3-1496-4871-A148-E6296508C352}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Tests", "ClassLibrary.Tests\ClassLibrary.Tests.csproj", "{3D77F080-C365-4E4D-AC83-CF334EF21FEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73E1BAB2-FBA3-4DC8-8028-AD3B95ACC122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E1BAB2-FBA3-4DC8-8028-AD3B95ACC122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E1BAB2-FBA3-4DC8-8028-AD3B95ACC122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E1BAB2-FBA3-4DC8-8028-AD3B95ACC122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D77F080-C365-4E4D-AC83-CF334EF21FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D77F080-C365-4E4D-AC83-CF334EF21FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D77F080-C365-4E4D-AC83-CF334EF21FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D77F080-C365-4E4D-AC83-CF334EF21FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1BFAD4C6-A96F-4B20-82AA-68BCAE80F000} = {90503483-FF1A-4607-AE5B-6C43D06C3823}
+		{E9BD21D3-1496-4871-A148-E6296508C352} = {90503483-FF1A-4607-AE5B-6C43D06C3823}
+	EndGlobalSection
+EndGlobal
