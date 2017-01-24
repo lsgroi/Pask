@@ -8,9 +8,9 @@ Describe "Build-WebDeployPackage" {
         Install-Pask -SolutionFullPath $TestSolutionFullPath
     }
 
-    Context "Build a web deploy package with default configuration and platform" {
+    Context "Build and artifact a web deployment package with default configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage
+        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -28,18 +28,23 @@ Describe "Build-WebDeployPackage" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\Debug\Package\PackageTmp\Index.html" | Should Exist
         }
 
-        It "builds the web deploy package" {
+        It "builds the web deployment package" {
             Join-Path (Join-Path (Join-Path $TestSolutionFullPath "WebApplication") $WebApplicationOutputPath) "WebApplication.zip" | Should Exist
         }
 
         It "builds other projects" {
             Join-Path $TestSolutionFullPath "WebApplication.Tests\bin\Debug\WebApplication.Tests.dll" | Should Exist
         }
+
+        It "creates the artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\Index.html" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\bin\WebApplication.dll" | Should Exist
+        }
     }
 
-    Context "Build a web deploy package from project only with default configuration and platform" {
+    Context "Build and artifact a web deployment package from project only with default configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage -BuildProjectOnly $true
+        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact -BuildProjectOnly $true
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -57,18 +62,23 @@ Describe "Build-WebDeployPackage" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\Debug\Package\PackageTmp\Index.html" | Should Exist
         }
 
-        It "builds the web deploy package" {
+        It "builds the web deployment package" {
             Join-Path (Join-Path (Join-Path $TestSolutionFullPath "WebApplication") $WebApplicationOutputPath) "WebApplication.zip" | Should Exist
         }
 
         It "does not build other projects" {
             Join-Path $TestSolutionFullPath "WebApplication.Tests\bin\Debug\WebApplication.Tests.dll" | Should Not Exist
         }
+
+        It "creates the artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\Index.html" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\bin\WebApplication.dll" | Should Exist
+        }
     }
 
-    Context "Build a web deploy package with custom configuration and platform" {
+    Context "Build and artifact a web deployment package with custom configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage -BuildConfiguration Release -BuildPlatform x64
+        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact -BuildConfiguration Release -BuildPlatform x64
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -86,12 +96,17 @@ Describe "Build-WebDeployPackage" {
             Join-Path $TestSolutionFullPath "WebApplication\obj\x64\Release\Package\PackageTmp\Index.html" | Should Exist
         }
 
-        It "builds the web deploy package" {
+        It "builds the web deployment package" {
             Join-Path (Join-Path (Join-Path $TestSolutionFullPath "WebApplication") $WebApplicationOutputPath) "WebApplication.zip" | Should Exist
         }
 
         It "builds other projects" {
             Join-Path $TestSolutionFullPath "WebApplication.Tests\bin\Release\WebApplication.Tests.dll" | Should Exist
+        }
+
+        It "creates the artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\Index.html" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\bin\WebApplication.dll" | Should Exist
         }
     }
 }

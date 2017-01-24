@@ -8,9 +8,9 @@ Describe "Build-WebApplication" {
         Install-Pask -SolutionFullPath $TestSolutionFullPath
     }
 
-    Context "Build a web application solution with default configuration and platform" {
+    Context "Build and artifact a web application solution with default configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebApplication
+        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebApplication, New-Artifact
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -31,11 +31,16 @@ Describe "Build-WebApplication" {
         It "builds other projects" {
             Join-Path $TestSolutionFullPath "WebApplication.Tests\bin\WebApplication.Tests.dll" | Should Exist
         }
+
+        It "creates the artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\Index.html" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\bin\WebApplication.dll" | Should Exist
+        }
     }
 
-    Context "Build a web application project only with default configuration and platform" {
+    Context "Build and artifact a web application project only with default configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebApplication -BuildProjectOnly $true
+        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebApplication, New-Artifact -BuildProjectOnly $true
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -56,11 +61,16 @@ Describe "Build-WebApplication" {
         It "does not build other projects" {
             Join-Path $TestSolutionFullPath "WebApplication.Tests\bin\WebApplication.Tests.dll" | Should Not Exist
         }
+
+        It "creates the artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\Index.html" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\bin\WebApplication.dll" | Should Exist
+        }
     }
 
-    Context "Build a web application solution with custom configuration and platform" {
+    Context "Build and artifact a web application solution with custom configuration and platform" {
         # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebApplication -BuildConfiguration Release -BuildPlatform x64
+        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebApplication, New-Artifact -BuildConfiguration Release -BuildPlatform x64
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -80,6 +90,11 @@ Describe "Build-WebApplication" {
 
         It "builds other projects" {
             Join-Path $TestSolutionFullPath "WebApplication.Tests\bin\WebApplication.Tests.dll" | Should Exist
+        }
+
+        It "creates the artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\Index.html" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\WebApplication\bin\WebApplication.dll" | Should Exist
         }
     }
 }

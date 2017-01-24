@@ -1,4 +1,4 @@
-Import-Task Restore-NuGetPackages, Clean, Build-WebDeployPackage
+Import-Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact
 
 # Synopsis: Default task
-Task . Restore-NuGetPackages, Clean, Build-WebDeployPackage
+Task . Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact

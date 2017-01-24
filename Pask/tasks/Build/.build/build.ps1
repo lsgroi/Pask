@@ -1,4 +1,4 @@
-Import-Task Clean, Build
+Import-Task Clean, Build, New-Artifact
 
 # Synopsis: Default task
-Task . Clean, Build
+Task . Clean, Build, New-Artifact
