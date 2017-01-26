@@ -62,8 +62,8 @@ function script:Set-BuildProperty {
         "ValueOfSessionOrDefault" { Get-BuildProperty $Name $Default }
         "ValueOfSession" { Get-BuildProperty $Name }
     }
-
-    $private:VariableValue = if ($private:PropertyValue.GetType() -eq [ScriptBlock]) { 
+   
+    $private:VariableValue = if ($private:PropertyValue -and $private:PropertyValue.GetType() -eq [ScriptBlock]) { 
         & $private:PropertyValue 
     } else { 
         $private:PropertyValue 
@@ -115,7 +115,7 @@ Set-Alias Get-Properties Get-BuildProperties -Scope Script
     None
 #>
 function script:Refresh-BuildProperties {
-    $private:BuildProperties = ${!BuildProperties!}.GetEnumerator() | Where { $_.Value.GetType() -eq [ScriptBlock] } 
+    $private:BuildProperties = ${!BuildProperties!}.GetEnumerator() | Where { $_.Value -and $_.Value.GetType() -eq [ScriptBlock] } 
     $private:BuildProperties | Foreach { Set-BuildProperty -Name $_.Key -Value $_.Value }
 }
 Set-Alias Refresh-Properties Refresh-BuildProperties -Scope Script

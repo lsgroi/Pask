@@ -61,11 +61,14 @@
     <Compile Include="tasks\Clean.ps1" />
     <Compile Include="tasks\Clean.Tests.ps1" />
     <Compile Include="tasks\Default.Tests.ps1" />
+    <Compile Include="tasks\Extract-Artifact.ps1" />
     <Compile Include="tasks\New-Artifact.ps1" />
     <Compile Include="tasks\New-Artifact.Tests.ps1" />
     <Compile Include="tasks\Restore-NuGetPackages.ps1" />
     <Compile Include="tasks\Test-Pester.ps1" />
     <Compile Include="tasks\Version-BuildServer.ps1" />
+    <Compile Include="tasks\Zip-Artifact.ps1" />
+    <Compile Include="tasks\ZipExtract-Artifact.Tests.ps1" />
     <Compile Include="tools\Init.ps1" />
     <Compile Include="version.txt" />
   </ItemGroup>

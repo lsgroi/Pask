@@ -60,6 +60,29 @@ Describe "Set-BuildProperty" {
         }
     }
 
+    Context "Set a new build property with static empty array value" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+
+            # Act
+            Set-BuildProperty $PropertyName -Value @()
+        }
+
+        It "a local variable should have the static value of empty array" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should BeLike @()
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
+        AfterAll {
+            # Cleanup
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
     Context "Set a new build property with static value and refresh all the build properties" {
         BeforeAll {
             # Arrange
@@ -265,6 +288,29 @@ Describe "Set-BuildProperty" {
 
         It "a local variable should have the default value" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the default value"
+        }
+
+        It "does not refresh all the build properties" {
+            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        }
+
+        AfterAll {
+            # Cleanup
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
+    Context "Set a new build property with default value of empty array" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+
+            # Act
+            Set-BuildProperty $PropertyName -Default @()
+        }
+
+        It "a local variable should have the default value of empty array" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should BeLike @()
         }
 
         It "does not refresh all the build properties" {
