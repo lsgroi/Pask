@@ -44,7 +44,7 @@ param(
 	$Result,
 	[switch]$Safe,
 	[switch]$Summary = $true,
-    [Parameter(ValueFromRemainingArguments=$true)][string[]]$Properties,
+    [Parameter(ValueFromRemainingArguments=$true)]$Properties,
     
     # Pask specific parameters
     [string]$SolutionPath,

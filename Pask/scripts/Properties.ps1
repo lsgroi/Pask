@@ -19,4 +19,9 @@ Set-Property RemoveArtifactPDB -Default $true
 Set-Property WebApplicationOutputPath -Default "obj/WebOut"
 
 # Extract-Artifact task
-Set-Property FileNamesToExtract -Default @()
+# Array of specific file names to extract only (e.g. MyAssembly.dll)
+Set-Property FileNameToExtract -Default @()
+
+# Version-Assemblies task
+# Array of AssemblyInfo files to exclude (relative path from solution's directory)
+Set-Property ExcludeAssemblyInfo -Default @()

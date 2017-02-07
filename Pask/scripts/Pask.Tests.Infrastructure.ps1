@@ -80,12 +80,12 @@ function script:Invoke-Pask {
 .PARAMETER Name <string>
    The solution name
 
+.OUTPUTS
+   None
+
 .EXAMPLE
    $DTE = New-Object -ComObject "VisualStudio.DTE.14.0"
    New-Solution ([ref]$DTE) "C:\Temp\SolutionDir" "MyTempSolution"
-
-.OUTPUTS
-   None
 #>
 function script:New-Solution {
     param([ref]$DTE, [string]$Path, [string]$Name)

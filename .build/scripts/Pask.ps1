@@ -33,6 +33,9 @@ param(
 .PARAMETER Refresh <switch>
     After setting the property, refreshes all build properties with script block value
 
+.OUTPUTS
+    None
+
 .EXAMPLE
     Set a build property with explicit value
     Set-Property -Name Configuration -Value Debug
@@ -44,9 +47,6 @@ param(
 .EXAMPLE
     Set a build property with value of session
     Set-Property -Name Configuration
-
-.OUTPUTS
-    None
 #>
 function script:Set-BuildProperty {
     [CmdletBinding(DefaultParameterSetName="ValueOfSession")]
@@ -265,6 +265,11 @@ function script:Restore-NuGetDevelopmentPackages {
 
 .OUTPUTS
    None
+
+.EXAMPLE
+   Write a yellow message to the host
+   Write-BuildMessage -Message "Copying assembly" -ForegroundColor "Yellow"
+
 #>
 function script:Write-BuildMessage {
     param(
@@ -919,11 +924,11 @@ function script:Get-ProjectSemanticVersion {
 .PARAMETER TaskProperties <string[]>
    Custom properties which overrides the existings when name matches
 
-.EXAMPLE
-   Jobs Task1, Task2 -CustomProperty "CustomPropertyValue"
-
 .OUTPUTS
    Output of invoked builds and other log messages
+
+.EXAMPLE
+   Jobs Task1, Task2 -CustomProperty "CustomPropertyValue"
 #>
 function script:Jobs {
     param(

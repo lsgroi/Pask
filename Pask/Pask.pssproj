@@ -66,6 +66,8 @@
     <Compile Include="tasks\New-Artifact.Tests.ps1" />
     <Compile Include="tasks\Restore-NuGetPackages.ps1" />
     <Compile Include="tasks\Test-Pester.ps1" />
+    <Compile Include="tasks\Version-Assemblies.ps1" />
+    <Compile Include="tasks\Version-Assemblies.Tests.ps1" />
     <Compile Include="tasks\Version-BuildServer.ps1" />
     <Compile Include="tasks\Zip-Artifact.ps1" />
     <Compile Include="tasks\ZipExtract-Artifact.Tests.ps1" />

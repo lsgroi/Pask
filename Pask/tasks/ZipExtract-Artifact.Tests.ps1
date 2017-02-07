@@ -31,7 +31,7 @@ Describe "ZipExtract-Artifact" {
     Context "Zip an artifact and extract filtered files" {
         # Act
         Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
-        Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact -FileNamesToExtract @("TextFile2.txt")
+        Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact -FileNameToExtract @("TextFile2.txt")
 
         It "extracts the filtered files" {
             Join-Path $TestSolutionFullPath ".build\output\ClassLibrary\Content\TextFile2.txt" | Should Exist

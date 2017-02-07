@@ -16,9 +16,9 @@ Task Extract-Artifact {
 	
     if ($ZipArtifact) {
         "Extracting artifact $($ZipArtifact.Name)"
-        Exec { & "$7za" x "$($ZipArtifact.FullName)" "-o$ArtifactFullPath" $FileNamesToExtract -r -y | Out-Null }
+        Exec { & "$7za" x "$($ZipArtifact.FullName)" "-o$ArtifactFullPath" $FileNameToExtract -r -y | Out-Null }
     } elseif ($Package) {
         "Extracting package '$($Package.Name)'"
-        Exec { & "$7za" e "$($Package.FullName)" "-o$ArtifactFullPath" $FileNamesToExtract -r -y | Out-Null }
+        Exec { & "$7za" e "$($Package.FullName)" "-o$ArtifactFullPath" $FileNameToExtract -r -y | Out-Null }
     }
 }

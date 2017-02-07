@@ -2,6 +2,10 @@ Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
 
+Version 0.7.0
+-------------------------------------------------------------------------------------
+- Add Version-Assemblies task
+
 Version 0.6.0
 -------------------------------------------------------------------------------------
 - Add Zip-Artifact and Extract-Artifact tasks
