@@ -1,3 +1,6 @@
+# Array of specific file names to extract only (e.g. MyAssembly.dll)
+Set-Property FileNameToExtract -Default @()
+
 # Synopsis: Extract the artifact from a ZIP archive or a NuGet package
 Task Extract-Artifact {
     Import-Properties -Package Pask

@@ -1,3 +1,5 @@
+Set-Property TestName -Default ""
+
 # Synopsis: Run PowerShell tests found in *.Tests.ps1 files
 Task Test-Pester {
     # Import Pester module

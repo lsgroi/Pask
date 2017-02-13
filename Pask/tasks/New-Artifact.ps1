@@ -1,3 +1,6 @@
+Import-Script Properties.MSBuild, Properties.WebApplication -Package Pask
+Set-Property RemoveArtifactPDB -Default $true
+
 # Synopsis: Create the artifact by copying MSBuild output to the build output directory
 Task New-Artifact {
     Import-Properties -Package Pask

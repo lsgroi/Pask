@@ -1,3 +1,6 @@
+# Array of AssemblyInfo files to exclude (relative path from solution's directory)
+Set-Property ExcludeAssemblyInfo -Default @()
+
 # Synopsis: Version all the assemblies in the solution
 Task Version-Assemblies {
     Import-Properties -Package Pask

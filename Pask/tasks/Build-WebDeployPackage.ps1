@@ -1,3 +1,5 @@
+Import-Script Properties.MSBuild, Properties.WebApplication -Package Pask
+
 # Synopsis: Build the solution in which the default project is a web application and the output should be a web deployment package
 Task Build-WebDeployPackage {
     Import-Properties -Package Pask

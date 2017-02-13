@@ -29,7 +29,7 @@ Describe "Build-WebDeployPackage" {
         }
 
         It "builds the web deployment package" {
-            Join-Path (Join-Path (Join-Path $TestSolutionFullPath "WebApplication") $WebApplicationOutputPath) "WebApplication.zip" | Should Exist
+            Join-Path (Join-Path $TestSolutionFullPath "WebApplication") "obj/WebOut/WebApplication.zip" | Should Exist
         }
 
         It "builds other projects" {
@@ -63,7 +63,7 @@ Describe "Build-WebDeployPackage" {
         }
 
         It "builds the web deployment package" {
-            Join-Path (Join-Path (Join-Path $TestSolutionFullPath "WebApplication") $WebApplicationOutputPath) "WebApplication.zip" | Should Exist
+            Join-Path (Join-Path $TestSolutionFullPath "WebApplication") "obj/WebOut/WebApplication.zip" | Should Exist
         }
 
         It "does not build other projects" {
@@ -97,7 +97,7 @@ Describe "Build-WebDeployPackage" {
         }
 
         It "builds the web deployment package" {
-            Join-Path (Join-Path (Join-Path $TestSolutionFullPath "WebApplication") $WebApplicationOutputPath) "WebApplication.zip" | Should Exist
+            Join-Path (Join-Path $TestSolutionFullPath "WebApplication") "obj/WebOut/WebApplication.zip" | Should Exist
         }
 
         It "builds other projects" {

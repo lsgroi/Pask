@@ -50,7 +50,9 @@
     <Compile Include="Pask.nuspec" />
     <Compile Include="readme.txt" />
     <Compile Include="scripts\Pask.Tests.Infrastructure.ps1" />
+    <Compile Include="scripts\Properties.MSBuild.ps1" />
     <Compile Include="scripts\Properties.ps1" />
+    <Compile Include="scripts\Properties.WebApplication.ps1" />
     <Compile Include="scripts\Show-BuildTree.ps1" />
     <Compile Include="tasks\Build-WebApplication.ps1" />
     <Compile Include="tasks\Build-WebApplication.Tests.ps1" />
