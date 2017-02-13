@@ -926,14 +926,14 @@ Describe "Get-PackageDir" {
     }
 }
 
-Describe "Import-Task" {
+Describe "Import-File" {
     BeforeAll {
         # Arrange
         $BuildFullPath = Join-Path $TestDrive ".build"
         New-Item $BuildFullPath -ItemType Directory
     }
 
-    Context "Non existent task" {
+    Context "Import non existent task" {
         BeforeAll {
             # Arrange
             Mock Get-SolutionProjects { return @() }
@@ -941,36 +941,48 @@ Describe "Import-Task" {
         }
 
         It "should error" {
-            { Import-Task Task-NonExistent } | Should Throw
+            { Import-File Task-NonExistent "tasks" } | Should Throw
         }
     }
 
-    Context "Task defined in the solution's build directory" {
+    Context "Import non existent script safely" {
         BeforeAll {
             # Arrange
-            $script:ImportedTask = ""
-            $TaskFullName = Join-Path $BuildFullPath "tasks\TaskFrom-Solution.ps1"
-            New-Item -Path (Join-Path $BuildFullPath "tasks") -ItemType Directory
-            Set-Content -Path $TaskFullName -Value '$script:ImportedTask = "TaskFromSolution"' -Force
+            Mock Get-SolutionProjects { return @() }
+            Mock Get-SolutionPackages { return @() }
+        }
+
+        It "should not error" {
+            { Import-File Script.NonExistent "scripts" -Safe } | Should Not Throw
+        }
+    }
+
+    Context "Script defined in the solution's build directory" {
+        BeforeAll {
+            # Arrange
+            $script:ImportedScript = ""
+            $ScriptFullName = Join-Path $BuildFullPath "scripts\ScriptFrom.Solution.ps1"
+            New-Item -Path (Join-Path $BuildFullPath "scripts") -ItemType Directory
+            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution"' -Force
             Mock Get-SolutionProjects { return @() }
             Mock Get-SolutionPackages { return @() }
 
             # Act
-            Import-Task TaskFrom-Solution
+            Import-File ScriptFrom.Solution "scripts"
         }
 
-        It "imports the task" {
-            $script:ImportedTask | Should Be "TaskFromSolution"
+        It "imports the script" {
+            $script:ImportedScript | Should Be "ScriptFromSolution"
         }
 
         AfterAll {
             # Cleanup
-            Remove-Variable ImportedTask -Scope Script
-            Remove-File $TaskFullName
+            Remove-Variable ImportedScript -Scope Script
+            Remove-File $ScriptFullName
         }
     }
 
-    Context "Task defined in a Pask project " {
+    Context "Task defined in a Pask project" {
         BeforeAll {
             # Arrange
             $script:ImportedTask = ""
@@ -987,7 +999,7 @@ Describe "Import-Task" {
             Mock Get-SolutionPackages { return @() }
 
             # Act
-            Import-Task TaskFrom-PaskProject
+            Import-File TaskFrom-PaskProject "tasks"
         }
 
         It "imports the task" {
@@ -1001,10 +1013,10 @@ Describe "Import-Task" {
         }
     }
 
-    Context "Task defined in a Pask package" {
+    Context "Script defined in a Pask package" {
         BeforeAll {
             # Arrange
-            $script:ImportedTask = ""
+            $script:ImportedScript = ""
             $PaskPackageName = "Pask.Package"
             Mock Get-SolutionPackages {
                 $Result = @()
@@ -1012,24 +1024,24 @@ Describe "Import-Task" {
                 return $Result
             }
             $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $TaskFullName = Join-Path $PackageFullPath "tasks\TaskFrom-PaskPackage.ps1"
-            New-Item -Path (Join-Path $PackageFullPath "tasks") -ItemType Directory
-            Set-Content -Path $TaskFullName -Value '$script:ImportedTask = "TaskFromPaskPackage"' -Force
+            $ScriptFullName = Join-Path $PackageFullPath "scripts\ScriptFrom.PaskPackage.ps1"
+            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
+            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"' -Force
             Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
             Mock Get-SolutionProjects { return @() }
 
             # Act
-            Import-Task TaskFrom-PaskPackage
+            Import-File ScriptFrom.PaskPackage "scripts"
         }
 
-        It "imports the task" {
-            $script:ImportedTask | Should Be "TaskFromPaskPackage"
+        It "imports the script" {
+            $script:ImportedScript | Should Be "ScriptFromPaskPackage"
         }
 
         AfterAll {
             # Cleanup
-            Remove-Variable ImportedTask -Scope Script
-            Remove-File $TaskFullName
+            Remove-Variable ImportedScript -Scope Script
+            Remove-File $ScriptFullName
         }
     }
 
@@ -1051,8 +1063,8 @@ Describe "Import-Task" {
             Mock Get-SolutionProjects { return @() }
 
             # Act
-            Import-Task TaskFrom-PaskPackage, TaskFrom-PaskPackage
-            Import-Task TaskFrom-PaskPackage
+            Import-File TaskFrom-PaskPackage, TaskFrom-PaskPackage "tasks"
+            Import-File TaskFrom-PaskPackage "tasks"
         }
 
         It "imports the task once" {
@@ -1066,15 +1078,15 @@ Describe "Import-Task" {
         }
     }
 
-    Context "Task defined in a Pask package and overridden in the build directory" {
+    Context "Script defined in a Pask package and overridden in the build directory" {
         BeforeAll {
             # Arrange
-            $script:ImportedTask = ""
-            $script:ImportedTaskCount = 0
+            $script:ImportedScript = ""
+            $script:ImportedScriptCount = 0
             # Stub build directory
-            $TaskFullName = Join-Path $BuildFullPath "tasks\Task-Override.ps1"
-            New-Item -Path (Join-Path $BuildFullPath "tasks") -ItemType Directory
-            Set-Content -Path $TaskFullName -Value '$script:ImportedTask = "TaskFromSolution"; $script:ImportedTaskCount += 1' -Force
+            $ScriptFullName = Join-Path $BuildFullPath "scripts\Script.Override.ps1"
+            New-Item -Path (Join-Path $BuildFullPath "scripts") -ItemType Directory
+            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution"; $script:ImportedScriptCount += 1' -Force
             # Stub Pask package
             $PaskPackageName = "Pask.Package"
             Mock Get-SolutionPackages {
@@ -1083,29 +1095,29 @@ Describe "Import-Task" {
                 return $Result
             }
             $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $PaskPackageTaskFullName = Join-Path $PackageFullPath "tasks\Task-Override.ps1"
-            New-Item -Path (Join-Path $PackageFullPath "tasks") -ItemType Directory
-            Set-Content -Path $PaskPackageTaskFullName -Value '$script:ImportedTask = "TaskFromPaskPackage"; $script:ImportedTaskCount += 1' -Force
+            $PackageScriptFullName = Join-Path $PackageFullPath "scripts\Script.Override.ps1"
+            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
+            Set-Content -Path $PackageScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"; $script:ImportedScriptCount += 1' -Force
             Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
             # No solution projects
             Mock Get-SolutionProjects { return @() }
 
             # Act
-            Import-Task Task-Override
+            Import-File Script.Override "scripts"
         }
 
-        It "uses the task in the build directory" {
-            $script:ImportedTask | Should Be "TaskFromSolution"
+        It "the script in the build directory overrides the script in the Pask package" {
+            $script:ImportedScript | Should Be "ScriptFromSolution"
         }
 
-        It "imports the task twice" {
-            $script:ImportedTaskCount | Should Be 2
+        It "imports both scripts from the package and build directory" {
+            $script:ImportedScriptCount | Should Be 2
         }
 
         AfterAll {
             # Cleanup
-            Remove-Variable ImportedTask, ImportedTaskCount -Scope Script
-            Remove-File $TaskFullName, $PaskPackageTaskFullName
+            Remove-Variable ImportedScript, ImportedScriptCount -Scope Script
+            Remove-File $ScriptFullName, $PackageScriptFullName
         }
     }
 
@@ -1133,14 +1145,14 @@ Describe "Import-Task" {
             Mock Get-SolutionPackages { return @() }
 
             # Act
-            Import-Task Task-Override
+            Import-File Task-Override "tasks"
         }
 
         It "uses the task in the build directory" {
             $script:ImportedTask | Should Be "TaskFromSolution"
         }
 
-        It "imports the task twice" {
+        It "imports both tasks from the project and the build directory" {
             $script:ImportedTaskCount | Should Be 2
         }
 
@@ -1151,11 +1163,11 @@ Describe "Import-Task" {
         }
     }
 
-    Context "Task defined in a Pask package and overridden in a Pask project" {
+    Context "Script defined in a Pask package and overridden in a Pask project" {
         BeforeAll {
             # Arrange
-            $script:ImportedTask = ""
-            $script:ImportedTaskCount = 0
+            $script:ImportedScript = ""
+            $script:ImportedScriptCount = 0
             # Stub Pask project
             $PaskProjectName = "Pask.Project"
             $PaskProjectFullPath = Join-Path $TestDrive $PaskProjectName
@@ -1164,9 +1176,9 @@ Describe "Import-Task" {
                 $Result += New-Object PSObject -Property @{ Name = $PaskProjectName; Directory = $PaskProjectFullPath }
                 return $Result
             }
-            $PaskProjectTaskFullName = Join-Path $PaskProjectFullPath "tasks\Task-Override.ps1"
-            New-Item -Path (Join-Path $PaskProjectFullPath "tasks") -ItemType Directory
-            Set-Content -Path $PaskProjectTaskFullName -Value '$script:ImportedTask = "TaskFromPaskProject"; $script:ImportedTaskCount += 1' -Force
+            $ProjectScriptFullName = Join-Path $PaskProjectFullPath "scripts\Script.Override.ps1"
+            New-Item -Path (Join-Path $PaskProjectFullPath "scripts") -ItemType Directory
+            Set-Content -Path $ProjectScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskProject"; $script:ImportedScriptCount += 1' -Force
             # Stub Pask package
             $PaskPackageName = "Pask.Package"
             Mock Get-SolutionPackages {
@@ -1175,27 +1187,27 @@ Describe "Import-Task" {
                 return $Result
             }
             $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $PaskPackageTaskFullName = Join-Path $PackageFullPath "tasks\Task-Override.ps1"
-            New-Item -Path (Join-Path $PackageFullPath "tasks") -ItemType Directory
-            Set-Content -Path $PaskPackageTaskFullName -Value '$script:ImportedTask = "TaskFromPaskPackage"; $script:ImportedTaskCount += 1' -Force
+            $PackageScriptFullName = Join-Path $PackageFullPath "scripts\Script.Override.ps1"
+            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
+            Set-Content -Path $PackageScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"; $script:ImportedScriptCount += 1' -Force
             Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
 
             # Act
-            Import-Task Task-Override
+            Import-File Script.Override "scripts"
         }
 
-        It "uses the task in the Pask project" {
-            $script:ImportedTask | Should Be "TaskFromPaskProject"
+        It "the script in the Pask project overrides the script in the Pask package" {
+            $script:ImportedScript | Should Be "ScriptFromPaskProject"
         }
 
-        It "imports the task twice" {
-            $script:ImportedTaskCount | Should Be 2
+        It "imports both scripts from package and project" {
+            $script:ImportedScriptCount | Should Be 2
         }
 
         AfterAll {
             # Cleanup
-            Remove-Variable ImportedTask, ImportedTaskCount -Scope Script
-            Remove-File $PaskProjectTaskFullName, $PaskPackageTaskFullName
+            Remove-Variable ImportedScript, ImportedScriptCount -Scope Script
+            Remove-File $ProjectScriptFullName, $PackageScriptFullName
         }
     }
 
@@ -1243,7 +1255,7 @@ Describe "Import-Task" {
             Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
 
             # Act
-            Import-Task *
+            Import-File * "tasks"
         }
 
         It "imports the first task" {
@@ -1276,68 +1288,17 @@ Describe "Import-Task" {
             Remove-File $FirstTaskFullName, $SecondTaskFullName, $PaskProjectFirstTaskFullName, $PaskProjectSecondTaskFullName, $PaskPackageFirstTaskFullName, $PaskPackageSecondTaskFullName
         }
     }
-}
 
-Describe "Import-Script" {
-    BeforeAll {
-        # Arrange
-        $BuildFullPath = Join-Path $TestDrive ".build"
-        New-Item $BuildFullPath -ItemType Directory
-    }
-
-    Context "Non existent script" {
-        BeforeAll {
-            # Arrange
-            Mock Get-SolutionProjects { return @() }
-            Mock Get-SolutionPackages { return @() }
-        }
-
-        It "should error" {
-            { Import-Script Script.NonExistent } | Should Throw
-        }
-    }
-
-    Context "Non existent script safe" {
-        BeforeAll {
-            # Arrange
-            Mock Get-SolutionProjects { return @() }
-            Mock Get-SolutionPackages { return @() }
-        }
-
-        It "should error" {
-            { Import-Script Script.NonExistent -Safe } | Should Not Throw
-        }
-    }
-
-    Context "Script defined in the solution's build directory" {
+    Context "Import a script explicitly from a Pask project" {
         BeforeAll {
             # Arrange
             $script:ImportedScript = ""
-            $ScriptFullName = Join-Path $BuildFullPath "scripts\ScriptFrom.Solution.ps1"
+            $script:ImportedScriptCount = 0
+            # Stub build output directory
+            $ScriptFullName = Join-Path $BuildFullPath "scripts\CustomScript.ps1"
             New-Item -Path (Join-Path $BuildFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution"' -Force
-            Mock Get-SolutionProjects { return @() }
-            Mock Get-SolutionPackages { return @() }
-
-            # Act
-            Import-Script ScriptFrom.Solution
-        }
-
-        It "imports the script" {
-            $script:ImportedScript | Should Be "ScriptFromSolution"
-        }
-
-        AfterAll {
-            # Cleanup
-            Remove-Variable ImportedScript -Scope Script
-            Remove-File $ScriptFullName
-        }
-    }
-
-    Context "Script defined in a Pask project" {
-        BeforeAll {
-            # Arrange
-            $script:ImportedScript = ""
+            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution; $script:ImportedScriptCount += 1"' -Force
+            # Stub Pask project
             $PaskProjectName = "Pask.Project"
             $PaskProjectFullPath = Join-Path $TestDrive $PaskProjectName
             Mock Get-SolutionProjects { 
@@ -1345,100 +1306,61 @@ Describe "Import-Script" {
                 $Result += New-Object PSObject -Property @{ Name = $PaskProjectName; Directory = $PaskProjectFullPath }
                 return $Result
             }
-            $ScriptFullName = Join-Path $PaskProjectFullPath "scripts\ScriptFrom.PaskProject.ps1"
+            $ProjectScriptFullName = Join-Path $PaskProjectFullPath "scripts\CustomScript.ps1"
             New-Item -Path (Join-Path $PaskProjectFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskProject"' -Force
-            Mock Get-SolutionPackages { return @() }
+            Set-Content -Path $ProjectScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskProject"; $script:ImportedScriptCount += 1' -Force
+            # Stub Pask package
+            $PaskPackageName = "Pask.Package"
+            Mock Get-SolutionPackages {
+                $Result = @()
+                $Result += New-Object PSObject -Property @{ id = $PaskPackageName; version = "1.0.0" }
+                return $Result
+            }
+            $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
+            $PackageScriptFullName = Join-Path $PackageFullPath "scripts\CustomScript.ps1"
+            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
+            Set-Content -Path $PackageScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"; $script:ImportedScriptCount += 1' -Force
+            Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
 
             # Act
-            Import-Script ScriptFrom.PaskProject
+            Import-File CustomScript "scripts" -Project Pask.Project
         }
 
-        It "imports the script" {
+        It "the script in the Pask project is imported" {
             $script:ImportedScript | Should Be "ScriptFromPaskProject"
         }
 
-        AfterAll {
-            # Cleanup
-            Remove-Variable ImportedScript -Scope Script
-            Remove-File $ScriptFullName
-        }
-    }
-
-    Context "Script defined in a Pask package" {
-        BeforeAll {
-            # Arrange
-            $script:ImportedScript = ""
-            $PaskPackageName = "Pask.Package"
-            Mock Get-SolutionPackages {
-                $Result = @()
-                $Result += New-Object PSObject -Property @{ id = $PaskPackageName; version = "1.0.0" }
-                return $Result
-            }
-            $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $ScriptFullName = Join-Path $PackageFullPath "scripts\ScriptFrom.PaskPackage.ps1"
-            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"' -Force
-            Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
-            Mock Get-SolutionProjects { return @() }
-
-            # Act
-            Import-Script ScriptFrom.PaskPackage
-        }
-
-        It "imports the script" {
-            $script:ImportedScript | Should Be "ScriptFromPaskPackage"
-        }
-
-        AfterAll {
-            # Cleanup
-            Remove-Variable ImportedScript -Scope Script
-            Remove-File $ScriptFullName
-        }
-    }
-
-    Context "Script imported multiple times" {
-        BeforeAll {
-            # Arrange
-            $script:ImportedScriptCount = 0
-            $PaskPackageName = "Pask.Package"
-            Mock Get-SolutionPackages {
-                $Result = @()
-                $Result += New-Object PSObject -Property @{ id = $PaskPackageName; version = "1.0.0" }
-                return $Result
-            }
-            $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $ScriptFullName = Join-Path $PackageFullPath "scripts\ScriptFrom.PaskPackage.ps1"
-            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ScriptFullName -Value '$script:ImportedScriptCount += 1' -Force
-            Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
-            Mock Get-SolutionProjects { return @() }
-
-            # Act
-            Import-Script ScriptFrom.PaskPackage, ScriptFrom.PaskPackage
-            Import-Script ScriptFrom.PaskPackage
-        }
-
-        It "imports the script once" {
+        It "imports only the script from the project" {
             $script:ImportedScriptCount | Should Be 1
         }
 
         AfterAll {
             # Cleanup
-            Remove-Variable ImportedScriptCount -Scope Script
-            Remove-File $ScriptFullName
+            Remove-Variable ImportedScript, ImportedScriptCount -Scope Script
+            Remove-File $ScriptFullName, $ProjectScriptFullName, $PackageScriptFullName
         }
     }
 
-    Context "Script defined in a Pask package and overridden in the build directory" {
+    Context "Import a task explicitly from a Pask package" {
         BeforeAll {
             # Arrange
-            $script:ImportedScript = ""
-            $script:ImportedScriptCount = 0
-            # Stub build directory
-            $ScriptFullName = Join-Path $BuildFullPath "scripts\Script.Override.ps1"
-            New-Item -Path (Join-Path $BuildFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution"; $script:ImportedScriptCount += 1' -Force
+            $script:ImportedTask = ""
+            $script:ImportedTaskCount = 0
+            # Stub build output directory
+            $TaskFullName = Join-Path $BuildFullPath "tasks\Task-Custom.ps1"
+            New-Item -Path (Join-Path $BuildFullPath "tasks") -ItemType Directory
+            Set-Content -Path $TaskFullName -Value '$script:ImportedTask = "TaskFromSolution; $script:ImportedTaskCount += 1"' -Force
+            # Stub Pask project
+            $PaskProjectName = "Pask.Project"
+            $PaskProjectFullPath = Join-Path $TestDrive $PaskProjectName
+            Mock Get-SolutionProjects { 
+                $Result = @()
+                $Result += New-Object PSObject -Property @{ Name = $PaskProjectName; Directory = $PaskProjectFullPath }
+                return $Result
+            }
+            $ProjectTaskFullName = Join-Path $PaskProjectFullPath "tasks\Task-Custom.ps1"
+            New-Item -Path (Join-Path $PaskProjectFullPath "tasks") -ItemType Directory
+            Set-Content -Path $ProjectTaskFullName -Value '$script:ImportedTask = "TaskFromPaskProject"; $script:ImportedTaskCount += 1' -Force
             # Stub Pask package
             $PaskPackageName = "Pask.Package"
             Mock Get-SolutionPackages {
@@ -1447,41 +1369,39 @@ Describe "Import-Script" {
                 return $Result
             }
             $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $PackageScriptFullName = Join-Path $PackageFullPath "scripts\Script.Override.ps1"
-            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
-            Set-Content -Path $PackageScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"; $script:ImportedScriptCount += 1' -Force
+            $PackageTaskFullName = Join-Path $PackageFullPath "tasks\Task-Custom.ps1"
+            New-Item -Path (Join-Path $PackageFullPath "tasks") -ItemType Directory
+            Set-Content -Path $PackageTaskFullName -Value '$script:ImportedTask = "TaskFromPaskPackage"; $script:ImportedTaskCount += 1' -Force
             Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
-            # No solution projects
-            Mock Get-SolutionProjects { return @() }
 
             # Act
-            Import-Script Script.Override
+            Import-File Task-Custom "tasks" -Package Pask.Package
         }
 
-        It "the script in the build directory should override the script in the Pask package" {
-            $script:ImportedScript | Should Be "ScriptFromSolution"
+        It "the task in the Pask package is imported" {
+            $script:ImportedTask | Should Be "TaskFromPaskPackage"
         }
 
-        It "imports the script twice" {
-            $script:ImportedScriptCount | Should Be 2
+        It "imports only the task from the package" {
+            $script:ImportedTaskCount | Should Be 1
         }
 
         AfterAll {
             # Cleanup
-            Remove-Variable ImportedScript, ImportedScriptCount -Scope Script
-            Remove-File $ScriptFullName, $PackageScriptFullName
+            Remove-Variable ImportedTask, ImportedTaskCount -Scope Script
+            Remove-File $TaskFullName, $ProjectTaskFullName, $PackageTaskFullName
         }
     }
 
-    Context "Script defined in a Pask project and overridden in the build directory" {
+    Context "Import a script explicitly from a Pask project and package" {
         BeforeAll {
             # Arrange
             $script:ImportedScript = ""
             $script:ImportedScriptCount = 0
-            # Stub build directory
-            $ScriptFullName = Join-Path $BuildFullPath "scripts\Script.Override.ps1"
+            # Stub build output directory
+            $ScriptFullName = Join-Path $BuildFullPath "scripts\CustomScript.ps1"
             New-Item -Path (Join-Path $BuildFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution"; $script:ImportedScriptCount += 1' -Force
+            Set-Content -Path $ScriptFullName -Value '$script:ImportedScript = "ScriptFromSolution; $script:ImportedScriptCount += 1"' -Force
             # Stub Pask project
             $PaskProjectName = "Pask.Project"
             $PaskProjectFullPath = Join-Path $TestDrive $PaskProjectName
@@ -1490,45 +1410,7 @@ Describe "Import-Script" {
                 $Result += New-Object PSObject -Property @{ Name = $PaskProjectName; Directory = $PaskProjectFullPath }
                 return $Result
             }
-            $ProjectScriptFullName = Join-Path $PaskProjectFullPath "scripts\Script.Override.ps1"
-            New-Item -Path (Join-Path $PaskProjectFullPath "scripts") -ItemType Directory
-            Set-Content -Path $ProjectScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskProject"; $script:ImportedScriptCount += 1' -Force
-            # No solution projects
-            Mock Get-SolutionPackages { return @() }
-
-            # Act
-            Import-Script Script.Override
-        }
-
-        It "the script in the build directory should override the script in the Pask project" {
-            $script:ImportedScript | Should Be "ScriptFromSolution"
-        }
-
-        It "imports the script twice" {
-            $script:ImportedScriptCount | Should Be 2
-        }
-
-        AfterAll {
-            # Cleanup
-            Remove-Variable ImportedScript, ImportedScriptCount -Scope Script
-            Remove-File $ScriptFullName, $ProjectScriptFullName
-        }
-    }
-
-    Context "Script defined in a Pask package and overridden in a Pask project" {
-        BeforeAll {
-            # Arrange
-            $script:ImportedScript = ""
-            $script:ImportedScriptCount = 0
-            # Stub Pask project
-            $PaskProjectName = "Pask.Project"
-            $PaskProjectFullPath = Join-Path $TestDrive $PaskProjectName
-            Mock Get-SolutionProjects { 
-                $Result = @()
-                $Result += New-Object PSObject -Property @{ Name = $PaskProjectName; Directory = $PaskProjectFullPath }
-                return $Result
-            }
-            $ProjectScriptFullName = Join-Path $PaskProjectFullPath "scripts\Script.Override.ps1"
+            $ProjectScriptFullName = Join-Path $PaskProjectFullPath "scripts\CustomScript.ps1"
             New-Item -Path (Join-Path $PaskProjectFullPath "scripts") -ItemType Directory
             Set-Content -Path $ProjectScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskProject"; $script:ImportedScriptCount += 1' -Force
             # Stub Pask package
@@ -1539,105 +1421,164 @@ Describe "Import-Script" {
                 return $Result
             }
             $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            $PackageScriptFullName = Join-Path $PackageFullPath "scripts\Script.Override.ps1"
+            $PackageScriptFullName = Join-Path $PackageFullPath "scripts\CustomScript.ps1"
             New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
             Set-Content -Path $PackageScriptFullName -Value '$script:ImportedScript = "ScriptFromPaskPackage"; $script:ImportedScriptCount += 1' -Force
             Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
 
             # Act
-            Import-Script Script.Override
+            Import-File CustomScript "scripts" -Project Pask.Project -Package Pask.Package
         }
 
-        It "the script in the Pask project should override the script in the Pask package" {
+        It "the script in the Pask project overrides the script in the Pask package" {
             $script:ImportedScript | Should Be "ScriptFromPaskProject"
         }
 
-        It "imports the script twice" {
+        It "imports both the scripst from the project and package" {
             $script:ImportedScriptCount | Should Be 2
         }
 
         AfterAll {
             # Cleanup
             Remove-Variable ImportedScript, ImportedScriptCount -Scope Script
-            Remove-File $ProjectScriptFullName, $PackageScriptFullName
+            Remove-File $ScriptFullName, $ProjectScriptFullName, $PackageScriptFullName
+        }
+    }
+}
+
+Describe "Import-Task" {
+    BeforeAll {
+        # Arrange
+        Mock Import-File {}
+    }
+
+    Context "Import a single task" {
+        BeforeAll {
+            # Act
+            Import-Task SingleTask
+        }
+
+        It "imports one file" {
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "SingleTask" -and $Path -eq "tasks" -and $Safe -eq $false }
         }
     }
 
-    Context "Import all of six scripts defined in the solution's build directory, Pask project and package" {
+    Context "Import two tasks from a project" {
         BeforeAll {
-            # Arrange
-            $script:ImportedFirstScript = ""
-            $script:ImportedSecondScript = ""
-            $script:ImportedThirdScript = ""
-            $script:ImportedFourthScript = ""
-            $script:ImportedFifthScript = ""
-            $script:ImportedSixthScript = ""
-            # Build directory
-            New-Item -Path (Join-Path $BuildFullPath "scripts") -ItemType Directory
-            $FirstScriptFullName = Join-Path $BuildFullPath "scripts\FirstScriptFromSolution.ps1"
-            Set-Content -Path $FirstScriptFullName -Value '$script:ImportedFirstScript = "FirstScriptFromSolution"' -Force
-            $SecondScriptFullName = Join-Path $BuildFullPath "scripts\SecondScriptFromSolution.ps1"
-            Set-Content -Path $SecondScriptFullName -Value '$script:ImportedSecondScript = "SecondScriptFromSolution"' -Force
-            # Stub Pask project
-            $PaskProjectName = "Pask.Project"
-            $PaskProjectFullPath = Join-Path $TestDrive $PaskProjectName
-            Mock Get-SolutionProjects { 
-                $Result = @()
-                $Result += New-Object PSObject -Property @{ Name = $PaskProjectName; Directory = $PaskProjectFullPath }
-                return $Result
-            }
-            New-Item -Path (Join-Path $PaskProjectFullPath "scripts") -ItemType Directory
-            $PaskProjectFirstScriptFullName = Join-Path $PaskProjectFullPath "scripts\FirstScriptFromProject.ps1"
-            Set-Content -Path $PaskProjectFirstScriptFullName -Value '$script:ImportedThirdScript = "FirstScriptFromPaskProject"' -Force
-            $PaskProjectSecondScriptFullName = Join-Path $PaskProjectFullPath "scripts\SecondScriptFromProject.ps1"
-            Set-Content -Path $PaskProjectSecondScriptFullName -Value '$script:ImportedFourthScript = "SecondScriptFromPaskProject"' -Force
-            # Stub Pask package
-            $PaskPackageName = "Pask.Package"
-            Mock Get-SolutionPackages {
-                $Result = @()
-                $Result += New-Object PSObject -Property @{ id = $PaskPackageName; version = "1.0.0" }
-                return $Result
-            }
-            $PackageFullPath = (Join-Path $TestDrive "packages\$PaskPackageName.1.0.0")
-            New-Item -Path (Join-Path $PackageFullPath "scripts") -ItemType Directory
-            $PaskPackageFirstScriptFullName = Join-Path $PackageFullPath "scripts\FirstScriptFrom-Package.ps1"
-            Set-Content -Path $PaskPackageFirstScriptFullName -Value '$script:ImportedFifthScript = "FirstScriptFromPaskPackage"' -Force
-            $PaskPackageSecondScriptFullName = Join-Path $PackageFullPath "scripts\SecondScriptFrom-Package.ps1"
-            Set-Content -Path $PaskPackageSecondScriptFullName -Value '$script:ImportedSixthScript = "SecondScriptFromPaskPackage"' -Force
-            Mock Get-PackageDir { return $PackageFullPath } -ParameterFilter { $PackageId -eq $PaskPackageName }
-
             # Act
-            Import-Script *
+            Import-Task Task-1, Task-2 -Project Pask-CustomProject
         }
 
-        It "imports the first script" {
-            $script:ImportedFirstScript | Should Be "FirstScriptFromSolution"
+        It "imports two files" {
+            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Task-1" -and $File[1] -eq "Task-2" -and $Path -eq "tasks" -and $Project -eq "Pask-CustomProject" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import two tasks from a package" {
+        BeforeAll {
+            # Act
+            Import-Task Task-1, Task-2 -Package Pask-CustomPackage
         }
 
-        It "imports the second script" {
-            $script:ImportedSecondScript | Should Be "SecondScriptFromSolution"
+        It "imports two files" {
+            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Task-1" -and $File[1] -eq "Task-2" -and $Path -eq "tasks" -and $Package -eq "Pask-CustomPackage" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import a task from both a project and package" {
+        BeforeAll {
+            # Act
+            Import-Task Task-Custom -Project Pask-CustomProject -Package Pask-CustomPackage
         }
 
-        It "imports the third script" {
-            $script:ImportedThirdScript | Should Be "FirstScriptFromPaskProject"
+        It "imports two files" {
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "Task-Custom" -and $Path -eq "tasks" -and $Project -eq "Pask-CustomProject" -and $Package -eq "Pask-CustomPackage" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import a task from a project with invalid name" {
+        It "should error" {
+            { Import-Task Task-Custom -Project InvalidProject } | Should Throw 
+        }
+    }
+
+    Context "Import a task from a package with invalid name" {
+        It "should error" {
+            { Import-Task Task-Custom -Package InvalidPackage } | Should Throw 
+        }
+    }
+}
+
+Describe "Import-Script" {
+    BeforeAll {
+        # Arrange
+        Mock Import-File {}
+    }
+
+    Context "Import a single script" {
+        BeforeAll {
+            # Act
+            Import-Script SingleScript
         }
 
-        It "imports the fourth script" {
-            $script:ImportedFourthScript | Should Be "SecondScriptFromPaskProject"
+        It "imports one file" {
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "SingleScript" -and $Path -eq "scripts" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import a script safetly" {
+        BeforeAll {
+            # Act
+            Import-Script CustomScript -Safe
         }
 
-        It "imports the fifth script" {
-            $script:ImportedFifthScript | Should Be "FirstScriptFromPaskPackage"
+        It "imports one file" {
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "CustomScript" -and $Path -eq "scripts" -and $Safe -eq $true }
+        }
+    }
+
+    Context "Import two scripts from a project" {
+        BeforeAll {
+            # Act
+            Import-Script Script1, Script2 -Project Pask-CustomProject
         }
 
-        It "imports the sixth script" {
-            $script:ImportedSixthScript | Should Be "SecondScriptFromPaskPackage"
+        It "imports two files" {
+            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Script1" -and $File[1] -eq "Script2" -and $Path -eq "scripts" -and $Project -eq "Pask-CustomProject" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import two scripts from a package" {
+        BeforeAll {
+            # Act
+            Import-Script Script1, Script2 -Package Pask-CustomPackage
         }
 
-        AfterAll {
-            # Cleanup
-            Remove-Variable ImportedFirstScript, ImportedSecondScript, ImportedThirdScript, ImportedFourthScript, ImportedFifthScript, ImportedSixthScript -Scope Script
-            Remove-File $FirstScriptFullName, $SecondScriptFullName, $PaskProjectFirstScriptFullName, $PaskProjectSecondScriptFullName, $PaskPackageFirstScriptFullName, $PaskPackageSecondScriptFullName
+        It "imports two files" {
+            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Script1" -and $File[1] -eq "Script2" -and $Path -eq "scripts" -and $Package -eq "Pask-CustomPackage" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import a script from both a project and package" {
+        BeforeAll {
+            # Act
+            Import-Script CustomScript -Project Pask-CustomProject -Package Pask-CustomPackage
+        }
+
+        It "imports two files" {
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "CustomScript" -and $Path -eq "scripts" -and $Project -eq "Pask-CustomProject" -and $Package -eq "Pask-CustomPackage" -and $Safe -eq $false }
+        }
+    }
+
+    Context "Import a script from a project with invalid name" {
+        It "should error" {
+            { Import-Script CustomScript -Project InvalidProject } | Should Throw 
+        }
+    }
+
+    Context "Import a script from a package with invalid name" {
+        It "should error" {
+            { Import-Script CustomScript -Package InvalidPackage } | Should Throw 
         }
     }
 }

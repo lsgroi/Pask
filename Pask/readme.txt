@@ -2,6 +2,10 @@ Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
 
+Version 0.8.0
+-------------------------------------------------------------------------------------
+- It is now possible to import a task/script from a specific project/package only
+
 Version 0.7.0
 -------------------------------------------------------------------------------------
 - Add Version-Assemblies task

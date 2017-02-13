@@ -415,12 +415,19 @@ function script:Get-PackageDir {
       - any Pask.* project in the solution
       - $BuildFullPath
    Import only occur only once, files are cached
+   Allows to import from specific projects/packages only
 
 .PARAMETER File <string[]>
    File names (no extension)
 
 .PARAMETER Path <string>
    Path relative to $BuildFullPath
+
+.PARAMETER Project <string[]>
+   Project names matching ^Pask.*
+
+.PARAMETER Package <string[]>
+   Packages name matching ^Pask.*
 
 .PARAMETER Safe <switch> = $false
    Tells not to error if the file is not found;
@@ -432,21 +439,41 @@ function script:Import-File {
     param(
         [Parameter(Mandatory=$true)][string[]]$File,
         [Parameter(Mandatory=$true)][string]$Path,
+        [ValidatePattern('^Pask.*')][string[]]$Project,
+        [ValidatePattern('^Pask.*')][string[]]$Package,
         [switch]$Safe
     )
 
     # List of directories in which to search the files
     $Directories = @()
     # Search the file in Pask.* packages
-    foreach ($Package in (Get-SolutionPackages | Where { $_.id -match "^Pask.*" })) {
-        $Directories += Get-PackageDir $Package.id
+    if ($Package) {
+        foreach ($Pkg in $Package) {
+            foreach ($_ in (Get-SolutionPackages | Where { $_.id -eq $Pkg })) {
+                $Directories += Get-PackageDir $_.id
+            }
+        }
+    } elseif (-not $Project) {
+        foreach ($Pkg in (Get-SolutionPackages | Where { $_.id -match "^Pask.*" })) {
+            $Directories += Get-PackageDir $Pkg.id
+        }
     }
     # Search the files in Pask.* projects
-    foreach ($Project in (Get-SolutionProjects | Where { $_.Name -match "^Pask.*" })) {
-        $Directories += $Project.Directory
+    if ($Project) {
+        foreach ($Prj in $Project) {
+            foreach ($_ in (Get-SolutionProjects | Where { $_.Name -eq $Prj })) {
+                $Directories += $_.Directory
+            }
+        }
+    } elseif (-not $Package) {
+        foreach ($Prj in (Get-SolutionProjects | Where { $_.Name -match "^Pask.*" })) {
+            $Directories += $Prj.Directory
+        }
     }
     # Search the files in the build directory
-    $Directories += $BuildFullPath
+    if (-not $Project -and -not $Package) {
+        $Directories += $BuildFullPath
+    }
 
     foreach($F in $File) {
         foreach($Directory in $Directories) {
@@ -476,18 +503,33 @@ function script:Import-File {
       - any Pask.* project in the solution
       - $BuildFullPath\tasks
    The latter imported overrides previous tasks imported with the same name
-   Import only occur only once, tasks are cached
+   Import only occurs once, tasks are cached
+   Allows to import from specific projects/packages only
 
 .PARAMETER Task <string[]>
    Tasks name
+
+.PARAMETER Project <string[]>
+   Project names matching ^Pask.*
+
+.PARAMETER Package <string[]>
+   Packages name matching ^Pask.*
 
 .OUTPUTS
    None
 #>
 function script:Import-Task {
-    param([Parameter(Mandatory=$true)][string[]]$Task)
+    param(
+        [Parameter(Mandatory=$true)][string[]]$Task,
+        [ValidatePattern('^Pask.*')][string[]]$Project,
+        [ValidatePattern('^Pask.*')][string[]]$Package
+    )
 
-    Import-File -File $Task -Path "tasks"
+    $Params = @{ File = $Task; Path = "tasks" }
+    if ($Project) { $Params.Add("Project", $Project) }
+    if ($Package) { $Params.Add("Package", $Package) }
+
+    Import-File @Params 
 }
 
 <#
@@ -496,10 +538,17 @@ function script:Import-Task {
       - any Pask.* package installed in the solution
       - any Pask.* project in the solution
       - $BuildFullPath\scripts
-   Import only occur only once, scripts are cached
+   Import only occurs once, scripts are cached
+   Allows to import from specific projects/packages only
 
 .PARAMETER Script <string[]>
    Scripts name
+
+.PARAMETER Project <string[]>
+   Project names matching ^Pask.*
+
+.PARAMETER Package <string[]>
+   Packages name matching ^Pask.*
 
 .PARAMETER Safe <switch> = $false
    Tells not to error if the file is not found
@@ -510,10 +559,16 @@ function script:Import-Task {
 function script:Import-Script {
     param(
         [Parameter(Mandatory=$true)][string[]]$Script,
+        [ValidatePattern('^Pask.*')][string[]]$Project,
+        [ValidatePattern('^Pask.*')][string[]]$Package,
         [switch]$Safe
     )
 
-    Import-File -File $Script -Path "scripts" -Safe:$Safe
+    $Params = @{ File = $Script; Path = "scripts"; Safe = $Safe }
+    if ($Project) { $Params.Add("Project", $Project) }
+    if ($Package) { $Params.Add("Package", $Package) }
+
+    Import-File @Params
 }
 
 <#
