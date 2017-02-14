@@ -33,5 +33,6 @@ Pask is designed to be extended to reduce the amount of boilerplate code in your
 : Wiki, script tutorials and examples
 - [Project Wiki](https://github.com/lsgroi/Pask/wiki)
 : Detailed documentation of conventions and patterns
+- The project was inspired by [PowerTasks](https://github.com/shaynevanasperen/PowerTasks) and [psakify](https://github.com/SeatwaveOpenSource/psakify)
 
 Pask is Copyright &copy; 2016 Luca Sgroi under the [Apache License](LICENSE.txt).
