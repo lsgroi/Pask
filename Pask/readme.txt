@@ -2,6 +2,12 @@ Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
 
+Version 0.10.0
+-------------------------------------------------------------------------------------
+- Create tasks directory during package installation
+- Project template now installs automatically the latest version of Pask
+- Solve a bug for which build wasn't running outside for non git repository
+
 Version 0.9.0
 -------------------------------------------------------------------------------------
 - Move task specific properties close to task definitions

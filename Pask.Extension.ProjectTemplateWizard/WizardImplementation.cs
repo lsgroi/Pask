@@ -3,13 +3,17 @@ using System.IO;
 using System.Linq;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.TemplateWizard;
+using Microsoft.VisualStudio.Shell;
+using NuGet.VisualStudio;
 
 namespace Pask.Extension.ProjectTemplateWizard
 {
     /// Defines the logic for the template wizard extension.
     public class WizardImplementation : IWizard
     {
+        private DTE _dte;
         private Solution2 _solution;
         private string _projectName;
 
@@ -20,8 +24,10 @@ namespace Pask.Extension.ProjectTemplateWizard
         /// <param name="customParams">The custom parameters with which to perform parameter replacement in the project.</param>
         public void RunStarted(object automationObject, Dictionary<string, string> replacementsDictionary, WizardRunKind runKind, object[] customParams)
         {
-            _solution = (automationObject as _DTE).Solution as Solution2;
+            _dte = automationObject as DTE;
+            _solution = _dte.Solution as Solution2;
             _projectName = replacementsDictionary["$safeprojectname$"];
+
         }
 
         /// Runs custom wizard logic when a project has finished generating
@@ -37,45 +43,29 @@ namespace Pask.Extension.ProjectTemplateWizard
             var project = EnvDteExtensions.GetProject(_solution, _projectName, EnvDteExtensions.CSharpType);
             var projectDir = Path.GetDirectoryName(project.FullName);
 
-            // Add '.build' solution folder and directory
-            var buildSolutionFolder = EnvDteExtensions.GetSolutionFolders(_solution).FirstOrDefault(x => x.Name == ".build")
-                                      ?? _solution.AddSolutionFolder(".build");
-            var buildDir = FileSystemExtensions.CreateDirectory(Path.Combine(solutionDir, ".build"));
-
-            // Add 'tasks' solution folder and directory
-            if (EnvDteExtensions.GetProjectFolders(buildSolutionFolder).All(x => x.Name != "tasks"))
-                EnvDteExtensions.AddSolutionFolder(buildSolutionFolder, "tasks");
-            FileSystemExtensions.CreateDirectory(Path.Combine(buildDir, "tasks"));
+            // Add solution items
+            var initDir = Path.Combine(projectDir, "init");
+            var buildDir = Directory.Exists(Path.Combine(solutionDir, ".build")) ? Path.Combine(solutionDir, ".build") : FileSystemExtensions.CreateDirectory(Path.Combine(solutionDir, ".build"));
+            var solutionItemsFolder = EnvDteExtensions.GetSolutionFolders(_solution).FirstOrDefault(x => x.Name == "Solution Items") ?? _solution.AddSolutionFolder("Solution Items");
+            var nugetFolder = EnvDteExtensions.GetSolutionFolders(_solution).FirstOrDefault(x => x.Name == ".nuget") ?? _solution.AddSolutionFolder(".nuget");
+            if (!File.Exists(Path.Combine(solutionDir, ".gitignore"))) File.Copy(Path.Combine(initDir, ".gitignore"), Path.Combine(solutionDir, ".gitignore"));
+            if (!File.Exists(Path.Combine(solutionDir, "NuGet.Config"))) File.Copy(Path.Combine(initDir, "NuGet.Config"), Path.Combine(solutionDir, "NuGet.Config"));
+            if (EnvDteExtensions.GetProjectItem(nugetFolder, "Nuget.config") == null) solutionItemsFolder.ProjectItems.AddFromFile(Path.Combine(solutionDir, "NuGet.Config"));
+            if (!File.Exists(Path.Combine(solutionDir, "README.md"))) File.Copy(Path.Combine(initDir, "README.md"), Path.Combine(solutionDir, "README.md"));
+            if (EnvDteExtensions.GetProjectItem(solutionItemsFolder, "README.md") == null) solutionItemsFolder.ProjectItems.AddFromFile(Path.Combine(solutionDir, "README.md"));
+            if (!File.Exists(Path.Combine(buildDir, "build.ps1"))) File.Copy(Path.Combine(initDir, ".build", "build.ps1"), Path.Combine(buildDir, "build.ps1"));
             
-            // Add 'scripts' solution folder and directory
-            if (EnvDteExtensions.GetProjectFolders(buildSolutionFolder).All(x => x.Name != "scripts"))
-                EnvDteExtensions.AddSolutionFolder(buildSolutionFolder, "scripts");
-            var scriptsDir = FileSystemExtensions.CreateDirectory(Path.Combine(buildDir, "scripts"));
-
-            // Initialize the solution copying the files
-            {
-                var initDir = Path.Combine(projectDir, "init");
-
-                // Override Pask build runner and script
-                File.Copy(Path.Combine(initDir, "Pask.ps1"), Path.Combine(solutionDir, "Pask.ps1"), true);
-                File.Copy(Path.Combine(initDir, ".build", "scripts", "Pask.ps1"), Path.Combine(scriptsDir, "Pask.ps1"), true);
-
-                // Copy the remaining files
-                if (!File.Exists(Path.Combine(solutionDir, ".gitignore"))) File.Copy(Path.Combine(initDir, ".gitignore"), Path.Combine(solutionDir, ".gitignore"));
-                if (!File.Exists(Path.Combine(solutionDir, "go.bat"))) File.Copy(Path.Combine(initDir, "go.bat"), Path.Combine(solutionDir, "go.bat"));
-                if (!File.Exists(Path.Combine(solutionDir, "NuGet.Config"))) File.Copy(Path.Combine(initDir, "NuGet.Config"), Path.Combine(solutionDir, "NuGet.Config"));
-                if (!File.Exists(Path.Combine(solutionDir, "README.md"))) File.Copy(Path.Combine(initDir, "README.md"), Path.Combine(solutionDir, "README.md"));
-                if (!File.Exists(Path.Combine(buildDir, ".gitignore"))) File.Copy(Path.Combine(initDir, ".build", ".gitignore"), Path.Combine(buildDir, ".gitignore"));
-                if (!File.Exists(Path.Combine(buildDir, "build.ps1"))) File.Copy(Path.Combine(initDir, ".build", "build.ps1"), Path.Combine(buildDir, "build.ps1"));
-
-                // Add build script to the solution
-                if(EnvDteExtensions.GetProjectItem(buildSolutionFolder, "build.ps1") == null)
-                    buildSolutionFolder.ProjectItems.AddFromFile(Path.Combine(solutionDir, ".build", "build.ps1"));
-            }
-
             // Delete init directory
-            Directory.Delete(Path.Combine(projectDir, "init"), true);
             EnvDteExtensions.DeleteProjectItem(project, "init");
+
+            // Install Pask
+            var componentModel = (IComponentModel) Package.GetGlobalService(typeof(SComponentModel));
+            var installerServices = componentModel.GetService<IVsPackageInstallerServices>();
+            if (installerServices.IsPackageInstalled(project, "Pask")) return;
+            var installer = componentModel.GetService<IVsPackageInstaller>();
+            installer.InstallPackage("https://api.nuget.org/v3/index.json", project, "Pask", (System.Version) null, false);
+
+            _dte.Documents.CloseAll();
         }
 
         /// Runs custom wizard logic before opening an item in the template.

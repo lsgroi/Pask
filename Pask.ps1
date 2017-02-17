@@ -41,9 +41,9 @@ Tells to visualize specified build task tree as indented text with brief task de
 param(
     # Invoke-Build specific parameters
     [Parameter(Position=0)][string[]]$Task = ".",
-	$Result,
-	[switch]$Safe,
-	[switch]$Summary = $true,
+    $Result,
+    [switch]$Safe,
+    [switch]$Summary = $true,
     [Parameter(ValueFromRemainingArguments=$true)]$Properties,
     
     # Pask specific parameters

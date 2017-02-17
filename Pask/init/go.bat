@@ -1,1 +1,1 @@
-Powershell -NonInteractive -ExecutionPolicy RemoteSigned -Command ".\Pask.ps1"
+Powershell -NonInteractive -ExecutionPolicy RemoteSigned -Command ".\Pask.ps1" %*

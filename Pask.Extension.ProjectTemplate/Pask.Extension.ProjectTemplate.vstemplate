@@ -1,50 +1,40 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
-    <TemplateData>
-        <Name>Pask.Extension</Name>
-        <Description>An extension for Pask.</Description>
-        <Icon>Pask.Extension.ProjectTemplate.ico</Icon>
-        <ProjectType>CSharp</ProjectType>
-        <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
-        <SortOrder>1000</SortOrder>
-        <TemplateID>b4dff9cf-a85d-4be2-b957-ae38e73a344a</TemplateID>
-        <CreateNewFolder>true</CreateNewFolder>
-        <DefaultName>Pask.Extension</DefaultName>
-        <ProvideDefaultName>true</ProvideDefaultName>
-    </TemplateData>
-    <TemplateContent>
-        <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
-            <!-- Project files -->
-            <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
-            <ProjectItem>version.txt</ProjectItem>
-            <ProjectItem ReplaceParameters="true">readme.txt</ProjectItem>
-            <ProjectItem>packages.config</ProjectItem>
-            <Folder Name="tools">
-                <ProjectItem>Init.ps1</ProjectItem>
-            </Folder>
-            <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.nuspec">Pask.Extension.ProjectTemplate.nuspec</ProjectItem>
-            <Folder Name="init">
-                <!-- Solution files -->
-                <ProjectItem>.gitignore</ProjectItem>
-                <ProjectItem>NuGet.config</ProjectItem>
-                <ProjectItem ReplaceParameters="true">README.MD</ProjectItem>
-                <!-- Pask files -->
-                <Folder Name="scripts" />
-                <Folder Name="tasks" />
-                <ProjectItem>go.bat</ProjectItem>
-                <ProjectItem>Pask.ps1</ProjectItem>
-                <Folder Name=".build">
-                    <ProjectItem>build.ps1</ProjectItem>
-                    <ProjectItem>.gitignore</ProjectItem>
-                    <Folder Name="scripts">
-                        <ProjectItem>Pask.ps1</ProjectItem>
-                    </Folder>
-                </Folder>
-            </Folder>
-        </Project>
-    </TemplateContent>
-    <WizardExtension>
-        <Assembly>Pask.Extension.ProjectTemplateWizard, Version=1.0.0.0, Culture=Neutral, PublicKeyToken=92748cc382cd26c3</Assembly>
-        <FullClassName>Pask.Extension.ProjectTemplateWizard.WizardImplementation</FullClassName>
-    </WizardExtension>
+  <TemplateData>
+    <Name>Pask.Extension</Name>
+    <Description>An extension for Pask.</Description>
+    <Icon>Pask.Extension.ProjectTemplate.ico</Icon>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>2.0</RequiredFrameworkVersion>
+    <SortOrder>1000</SortOrder>
+    <TemplateID>b4dff9cf-a85d-4be2-b957-ae38e73a344a</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>Pask.Extension</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      <ProjectItem>version.txt</ProjectItem>
+      <ProjectItem ReplaceParameters="true">readme.txt</ProjectItem>
+      <Folder Name="tools">
+        <ProjectItem>Init.ps1</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="$safeprojectname$.nuspec">Pask.Extension.ProjectTemplate.nuspec</ProjectItem>
+      <Folder Name="init">
+        <ProjectItem>.gitignore</ProjectItem>
+        <ProjectItem>NuGet.config</ProjectItem>
+        <ProjectItem ReplaceParameters="true">README.MD</ProjectItem>
+        <Folder Name="scripts" />
+        <Folder Name="tasks" />
+        <Folder Name=".build">
+          <ProjectItem>build.ps1</ProjectItem>
+        </Folder>
+      </Folder>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Pask.Extension.ProjectTemplateWizard, Version=1.0.0.0, Culture=Neutral, PublicKeyToken=92748cc382cd26c3</Assembly>
+    <FullClassName>Pask.Extension.ProjectTemplateWizard.WizardImplementation</FullClassName>
+  </WizardExtension>
 </VSTemplate>

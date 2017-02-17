@@ -83,6 +83,13 @@ if ($Package -ne $null) {
         New-Directory $BuildFullPath | Out-Null
     }
     
+    # Creating tasks directory
+    $TasksFullPath = Join-Path $BuildFullPath "tasks"
+    if (-not (Test-Path $TasksFullPath)) {
+        Write-Host "Creating '.build\tasks'."
+        New-Directory $TasksFullPath | Out-Null
+    }
+
     # Add .build\.gitignore
     $GitIgnore = Join-Path $BuildFullPath ".gitignore"
     if(-not (Test-Path $GitIgnore)) {

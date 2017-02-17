@@ -244,9 +244,9 @@ function script:Restore-NuGetDevelopmentPackages {
     $NuGetExe = Get-NuGetExe
     Get-SolutionPackages | Where { $_.developmentDependency -eq $true } | ForEach {
         Invoke-Command -ErrorAction Stop -ScriptBlock { & $NuGetExe install $_.id -Version $_.version -OutputDirectory "$PackagesDir" -NonInteractive -Verbosity quiet }
-        if ($LASTEXITCODE) {
+        if ($LastExitCode) {
             Write-BuildMessage -Message "Error restoring NuGet package $($_.id).$($_.version)" -ForegroundColor "Red"
-            exit $LASTEXITCODE
+            exit $LastExitCode
         }
     }
 }
@@ -764,18 +764,37 @@ function script:Get-GitExe {
 
 <#
 .SYNOPSIS 
+   Determines whether the project is in a git repository 
+
+.OUTPUTS <bool>
+#>
+function script:Test-GitRepository {
+    $GitExe = Get-GitExe
+
+    if (-not $GitExe -or -not (Test-Path $GitExe)) {
+        return $false
+    } else {
+        try {
+            & $GitExe rev-parse --is-inside-work-tree 2>&1 | Out-Null
+        } catch {
+            return $false
+        }
+        return $true
+    }
+}
+
+<#
+.SYNOPSIS 
    Gets the last git committer date
 
 .OUTPUTS <DateTime>
 #>
 function script:Get-CommitterDate {
-    $GitExe = Get-GitExe
-
-    if (-not $GitExe -or -not (Test-Path $GitExe)) {
+    if (-not (Test-GitRepository)) {
         return [DateTime]::Now
     }
     
-    $Date = exec { & $GitExe -C "$($SolutionFullPath.Trim('\'))" show --no-patch --format=%ci }
+    $Date = Exec { & (Get-GitExe) -C "$($SolutionFullPath.Trim('\'))" show --no-patch --format=%ci }
     
     return [DateTime]::Parse($Date, $null, [System.Globalization.DateTimeStyles]::RoundtripKind)
 }
@@ -784,16 +803,20 @@ function script:Get-CommitterDate {
 .SYNOPSIS 
    Gets the current git branch name
 
-.OUTPUTS <string>
+.OUTPUTS <object>
+    Outputs $null if not in a git repository
+    ------------------- EXAMPLE -------------------
+    @{
+        Name = 'master'
+        IsMaster = $true
+    }
 #>
 function script:Get-Branch {
-    $GitExe = Get-GitExe
-
-    if (-not $GitExe -or -not (Test-Path $GitExe)) {
-        return [string]::Empty
+    if (-not (Test-GitRepository)) {
+        return $null
     }
 
-    $RawName = exec { git -C "$($SolutionFullPath.Trim('\'))" name-rev --name-only HEAD }
+    $RawName = Exec { & (Get-GitExe) -C "$($SolutionFullPath.Trim('\'))" name-rev --name-only HEAD }
     
     if ($RawName -match '/([^/]+)$') {
         # In this case we resolved refs/heads/branch_name but we are only interested in branch_name
@@ -847,7 +870,7 @@ function script:Get-Version {
     $Build = $CommitterDate.Day.ToString("D1")
     $Patch = "$Build$($CommitterDate.Hour.ToString('D2'))$($CommitterDate.Minute.ToString('D2'))$($CommitterDate.Second.ToString('D2'))"
     $Revision = "$($CommitterDate.Hour.ToString('D1'))$($CommitterDate.Minute.ToString('D2'))$($CommitterDate.Second.ToString('D2'))"
-    $PreReleaseLabel = if ($Branch.IsMaster) { "" } else { $Branch.Name[0..19] -join "" }
+    $PreReleaseLabel = if (-not $Branch -or $Branch.IsMaster) { "" } else { $Branch.Name[0..19] -join "" }
     $InformationalVersion = if ($PreReleaseLabel) { "$Major.$Minor.$Build.$Revision-$PreReleaseLabel" } else { "$Major.$Minor.$Build.$Revision" }
 
     return New-Object PSObject -Property ([ordered]@{
@@ -922,7 +945,8 @@ function script:Get-SemanticVersion {
     $Patch = $PatchParts[0]
     
     $PreReleaseLabel = $PatchParts[1]
-    if (-not (Get-Branch).IsMaster -and -not $PreReleaseLabel) {
+    $Branch = Get-Branch
+    if (($Branch -and -not $Branch.IsMaster) -and -not $PreReleaseLabel) {
         # Set pre-release label if not in master
         $CommitterDate = Get-CommitterDate
         $PreReleaseLabel = "pre$($CommitterDate.Year)$($CommitterDate.Month.ToString('D2'))$($CommitterDate.Day.ToString('D2'))$($CommitterDate.Hour.ToString('D2'))$($CommitterDate.Minute.ToString('D2'))$($CommitterDate.Second.ToString('D2'))"

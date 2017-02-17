@@ -22,6 +22,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>
@@ -37,7 +38,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Pask.Extension.ProjectTemplate</RootNamespace>
     <AssemblyName>Pask.Extension.ProjectTemplate</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
@@ -82,13 +83,9 @@
   <ItemGroup>
     <None Include="AssemblyInfo.cs" />
     <None Include="init\.build\build.ps1" />
-    <None Include="init\.build\scripts\Pask.ps1" />
-    <None Include="init\go.bat" />
     <None Include="init\NuGet.Config" />
     <None Include="init\README.md" />
-    <None Include="packages.config" />
     <None Include="Pask.Extension.ProjectTemplate.nuspec" />
-    <None Include="init\Pask.ps1" />
     <None Include="ProjectTemplate.csproj">
       <SubType>Designer</SubType>
     </None>
@@ -121,7 +118,6 @@
     <Folder Include="tasks\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="init\.build\.gitignore" />
     <None Include="init\.gitignore" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
