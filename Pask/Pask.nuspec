@@ -16,7 +16,7 @@
         <tags>Invoke-Build PowerShell BuildAutomation</tags>
         <copyright>Copyright © 2016 Luca Sgroi under the Apache License</copyright>
         <dependencies>
-            <dependency id="Invoke-Build" version="3.2.0" />
+            <dependency id="Invoke-Build" />
         </dependencies>
     </metadata>
     <files>
