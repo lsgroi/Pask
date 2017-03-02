@@ -9,8 +9,21 @@ if ($Project -eq $null) {
     return
 }
 
-function Add-FileToSolution {	
-	param($ProjectItems, [string]$Source, [string]$Destination)
+<#
+.SYNOPSIS 
+   Copies a file
+
+.PARAMETER Source <string>
+   Full name of the source file
+
+.PARAMETER Destination <string>
+   Full name of the destination file
+
+.OUTPUTS
+   None
+#>
+function Copy-File {
+	param([string]$Source, [string]$Destination)
 
 	$FileName = Split-Path -Path $Destination -Leaf
 	
@@ -18,13 +31,99 @@ function Add-FileToSolution {
 		Write-Host "Copying '$FileName'."
 		Copy-Item $Source $Destination | Out-Null
 	}
+}
 
-	if($($ProjectItems.GetEnumerator() | Where { $_.FileNames(1) -eq $destination }) -eq $null) {
-		Write-Host "Adding to the solution '$FileName'."
-		$BuildProjectItems.AddFromFile($Destination) | Out-Null
+<#
+.SYNOPSIS 
+   Adds a file to a solution folder
+
+.PARAMETER File <string>
+   Full name of the file
+
+.PARAMETER $SolutionFolder <EnvDTE.Project>
+   A solution folder
+
+.OUTPUTS
+   None
+#>
+function Add-FileToSolutionFolder {	
+	param([string]$File, $SolutionFolder)
+
+	$FileName = Split-Path -Path $File -Leaf
+	$ProjectItems = Get-Interface $SolutionFolder.ProjectItems ([EnvDTE.ProjectItems])
+
+	if($ProjectItems -and $($ProjectItems.GetEnumerator() | Where { $_.FileNames(1) -eq $File }) -eq $null) {
+		Write-Host "Adding '$FileName' to solution folder '$($SolutionFolder.Name)'."
+		$ProjectItems.AddFromFile($File) | Out-Null
 	}
 }
 
+<#
+.SYNOPSIS 
+   Adds a solution folder, if it does not already exist, to a solution or a solution folder
+
+.PARAMETER $Name <string>
+   The solution folder name
+
+.PARAMETER Solution <EnvDTE80.Solution2>
+   A solution
+
+.PARAMETER SolutionFolder <EnvDTE80.SolutionFolder>
+   A solution folder
+
+.OUTPUTS <EnvDTE.Project>
+   The solution folder
+#>
+function Add-SolutionFolder {	
+	param(
+        [Parameter(Position=0)] 
+        [string]$Name,
+
+        [Parameter(ParameterSetName="Solution",Position=1)]
+        $Solution,
+
+        [Parameter(ParameterSetName="SolutionFolder",Position=1)]
+        $SolutionFolder
+    )
+
+    switch ($PsCmdlet.ParameterSetName) {
+        "Solution" {
+            $NewSolutionFolder = $Solution.Projects | Where { $_.Name -eq $Name }
+
+            if ($NewSolutionFolder -eq $null) {
+                Write-Host "Adding solution folder '$Name'."
+                $NewSolutionFolder = $Solution.AddSolutionFolder($Name)
+            }
+
+            return $NewSolutionFolder
+        }
+        "SolutionFolder" {
+            $NewSolutionFolder = $SolutionFolder.ProjectItems | Where { $_.Name -eq $Name }
+
+            if ($NewSolutionFolder -eq $null) {
+                Write-Host "Adding solution folder '$($SolutionFolder.Name)\$Name'."
+                $NewSolutionFolder = $SolutionFolder.Object.AddSolutionFolder($Name)
+            }
+
+            return $NewSolutionFolder
+        }
+        default {
+            return $null
+        }
+    }
+}
+
+
+<#
+.SYNOPSIS 
+   Removes a project item from the solution
+
+.PARAMETER $ProjectItems <EnvDTE.ProjectItem>
+   The project item
+
+.OUTPUTS
+   None
+#>
 function Remove-ProjectItem {
 	param($ProjectItem)
 
@@ -48,19 +147,16 @@ if ($Package -ne $null) {
     . (Join-Path $InstallPath "scripts\$($Package.Id).ps1")
 
 	$SolutionName = ($Solution.Properties | Where { $_.Name -eq "Name" }).Value
-	$BuildSolutionFolder = $Solution.Projects | Where { $_.Name -eq ".build" }
+    $NuGetSolutionFolder = $Solution.Projects | Where { $_.Name -eq ".nuget" }
 	$BuildFullPath = Join-Path $SolutionFullPath ".build"
 
-	# Add '.build' solution folder if it does not already exist
-	if ($BuildSolutionFolder -eq $null) {
-        $BuildSolutionFolder = $Solution.AddSolutionFolder(".build")
-        $BuildSolutionFolder.Object.AddSolutionFolder("tasks") | Out-Null
-        $BuildSolutionFolder.Object.AddSolutionFolder("scripts") | Out-Null
-	}
-
-	# Remove NuGet.exe from the solution
-	$NuGetSolutionFolder = $solution.Projects | Where { $_.Name -eq ".nuget" }
-	if ($NuGetSolutionFolder -ne $null) {
+	# Add '.build' solution folder
+    $BuildSolutionFolder = Add-SolutionFolder ".build" -Solution $Solution
+    Add-SolutionFolder "tasks" -SolutionFolder $BuildSolutionFolder | Out-Null
+    Add-SolutionFolder "scripts" -SolutionFolder $BuildSolutionFolder | Out-Null
+        
+    if ($NuGetSolutionFolder -ne $null) {
+        # Remove NuGet.exe from the solution
 		Remove-ProjectItem ($NuGetSolutionFolder.ProjectItems | Where { $_.Name -eq "NuGet.exe" })
 	}
 
@@ -72,21 +168,36 @@ if ($Package -ne $null) {
 		$NuGetTargets.Load($NuGetTargetsFile)
 		$NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
 		$NuGetTargets.Save($NuGetTargetsFile)
+        $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
+        Add-FileToSolutionFolder $NuGetTargetsFile $NuGetSolutionFolder
 	}
     
-    $BuildProjectItems = Get-Interface $BuildSolutionFolder.ProjectItems ([EnvDTE.ProjectItems])
-    
+    # Add Nuget.config to the solution
+	$NuGetConfigFile = Join-Path (Join-Path $SolutionFullPath ".nuget") "NuGet.config"
+	if (Test-Path $NuGetConfigFile) {
+        # Inside the '.nuget' directory
+        $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
+        Add-FileToSolutionFolder $NuGetConfigFile $NuGetSolutionFolder
+	} else {
+        # In the solution directory
+        $NuGetConfigFile = Join-Path $SolutionFullPath "NuGet.config"
+        if (Test-Path $NuGetConfigFile) {
+            $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
+            Add-FileToSolutionFolder $NuGetConfigFile $NuGetSolutionFolder
+	    }
+    }
+   
     # Creating .build directory
     $BuildFullPath = Join-Path $SolutionFullPath ".build"
     if (-not (Test-Path $BuildFullPath)) {
-        Write-Host "Creating '.build'."
+        Write-Host "Creating '.build' direcotry."
         New-Directory $BuildFullPath | Out-Null
     }
     
     # Creating tasks directory
     $TasksFullPath = Join-Path $BuildFullPath "tasks"
     if (-not (Test-Path $TasksFullPath)) {
-        Write-Host "Creating '.build\tasks'."
+        Write-Host "Creating '.build\tasks' directory."
         New-Directory $TasksFullPath | Out-Null
     }
 
@@ -112,7 +223,12 @@ if ($Package -ne $null) {
     Copy-Item (Join-Path $InstallPath "scripts\$($Package.Id).ps1") (Join-Path $SolutionFullPath ".build\scripts\$($Package.Id).ps1") -Force | Out-Null
     
     # Add solution build scripts
-    Add-FileToSolution $BuildProjectItems (Join-Path $InstallPath "init\.build\build.ps1") (Join-Path $SolutionFullPath ".build\build.ps1")
+    Copy-File (Join-Path $InstallPath "init\.build\build.ps1") (Join-Path $SolutionFullPath ".build\build.ps1")
+    Add-FileToSolutionFolder (Join-Path $SolutionFullPath ".build\build.ps1") $BuildSolutionFolder
+
+    # Add 'Solution Items' solution folder and items
+    $SolutionItemsFolder = Add-SolutionFolder "Solution Items" -Solution $Solution
+    Add-FileToSolutionFolder $GoBat $SolutionItemsFolder
 
     $Solution.SaveAs($Solution.FullName)
 
