@@ -5,8 +5,8 @@ Task Clean {
         Remove-ItemSilently (Join-Path $BuildOutputFullPath "*")
     }
     
-    Write-BuildMessage "Cleaning '$SolutionFullPath'"
-    Get-ChildItem -Directory -Path (Join-Path $SolutionFullPath "**\bin"), (Join-Path $SolutionFullPath "**\obj") `
+    Write-BuildMessage "Cleaning '$PaskFullPath'"
+    Get-ChildItem -Directory -Path (Join-Path $PaskFullPath "**\bin"), (Join-Path $PaskFullPath "**\obj") `
         | Sort -Descending @{Expression = {$_.FullName.Length}} `
         | Select -ExpandProperty FullName `
         | ForEach {

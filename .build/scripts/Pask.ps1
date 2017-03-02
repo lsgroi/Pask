@@ -170,7 +170,7 @@ function script:Remove-ItemSilently {
    Full name
 #> 
 function script:Get-NuGetExe {
-    Join-Path $SolutionFullPath ".nuget\NuGet.exe"
+    Join-Path $PaskFullPath ".nuget\NuGet.exe"
 }
 
 <#
@@ -199,7 +199,7 @@ function script:Initialize-NuGetExe {
    The full path
 #> 
 function script:Get-PackagesDir {
-    $PackagesDir = Join-Path $SolutionFullPath "packages" 
+    $PackagesDir = Join-Path $PaskFullPath "packages" 
     $NuGet = Get-NuGetExe
     if (Test-Path $NuGet) {
         Push-Location -Path (Split-Path $NuGet)
@@ -794,7 +794,7 @@ function script:Get-CommitterDate {
         return [DateTime]::Now
     }
     
-    $Date = Exec { & (Get-GitExe) -C "$($SolutionFullPath.Trim('\'))" show --no-patch --format=%ci }
+    $Date = Exec { & (Get-GitExe) -C "$($PaskFullPath.Trim('\'))" show --no-patch --format=%ci }
     
     return [DateTime]::Parse($Date, $null, [System.Globalization.DateTimeStyles]::RoundtripKind)
 }
@@ -816,7 +816,7 @@ function script:Get-Branch {
         return $null
     }
 
-    $RawName = Exec { & (Get-GitExe) -C "$($SolutionFullPath.Trim('\'))" name-rev --name-only HEAD }
+    $RawName = Exec { & (Get-GitExe) -C "$($PaskFullPath.Trim('\'))" name-rev --name-only HEAD }
     
     if ($RawName -match '/([^/]+)$') {
         # In this case we resolved refs/heads/branch_name but we are only interested in branch_name

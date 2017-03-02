@@ -25,8 +25,8 @@ Tells to show summary information after the build.
 .PARAMETER Properties
 A set of properties passed to the build script.
 
-.PARAMETER SolutionPath
-The relative path to the solution directory.
+.PARAMETER SolutionFilePath
+The relative path to the solution file.
 
 .PARAMETER SolutionName
 Base name of the solution.
@@ -47,8 +47,8 @@ param(
     [Parameter(ValueFromRemainingArguments=$true)]$Properties,
     
     # Pask specific parameters
-    [string]$SolutionPath,
-    [string]$SolutionName = (Get-ChildItem -Path (Join-Path $PSScriptRoot $SolutionPath) *.sln | Select-Object -First 1).BaseName,
+    [string]$SolutionFilePath,
+    [string]$SolutionName = (Get-ChildItem -Path (Join-Path $PSScriptRoot $SolutionFilePath) *.sln | Sort-Object -Descending | Select-Object -First 1).BaseName,
     [string]$ProjectName = $SolutionName,
     [switch]$Tree
 )
@@ -65,15 +65,17 @@ for ($i=0; $i -lt $Properties.Count; $i+=2) {
 }
 
 # Set default properties
-Set-BuildProperty -Name SolutionFullPath -Value (Join-Path $PSScriptRoot $SolutionPath)
+Set-BuildProperty -Name PaskFullPath -Value $PSScriptRoot
+Set-BuildProperty -Name SolutionName -Value $SolutionName
+Set-BuildProperty -Name SolutionFullPath -Value (Join-Path $PaskFullPath $SolutionFilePath)
 Set-BuildProperty -Name SolutionFullName -Value (Join-Path $SolutionFullPath "$SolutionName.sln")
-Set-BuildProperty -Name BuildFullPath -Value (Join-Path $PSScriptRoot ".build")
+Set-BuildProperty -Name BuildFullPath -Value (Join-Path $PaskFullPath ".build")
 Set-BuildProperty -Name BuildOutputFullPath -Value (Join-Path $BuildFullPath "output")
 Set-BuildProperty -Name TestsArtifactFullPath -Value (Join-Path $BuildOutputFullPath "Tests")
 Set-BuildProperty -Name TestsResultsFullPath -Value (Join-Path $BuildOutputFullPath "TestsResults")
 
 # Test solution existence
-if(-not (Test-Path $SolutionFullName)) { Write-Error "Cannot find solution in $SolutionFullPath" }
+if(-not (Test-Path $SolutionFullName)) { Write-Error "Cannot find '$SolutionName' solution in '$SolutionFullPath'" }
 
 # Restore NuGet packages marked as development-only-dependency
 Write-BuildMessage -Message "Restore NuGet development dependencies" -ForegroundColor "Cyan"

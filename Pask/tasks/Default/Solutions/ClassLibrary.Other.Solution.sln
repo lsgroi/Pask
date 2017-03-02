@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Other", "..\ClassLibrary.Other\ClassLibrary.Other.csproj", "{0942CC61-F317-41FF-8BFB-3C2E6B4A4E23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Other.Tests", "..\ClassLibrary.Other.Tests\ClassLibrary.Other.Tests.csproj", "{6349C1F2-809C-4F3F-95CC-6FB46425CF08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{D1FA71B8-5525-4E0B-AE37-34F6B22738CA}"
+	ProjectSection(SolutionItems) = preProject
+		..\.build\build.ps1 = ..\.build\build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{EE515CDF-6584-4BED-9C4A-7EAA11342877}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{5A95FFB8-7F5B-459F-9F05-FA9A79C59F3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0942CC61-F317-41FF-8BFB-3C2E6B4A4E23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0942CC61-F317-41FF-8BFB-3C2E6B4A4E23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0942CC61-F317-41FF-8BFB-3C2E6B4A4E23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0942CC61-F317-41FF-8BFB-3C2E6B4A4E23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6349C1F2-809C-4F3F-95CC-6FB46425CF08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6349C1F2-809C-4F3F-95CC-6FB46425CF08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6349C1F2-809C-4F3F-95CC-6FB46425CF08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6349C1F2-809C-4F3F-95CC-6FB46425CF08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EE515CDF-6584-4BED-9C4A-7EAA11342877} = {D1FA71B8-5525-4E0B-AE37-34F6B22738CA}
+		{5A95FFB8-7F5B-459F-9F05-FA9A79C59F3C} = {D1FA71B8-5525-4E0B-AE37-34F6B22738CA}
+	EndGlobalSection
+EndGlobal

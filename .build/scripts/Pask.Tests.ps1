@@ -563,7 +563,7 @@ Describe "Remove-ItemSilently" {
 }
 
 Describe "Get-NuGetExe" {
-    $SolutionFullPath = (Join-Path $TestDrive "solution directory")
+    $PaskFullPath = (Join-Path $TestDrive "solution directory")
     
     It "gets the NuGet executable" {
         Get-NuGetExe | Should Be (Join-Path $TestDrive "solution directory\.nuget\NuGet.exe")
@@ -573,8 +573,8 @@ Describe "Get-NuGetExe" {
 Describe "Initialize-NuGetExe" {
     BeforeAll {
         # Arrange
-        $SolutionFullPath = (Join-Path $TestDrive "solution directory")
-        $NuGet = (Join-Path $SolutionFullPath ".nuget\NuGet.exe")
+        $PaskFullPath = (Join-Path $TestDrive "solution directory")
+        $NuGet = (Join-Path $PaskFullPath ".nuget\NuGet.exe")
         Mock Get-NuGetExe { return $NuGet }
         Mock New-Object {
             $Result = [PSCustomObject] @{}
@@ -591,7 +591,7 @@ Describe "Initialize-NuGetExe" {
     Context "NuGet executable already exists" {
         BeforeAll {
             # Arrange
-            New-Item -Path (Join-Path $SolutionFullPath ".nuget") -ItemType Directory
+            New-Item -Path (Join-Path $PaskFullPath ".nuget") -ItemType Directory
             New-Item -Path $NuGet -ItemType File
 
             # Act
@@ -617,7 +617,7 @@ Describe "Initialize-NuGetExe" {
     Context "NuGet directory exists but NuGet executable does not exist" {
         BeforeAll {
             # Arrange
-            New-Item -Path (Join-Path $SolutionFullPath ".nuget") -ItemType Directory
+            New-Item -Path (Join-Path $PaskFullPath ".nuget") -ItemType Directory
 
             # Act
             Initialize-NuGetExe
@@ -632,9 +632,9 @@ Describe "Initialize-NuGetExe" {
 Describe "Get-PackagesDir" {
     BeforeAll {
         # Arrange
-        $SolutionFullPath = (Join-Path $TestDrive "solution directory")
-        New-Item -Path (Join-Path $SolutionFullPath ".nuget") -ItemType Directory
-        $NuGet = (Join-Path $SolutionFullPath ".nuget\NuGet.exe")
+        $PaskFullPath = (Join-Path $TestDrive "solution directory")
+        New-Item -Path (Join-Path $PaskFullPath ".nuget") -ItemType Directory
+        $NuGet = (Join-Path $PaskFullPath ".nuget\NuGet.exe")
         Mock Get-NuGetExe { return $NuGet }
     }
 

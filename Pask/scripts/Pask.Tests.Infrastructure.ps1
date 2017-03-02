@@ -37,8 +37,11 @@ function script:Install-NuGetPackage {
 .SYNOPSIS 
    Invokes a Pask build on a target solution
 
-.PARAMETER SolutionFullPath <string>
-   The target solution's directory
+.PARAMETER TargetPaskFullPath <string>
+   The target Pask's directory
+
+.PARAMETER SolutionFilePath <string>
+   The path of the target solution's file
 
 .PARAMETER SolutionName <string>
    The target solution's name
@@ -54,16 +57,23 @@ function script:Install-NuGetPackage {
 #>
 function script:Invoke-Pask {
     param(
-        [Parameter(Mandatory=$true,Position=0)][Alias(“SolutionFullPath”)][string]$TargetSolutionFullPath,
+        [Parameter(Mandatory=$true,Position=0)][string]$TargetPaskFullPath,
+        [string]$SolutionFilePath,
         [string]$SolutionName,
         [string[]]$Task = ".",
         [Parameter(ValueFromRemainingArguments=$true)]$Properties
     )
 
-    if($SolutionName) {
-        Exec { & "$(Join-Path $TargetSolutionFullPath "Pask.ps1")" -SolutionName $SolutionName -Task $Task -Properties $Properties }
-    } else { 
-        Exec { & "$(Join-Path $TargetSolutionFullPath "Pask.ps1")" -Task $Task -Properties $Properties }
+    $TargetPaskFullName = Join-Path $TargetPaskFullPath "Pask.ps1"
+
+    if($SolutionFilePath -and $SolutionName) {
+        Exec { & $TargetPaskFullName -SolutionFilePath $SolutionFilePath -SolutionName $SolutionName -Task $Task -Properties $Properties }
+    } elseif ($SolutionFilePath) { 
+        Exec { & $TargetPaskFullName -SolutionFilePath $SolutionFilePath -Task $Task -Properties $Properties }
+    } elseif ($SolutionName) { 
+        Exec { & $TargetPaskFullName -SolutionName $SolutionName -Task $Task -Properties $Properties }
+    } else {
+        Exec { & $TargetPaskFullName -Task $Task -Properties $Properties }
     }
 }
 
