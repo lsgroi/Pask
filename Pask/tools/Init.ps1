@@ -226,10 +226,6 @@ if ($Package -ne $null) {
     Copy-File (Join-Path $InstallPath "init\.build\build.ps1") (Join-Path $SolutionFullPath ".build\build.ps1")
     Add-FileToSolutionFolder (Join-Path $SolutionFullPath ".build\build.ps1") $BuildSolutionFolder
 
-    # Add 'Solution Items' solution folder and items
-    $SolutionItemsFolder = Add-SolutionFolder "Solution Items" -Solution $Solution
-    Add-FileToSolutionFolder $GoBat $SolutionItemsFolder
-
     $Solution.SaveAs($Solution.FullName)
 
     # Open the readme.txt

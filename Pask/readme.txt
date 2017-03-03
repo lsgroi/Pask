@@ -1,6 +1,10 @@
 Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
+Version 0.11.0
+-------------------------------------------------------------------------------------
+- Full support for custom solution name and path
+- Improvements to package installation
 
 Version 0.10.0
 -------------------------------------------------------------------------------------
