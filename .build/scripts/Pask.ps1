@@ -483,9 +483,9 @@ function script:Import-File {
                 if (Get-Files $_.FullName) {
                     $Imported = $true
                 } else {
-                    . $_.FullName
                     ${!Files!}.Add($_.FullName) | Out-Null
                     ${script:!Files!} = ${!Files!}
+                    . $_.FullName
                     $Imported = $true
                 }
             }
@@ -608,9 +608,9 @@ function script:Import-Properties {
     # Always import solution properties
     $SolutionProperties = Join-Path $BuildFullPath $PropertiesPath
     if ((Test-Path $SolutionProperties) -and -not (Get-Files $SolutionProperties)) {
-        . $SolutionProperties
         ${!Files!}.Add($SolutionProperties) | Out-Null
         ${script:!Files!} = ${!Files!}
+        . $SolutionProperties
     }
 
     # Import properties from projects
@@ -619,9 +619,9 @@ function script:Import-Properties {
         if ($SolutionProject) {
             $ProjectProperties = Join-Path $SolutionProject.Directory $PropertiesPath
             If ((Test-Path $ProjectProperties) -and -not (Get-Files $ProjectProperties)) {
-                . $ProjectProperties
                 ${!Files!}.Add($ProjectProperties) | Out-Null
                 ${script:!Files!} = ${!Files!}
+                . $ProjectProperties
             }
         }
     }
@@ -631,9 +631,9 @@ function script:Import-Properties {
         if (Get-SolutionPackages | Where { $_.id -eq $Pkg }) {
             $PackageProperties = Join-Path (Get-PackageDir $Pkg) $PropertiesPath
             if ((Test-Path $PackageProperties) -and -not (Get-Files $PackageProperties)) {
-                . $PackageProperties
                 ${!Files!}.Add($PackageProperties) | Out-Null
                 ${script:!Files!} = ${!Files!}
+                . $PackageProperties
             }
         }
     }
