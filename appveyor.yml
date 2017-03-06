@@ -17,7 +17,7 @@
   test: off
 
 # configuration for branches
-# build amd test
+# build and test
 -
   branches:
     except:

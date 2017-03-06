@@ -92,20 +92,20 @@ function Add-SolutionFolder {
 
             if ($NewSolutionFolder -eq $null) {
                 Write-Host "Adding solution folder '$Name'."
-                $NewSolutionFolder = $Solution.AddSolutionFolder($Name)
+                return $Solution.AddSolutionFolder($Name)
+            } else {
+                return $NewSolutionFolder
             }
-
-            return $NewSolutionFolder
         }
         "SolutionFolder" {
             $NewSolutionFolder = $SolutionFolder.ProjectItems | Where { $_.Name -eq $Name }
 
             if ($NewSolutionFolder -eq $null) {
                 Write-Host "Adding solution folder '$($SolutionFolder.Name)\$Name'."
-                $NewSolutionFolder = $SolutionFolder.Object.AddSolutionFolder($Name)
-            }
-
-            return $NewSolutionFolder
+                return $SolutionFolder.Object.AddSolutionFolder($Name)
+            } else {
+                return $NewSolutionFolder.Object
+            }            
         }
         default {
             return $null
@@ -152,8 +152,8 @@ if ($Package -ne $null) {
 
 	# Add '.build' solution folder
     $BuildSolutionFolder = Add-SolutionFolder ".build" -Solution $Solution
-    Add-SolutionFolder "tasks" -SolutionFolder $BuildSolutionFolder | Out-Null
-    Add-SolutionFolder "scripts" -SolutionFolder $BuildSolutionFolder | Out-Null
+    $TasksSolutionFolder = Add-SolutionFolder "tasks" -SolutionFolder $BuildSolutionFolder
+    $BuildScriptsSolutionFolder = Add-SolutionFolder "scripts" -SolutionFolder $BuildSolutionFolder
         
     if ($NuGetSolutionFolder -ne $null) {
         # Remove NuGet.exe from the solution
@@ -167,7 +167,11 @@ if ($Package -ne $null) {
         $NuGetTargets.PreserveWhitespace = $true
         try {
 		    $NuGetTargets.Load($NuGetTargetsFile)
-		    $NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
+            if ($NuGetTargets.Project.PropertyGroup -is [System.Array]) {
+		        $NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
+            } else {
+                $NuGetTargets.Project.PropertyGroup.DownloadNuGetExe.InnerText = "true"
+            }
 		    $NuGetTargets.Save($NuGetTargetsFile)
         } catch {
             Write-Warning "Cannot update 'NuGet.targets' - invalid format."
@@ -221,15 +225,19 @@ if ($Package -ne $null) {
     }
 
     # Add build scripts
-    New-Directory (Join-Path $SolutionFullPath ".build\scripts") | Out-Null
+    $BuildScriptsFullPath = New-Directory (Join-Path $SolutionFullPath ".build\scripts")
     Write-Host "Copying $($Package.Id) build runner."
     Copy-Item (Join-Path $InstallPath "init\$($Package.Id).ps1") (Join-Path $SolutionFullPath "$($Package.Id).ps1") -Force | Out-Null
     Write-Host "Copying $($Package.Id) build script."
     Copy-Item (Join-Path $InstallPath "scripts\$($Package.Id).ps1") (Join-Path $SolutionFullPath ".build\scripts\$($Package.Id).ps1") -Force | Out-Null
-    
+
     # Add solution build scripts
     Copy-File (Join-Path $InstallPath "init\.build\build.ps1") (Join-Path $SolutionFullPath ".build\build.ps1")
     Add-FileToSolutionFolder (Join-Path $SolutionFullPath ".build\build.ps1") $BuildSolutionFolder
+    Get-ChildItem -Path $BuildScriptsFullPath -Filter *.ps1 | Where { $_.Name -ne "$($Package.Id).ps1" } | Foreach { Add-FileToSolutionFolder $_.FullName $BuildScriptsSolutionFolder }
+
+    # Add solution tasks
+    Get-ChildItem -Path $TasksFullPath -Filter *.ps1 | Foreach { Add-FileToSolutionFolder $_.FullName $TasksSolutionFolder }
 
     $Solution.SaveAs($Solution.FullName)
 
