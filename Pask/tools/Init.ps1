@@ -165,11 +165,16 @@ if ($Package -ne $null) {
 	if (Test-Path $NuGetTargetsFile) {
         [xml]$NuGetTargets = New-Object System.Xml.XmlDocument
         $NuGetTargets.PreserveWhitespace = $true
-		$NuGetTargets.Load($NuGetTargetsFile)
-		$NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
-		$NuGetTargets.Save($NuGetTargetsFile)
-        $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
-        Add-FileToSolutionFolder $NuGetTargetsFile $NuGetSolutionFolder
+        try {
+		    $NuGetTargets.Load($NuGetTargetsFile)
+		    $NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
+		    $NuGetTargets.Save($NuGetTargetsFile)
+        } catch {
+            Write-Warning "Cannot update 'NuGet.targets' - invalid format."
+        } finally {
+            $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
+            Add-FileToSolutionFolder $NuGetTargetsFile $NuGetSolutionFolder
+        }
 	}
     
     # Add Nuget.config to the solution

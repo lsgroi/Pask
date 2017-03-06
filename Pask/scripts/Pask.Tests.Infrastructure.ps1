@@ -110,6 +110,11 @@ function script:New-Solution {
     $NuGetConfig = "<?xml version=""1.0"" encoding=""utf-8""?><configuration><packageSources><add key=""Local"" value=""$LocalNuGetFeed"" /></packageSources></configuration>"
     Set-Content -Path (Join-Path $Path "NuGet.config") -Value $NuGetConfig -Force
 
+    # Create a NuGet.targets
+    $NuGetTargets = "<?xml version=""1.0"" encoding=""utf-8""?><Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003""> <PropertyGroup><DownloadNuGetExe Condition="" '`$(DownloadNuGetExe)' == '' "">true</DownloadNuGetExe></PropertyGroup></Project>"
+    New-Directory (Join-Path $Path ".nuget") | Out-Null
+    Set-Content -Path (Join-Path $Path ".nuget\NuGet.targets") -Value $NuGetConfig -Force
+
     "Creating solution in $Path"
     $DTE.Value.Solution.Create($Path, $Name)
     $WebApplicationProjectTemplate = $DTE.Value.Solution.GetProjectTemplate("Microsoft.CSharp.ConsoleApplication", "CSharp")
