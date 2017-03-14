@@ -26,7 +26,7 @@ Pask can target any .NET solution following some basic convention patterns and i
 Primarily to make the build process a first class citizen and treat it exactly as the code which is building.
 Pask introduces a set of conventions and predefined tasks which reduce the overhead of setting up a build pipeline for new projects.
 It allows to catch failed builds earlier by running the same process on a CI server as well as on a development machine.
-Pask is designed to be extended to reduce the amount of boilerplate code in your build scripts by creating extensions with single responsibilities.
+Pask is designed to be extended to reduce the amount of boilerplate code in your build scripts by creating extensions with single responsibility.
 
 ## Resources
 - [Invoke-Build](https://github.com/nightroman/Invoke-Build/wiki)
