@@ -20,7 +20,7 @@ Pask is a modular task-oriented PowerShell build tool for .NET which relies on [
 On very simple projects, building and testing the software can be accomplished using the capabilities of your IDE (Integrated Development Environment).
 However, this is really only appropriate for the most trivial of tasks.
 Soon enough any project would demand more control and so it is vital to script building, testing and packaging activities.  
-Pask can target any .NET solution following some basic convention patterns and it can be used at any stage of a Deployment Pipeline.
+Pask can target any .NET solution following some basic convention patterns and it can be used at any stage of a Deployment Pipeline allowing to define the pipelined job processes with code.
 
 ## Why Pask?
 Primarily to make the build process a first class citizen and treat it exactly as the code which is building.
