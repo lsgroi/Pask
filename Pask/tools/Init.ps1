@@ -19,17 +19,35 @@ if ($Project -eq $null) {
 .PARAMETER Destination <string>
    Full name of the destination file
 
+.PARAMETER Force <switch>
+   Always override the file
+
+.PARAMETER Message <string>
+   Optional message to the console
+
+.PARAMETER PassThru <switch>
+   Returns the full name of the destination file
+
 .OUTPUTS
    None
 #>
 function Copy-File {
-	param([string]$Source, [string]$Destination)
+	param([string]$Source, [string]$Destination, [switch]$Force, [string]$Message, [switch]$PassThru)
 
 	$FileName = Split-Path -Path $Destination -Leaf
 	
-	if (-not (Test-Path $Destination)) {
-		Write-Host "Copying '$FileName'."
-		Copy-Item $Source $Destination | Out-Null
+	if (-not (Test-Path $Destination) -or $Force) {
+        if ($Message) {
+            Write-Host $Message
+        } else {
+            Write-Host "Copying '$FileName'."
+        }
+
+        if ($PassThru) {
+            return (Copy-Item $Source $Destination -PassThru).FullName
+        } else {
+            Copy-Item $Source $Destination
+        }
 	}
 }
 
@@ -218,32 +236,18 @@ if ($Package -ne $null) {
     }
 
     # Add .build\.gitignore
-    $GitIgnore = Join-Path $BuildFullPath ".gitignore"
-    if(-not (Test-Path $GitIgnore)) {
-        Write-Host "Creating '.build\.gitignore'."
-        Copy-Item (Join-Path $InstallPath "init\.build\.gitignore") $GitIgnore -Force | Out-Null
-    }
+    Copy-File (Join-Path $InstallPath "init\.build\.gitignore") (Join-Path $BuildFullPath ".gitignore") -Message "Creating '.build\.gitignore'."
 
     # Add .nuget\.gitignore
-    $GitIgnore = Join-Path $NuGetFullPath ".gitignore"
-    if(-not (Test-Path $GitIgnore)) {
-        Write-Host "Creating '.nuget\.gitignore'."
-        Copy-Item (Join-Path $InstallPath "init\.nuget\.gitignore") $GitIgnore -Force | Out-Null
-    }
+    Copy-File (Join-Path $InstallPath "init\.nuget\.gitignore") (Join-Path $NuGetFullPath ".gitignore") -Message "Creating '.nuget\.gitignore'."
 
     # Add go.bat
-    $GoBat = Join-Path $SolutionFullPath "go.bat"
-    if (-not (Test-Path $GoBat)) {
-        Write-Host "Creating 'go.bat'."
-        Copy-Item (Join-Path $InstallPath "init\go.bat") $GoBat -Force | Out-Null
-    }
+    Copy-File (Join-Path $InstallPath "init\go.bat") (Join-Path $SolutionFullPath "go.bat") -Message "Creating 'go.bat'."
 
     # Add build scripts
     $BuildScriptsFullPath = New-Directory (Join-Path $SolutionFullPath ".build\scripts")
-    Write-Host "Copying $($Package.Id) build runner."
-    Copy-Item (Join-Path $InstallPath "init\$($Package.Id).ps1") (Join-Path $SolutionFullPath "$($Package.Id).ps1") -Force | Out-Null
-    Write-Host "Copying $($Package.Id) build script."
-    Copy-Item (Join-Path $InstallPath "scripts\$($Package.Id).ps1") (Join-Path $SolutionFullPath ".build\scripts\$($Package.Id).ps1") -Force | Out-Null
+    Copy-File (Join-Path $InstallPath "init\$($Package.Id).ps1") (Join-Path $SolutionFullPath "$($Package.Id).ps1") -Force -Message "Copying $($Package.Id) build runner."
+    Copy-File (Join-Path $InstallPath "scripts\$($Package.Id).ps1") (Join-Path $SolutionFullPath ".build\scripts\$($Package.Id).ps1") -Force -Message "Copying $($Package.Id) build script."
 
     # Add solution build scripts
     Copy-File (Join-Path $InstallPath "init\.build\build.ps1") (Join-Path $SolutionFullPath ".build\build.ps1")
