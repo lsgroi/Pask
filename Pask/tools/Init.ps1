@@ -199,10 +199,17 @@ if ($Package -ne $null) {
     # Creating .build directory
     $BuildFullPath = Join-Path $SolutionFullPath ".build"
     if (-not (Test-Path $BuildFullPath)) {
-        Write-Host "Creating '.build' direcotry."
+        Write-Host "Creating '.build' directory."
         New-Directory $BuildFullPath | Out-Null
     }
     
+    # Creating .nuget directory
+    $NuGetFullPath = Join-Path $SolutionFullPath ".nuget"
+    if (-not (Test-Path $NuGetFullPath)) {
+        Write-Host "Creating '.nuget' directory."
+        New-Directory $NuGetFullPath | Out-Null
+    }
+
     # Creating tasks directory
     $TasksFullPath = Join-Path $BuildFullPath "tasks"
     if (-not (Test-Path $TasksFullPath)) {
@@ -215,6 +222,13 @@ if ($Package -ne $null) {
     if(-not (Test-Path $GitIgnore)) {
         Write-Host "Creating '.build\.gitignore'."
         Copy-Item (Join-Path $InstallPath "init\.build\.gitignore") $GitIgnore -Force | Out-Null
+    }
+
+    # Add .nuget\.gitignore
+    $GitIgnore = Join-Path $NuGetFullPath ".gitignore"
+    if(-not (Test-Path $GitIgnore)) {
+        Write-Host "Creating '.nuget\.gitignore'."
+        Copy-Item (Join-Path $InstallPath "init\.nuget\.gitignore") $GitIgnore -Force | Out-Null
     }
 
     # Add go.bat

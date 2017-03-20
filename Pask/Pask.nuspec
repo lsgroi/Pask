@@ -22,6 +22,9 @@
     <files>
         <file src="init\**" target="init" />
         <file src="..\Pask.ps1" target="init" />
+        <file src="..\go.bat" target="init" />
+        <file src="..\.build\.gitignore" target="init\.build" />
+        <file src="..\.nuget\.gitignore" target="init\.nuget" />
         <file src="..\.build\scripts\Pask.ps1" target="scripts" />
         <file src="scripts\*.ps1" target="scripts" exclude="scripts\*.Tests.ps1" />
         <file src="tasks\*.ps1" target="tasks" exclude="tasks\*.Tests.ps1" />

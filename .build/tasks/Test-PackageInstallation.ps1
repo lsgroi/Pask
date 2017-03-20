@@ -9,7 +9,8 @@ Task Test-PackageInstallation Clean, Pack-Nuspec, Push-Local, {
         Assert (Test-Path (Join-Path $SolutionFullPath "Pask.ps1")) "Cannot find Pask build runner"
         Assert (Test-Path (Join-Path $SolutionFullPath ".build\scripts\Pask.ps1")) "Cannot find Pask build script"
         Assert (Test-Path (Join-Path $SolutionFullPath ".build\tasks")) "Cannot find 'tasks' directory"
-        Assert (Test-Path (Join-Path $SolutionFullPath ".build\.gitignore")) "Cannot find .gitignore'"
+        Assert (Test-Path (Join-Path $SolutionFullPath ".build\.gitignore")) "Cannot find '.build\.gitignore'"
+        Assert (Test-Path (Join-Path $SolutionFullPath ".nuget\.gitignore")) "Cannot find '.nuget\.gitignore'"
         Assert (Test-Path (Join-Path $SolutionFullPath "go.bat")) "Cannot find go.bat'"
         $InvokeBuildVersion = (([xml](Get-Content (Join-Path $ProjectFullPath "Pask.nuspec"))).package.metadata.dependencies.dependency | Where { $_.id -eq "Invoke-Build" }).version
         Assert ((([xml](Get-Content (Join-Path $SolutionFullPath "Application\packages.config"))).packages.package | Where { $_.id -eq "Invoke-Build" }).version -eq $InvokeBuildVersion) "Incorrect version of Invoke-Build installed into project 'Application'"

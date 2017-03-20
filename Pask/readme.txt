@@ -1,6 +1,10 @@
 Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
+Version 0.14.0
+-------------------------------------------------------------------------------------
+- Explicitly ignore NuGet.exe so the latest version is always used
+
 Version 0.13.0
 -------------------------------------------------------------------------------------
 - Expose the ability to test a package installation
