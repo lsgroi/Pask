@@ -1,9 +1,8 @@
+Import-Properties -Package Pask
 Import-Script Properties.MSBuild -Package Pask
 
 # Synopsis: Build the solution using MSBuild
 Task Build {
-    Import-Properties -Package Pask
-
     Use $MSBuildVersion MSBuild
 
     # Select the project to build

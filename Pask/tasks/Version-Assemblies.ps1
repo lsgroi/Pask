@@ -1,10 +1,10 @@
+Import-Properties -Package Pask
+
 # Array of AssemblyInfo files to exclude (relative path from solution's directory)
 Set-Property ExcludeAssemblyInfo -Default @()
 
 # Synopsis: Version all the assemblies in the solution
 Task Version-Assemblies {
-    Import-Properties -Package Pask
-
     # Regular expression patterns to find version information for an assembly
     $AssemblyVersionRegex = 'AssemblyVersion\s*\(\s*\"(.+)?"\s*\)'
     $AssemblyFileVersionRegex = 'AssemblyFileVersion\s*\(\s*\"(.+)?"\s*\)'

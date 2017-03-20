@@ -1,7 +1,7 @@
+Import-Properties -Project Pask
+
 # Synopsis: Apply the current version to the build server
 Task Version-BuildServer {
-    Import-Properties -Project Pask
-
     if ($env:TEAMCITY_VERSION) {
         "##teamcity[buildNumber '$($Version.InformationalVersion)']"
     } elseif ($env:TF_BUILD) {
