@@ -14,7 +14,7 @@ Task Test-PackageInstallation Clean, Pack-Nuspec, Push-Local, {
         Assert (Test-Path (Join-Path $SolutionFullPath "go.bat")) "Cannot find go.bat'"
         $InvokeBuildVersion = (([xml](Get-Content (Join-Path $ProjectFullPath "Pask.nuspec"))).package.metadata.dependencies.dependency | Where { $_.id -eq "Invoke-Build" }).version
         Assert ((([xml](Get-Content (Join-Path $SolutionFullPath "Application\packages.config"))).packages.package | Where { $_.id -eq "Invoke-Build" }).version -eq $InvokeBuildVersion) "Incorrect version of Invoke-Build installed into project 'Application'"
-        Assert ((([xml](Get-Content (Join-Path $SolutionFullPath "Application.Core\packages.config"))).packages.package | Where { $_.id -eq "Invoke-Build" }).version -eq $InvokeBuildVersion) "Incorrect version of Invoke-Build installed into project 'Application.Core'"
+        Assert ((([xml](Get-Content (Join-Path $SolutionFullPath "Application.Domain\packages.config"))).packages.package | Where { $_.id -eq "Invoke-Build" }).version -eq $InvokeBuildVersion) "Incorrect version of Invoke-Build installed into project 'Application.Core'"
     }
 
     Test-PackageInstallation -Assertion $Assertion

@@ -120,7 +120,7 @@ function script:New-Solution {
     $WebApplicationProjectTemplate = $DTE.Value.Solution.GetProjectTemplate("Microsoft.CSharp.ConsoleApplication", "CSharp")
     $DTE.Value.Solution.AddFromTemplate($WebApplicationProjectTemplate, "$(Join-Path $Path $Name)", $Name, $false)
     $ClassLibraryTemplate = $DTE.Value.Solution.GetProjectTemplate("Microsoft.CSharp.ClassLibrary", "CSharp")
-    $DTE.Value.Solution.AddFromTemplate($ClassLibraryTemplate, "$(Join-Path $Path "$Name.Core")", "$Name.Contracts", $false)
+    $DTE.Value.Solution.AddFromTemplate($ClassLibraryTemplate, "$(Join-Path $Path "$Name.Domain")", "$Name.Domain", $false)
     $SolutionFullName = Join-Path $Path "$Name.sln"
     $DTE.Value.Solution.SaveAs($SolutionFullName)
     $DTE.Value.Solution.Open($SolutionFullName)
