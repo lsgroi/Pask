@@ -223,8 +223,10 @@ namespace EnvDteUtils{
     }
 }
 "@
-    Add-Type -TypeDefinition $source
-    [EnvDTEUtils.MessageFilter]::Register()
+    if(-not ("EnvDteUtils.MessageFilter" -as [type])) {
+        Add-Type -TypeDefinition $source
+        [EnvDTEUtils.MessageFilter]::Register()
+    }
 }
 
 <#
