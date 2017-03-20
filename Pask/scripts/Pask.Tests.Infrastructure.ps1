@@ -120,7 +120,7 @@ function script:New-Solution {
     $WebApplicationProjectTemplate = $DTE.Value.Solution.GetProjectTemplate("Microsoft.CSharp.ConsoleApplication", "CSharp")
     $DTE.Value.Solution.AddFromTemplate($WebApplicationProjectTemplate, "$(Join-Path $Path $Name)", $Name, $false)
     $ClassLibraryTemplate = $DTE.Value.Solution.GetProjectTemplate("Microsoft.CSharp.ClassLibrary", "CSharp")
-    $DTE.Value.Solution.AddFromTemplate($ClassLibraryTemplate, "$(Join-Path $Path "$Name.Core")", "$Name.Core", $false)
+    $DTE.Value.Solution.AddFromTemplate($ClassLibraryTemplate, "$(Join-Path $Path "$Name.Core")", "$Name.Contracts", $false)
     $SolutionFullName = Join-Path $Path "$Name.sln"
     $DTE.Value.Solution.SaveAs($SolutionFullName)
     $DTE.Value.Solution.Open($SolutionFullName)
@@ -225,4 +225,69 @@ namespace EnvDteUtils{
 "@
     Add-Type -TypeDefinition $source
     [EnvDTEUtils.MessageFilter]::Register()
+}
+
+<#
+.SYNOPSIS 
+   Allows to test a package installation by creating a solution in Visual Studio and install the package from the local feed
+
+.PARAMETER Name <string>
+   The package name
+
+.PARAMETER SolutionName <string> = Application
+   The name of the solution to be created
+
+.PARAMETER $SolutionFullPath <string> = $Env:Temp\[guid]::NewGuid()
+   The full path of the solution
+
+.PARAMETER InstallationTargetInfo <string> = 'Install in all projects'
+   Message displayed in regards to installation target
+
+.PARAMETER Assertion <scriptblock>
+   Script block to implement custom assertions
+   Useful variable to use in the script are the input parameters ($Name, $SolutionName, $SolutionFullPath) and the solution $DTE 
+   
+.OUTPUTS
+   Installation instructions and result to the console
+
+.EXAMPLE
+   Test-PackageInstallation -Name Pask.MyExtension -SolutionName MyApplication - Assertion { Assert (Test-Path (Join-Path $SolutionFullPath "MyFile.txt")) }
+#>
+function script:Test-PackageInstallation {
+    param(
+        [string]$Name = "Pask", 
+        [string]$SolutionName = "Application", 
+        [string]$SolutionFullPath = (Join-Path $Env:Temp ([guid]::NewGuid())),
+        [string]$InstallationTargetInfo = "Install in all projects",
+        [scriptblock]$Assertion = {}
+    )
+
+    # Arrange
+        $SolutionFullName = Join-Path $SolutionFullPath "$SolutionName.sln"
+        Write-Host "Loading Visual Studio 2015 ..."
+        $DTE = New-Object -ComObject "VisualStudio.DTE.14.0"
+ 
+        try {
+            New-Solution ([ref]$DTE) "$SolutionFullPath" $SolutionName
+            Write-Host "Manual steps:"
+            Write-Host "  1 Install the package in Visual Studio via NuGet Package Manager"
+            Write-Host "    - Select the " -NoNewline; Write-Host "Local" -ForegroundColor Yellow -NoNewline; Write-Host " NuGet feed"
+            Write-Host "    - Search " -NoNewline; Write-Host $Name -ForegroundColor Yellow -NoNewline; Write-Host " package"
+            Write-Host "    - $InstallationTargetInfo"
+            Write-Host "  2 Continue for validation"
+
+    # Act
+            Write-Host "Press 'C' to continue ..."
+	        do { $Key = [Console]::ReadKey($true).Key } until ($Key -eq "C")
+            $DTE.Solution.SaveAs($SolutionFullName)
+    # Assert
+            & $Assertion
+            Write-Host " [+] package installation succeeded" -ForegroundColor Green
+        } catch {
+            $dte.Quit()
+            throw
+        }
+    
+    # Teardown
+        $dte.Quit()
 }

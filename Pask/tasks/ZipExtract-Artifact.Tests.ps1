@@ -14,9 +14,11 @@ Describe "ZipExtract-Artifact" {
     }
 
     Context "Zip and extract an artifact" {
-        # Act
-        Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
-        Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact
+        BeforeAll {
+            # Act
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
+            Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact
+        }
 
         It "extracts the artifact's assembly" {
             Join-Path $TestSolutionFullPath ".build\output\ClassLibrary\ClassLibrary.dll" | Should Exist
@@ -29,9 +31,11 @@ Describe "ZipExtract-Artifact" {
     }
 
     Context "Zip an artifact and extract filtered files" {
-        # Act
-        Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
-        Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact -FileNameToExtract @("TextFile2.txt")
+        BeforeAll {
+            # Act
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
+            Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact -FileNameToExtract @("TextFile2.txt")
+        }
 
         It "extracts the filtered files" {
             Join-Path $TestSolutionFullPath ".build\output\ClassLibrary\Content\TextFile2.txt" | Should Exist

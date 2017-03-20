@@ -9,8 +9,10 @@ Describe "Build" {
     }
 
     Context "Build and artifact a class library solution with default configuration and platform" {
-        # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionName ClassLibrary -Task Clean, Build, New-Artifact
+        BeforeAll {
+            # Act
+            Invoke-Pask $TestSolutionFullPath -SolutionName ClassLibrary -Task Clean, Build, New-Artifact
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Debug\ClassLibrary.dll" | Should Exist
@@ -34,8 +36,10 @@ Describe "Build" {
     }
 
     Context "Build and artifact a class library project only with custom configuration" {
-        # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionName ClassLibrary -Task Clean, Build, New-Artifact -BuildProjectOnly $true -BuildConfiguration Release
+        BeforeAll {
+            # Act
+            Invoke-Pask $TestSolutionFullPath -SolutionName ClassLibrary -Task Clean, Build, New-Artifact -BuildProjectOnly $true -BuildConfiguration Release
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Release\ClassLibrary.dll" | Should Exist
@@ -59,8 +63,10 @@ Describe "Build" {
     }
 
     Context "Build and artifact a console application solution with custom configuration and platform" {
-        # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionName ConsoleApplication -Task Clean, Build, New-Artifact -BuildConfiguration Release -BuildPlatform x86
+        BeforeAll {
+            # Act
+            Invoke-Pask $TestSolutionFullPath -SolutionName ConsoleApplication -Task Clean, Build, New-Artifact -BuildConfiguration Release -BuildPlatform x86
+        }
 
         It "builds the console application executable" {
             Join-Path $TestSolutionFullPath "ConsoleApplication\bin\x86\Release\ConsoleApplication.exe" | Should Exist

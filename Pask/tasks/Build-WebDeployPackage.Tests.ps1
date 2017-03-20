@@ -9,8 +9,10 @@ Describe "Build-WebDeployPackage" {
     }
 
     Context "Build and artifact a web deployment package with default configuration and platform" {
-        # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact
+        BeforeAll {
+            # Act
+            Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -43,8 +45,10 @@ Describe "Build-WebDeployPackage" {
     }
 
     Context "Build and artifact a web deployment package from project only with default configuration and platform" {
-        # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact -BuildProjectOnly $true
+        BeforeAll {
+            # Act
+            Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact -BuildProjectOnly $true
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist
@@ -77,8 +81,10 @@ Describe "Build-WebDeployPackage" {
     }
 
     Context "Build and artifact a web deployment package with custom configuration and platform" {
-        # Act
-        Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact -BuildConfiguration Release -BuildPlatform x64
+        BeforeAll {
+            # Act
+            Invoke-Pask $TestSolutionFullPath -Task Restore-NuGetPackages, Clean, Build-WebDeployPackage, New-Artifact -BuildConfiguration Release -BuildPlatform x64
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "WebApplication\bin\WebApplication.dll" | Should Exist

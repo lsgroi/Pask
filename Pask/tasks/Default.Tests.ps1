@@ -10,11 +10,13 @@ Describe "Default" {
     }
 
     Context "Invoke the default task within the default solution" {
-        # Arrange
-        Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+        BeforeAll {
+            # Arrange
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
 
-        # Act
-        Invoke-Pask $TestSolutionFullPath
+            # Act
+            Invoke-Pask $TestSolutionFullPath
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Debug\ClassLibrary.dll" | Should Exist
@@ -30,11 +32,13 @@ Describe "Default" {
     }
 
     Context "Invoke the default task within a custom solution" {
-        # Arrange
-        Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+        BeforeAll {
+            # Arrange
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
 
-        # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionName "ClassLibrary.Other"
+            # Act
+            Invoke-Pask $TestSolutionFullPath -SolutionName "ClassLibrary.Other"
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary.Other\bin\Debug\ClassLibrary.Other.dll" | Should Exist
@@ -46,11 +50,13 @@ Describe "Default" {
     }
 
     Context "Invoke the default task within the default solution in a specific path" {
-        # Arrange
-        Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+        BeforeAll {
+            # Arrange
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
 
-        # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionFilePath "Solutions"
+            # Act
+            Invoke-Pask $TestSolutionFullPath -SolutionFilePath "Solutions"
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin\Debug\ClassLibrary.dll" | Should Exist
@@ -62,11 +68,13 @@ Describe "Default" {
     }
 
     Context "Invoke the default task within a custom solution in a specific path" {
-        # Arrange
-        Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+        BeforeAll {
+            # Arrange
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
 
-        # Act
-        Invoke-Pask $TestSolutionFullPath -SolutionFilePath "Solutions" -SolutionName "ClassLibrary.Other.Solution"
+            # Act
+            Invoke-Pask $TestSolutionFullPath -SolutionFilePath "Solutions" -SolutionName "ClassLibrary.Other.Solution"
+        }
 
         It "builds the default project" {
             Join-Path $TestSolutionFullPath "ClassLibrary.Other\bin\Debug\ClassLibrary.Other.dll" | Should Exist

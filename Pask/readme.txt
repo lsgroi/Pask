@@ -1,6 +1,10 @@
 Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
+Version 0.13.0
+-------------------------------------------------------------------------------------
+- Expose the ability to test a package installation
+
 Version 0.12.0
 -------------------------------------------------------------------------------------
 - Automatically add scripts and tasks to solution during installation

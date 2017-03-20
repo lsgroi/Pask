@@ -53,6 +53,7 @@ using System.Runtime.InteropServices;
                 InformationalVersion = "3.2.1"
             }
 
+            # Act
             Invoke-Pask $TestSolutionFullPath -Task Clean, Version-Assemblies, Build -Version ($StubVersion) -ExcludeAssemblyInfo @("Tests\ClassLibrary.IntegrationTests\Properties\AssemblyInfo.cs")
         }
 
