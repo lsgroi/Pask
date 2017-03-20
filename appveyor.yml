@@ -4,6 +4,8 @@
   branches:
     only:
       - master
+  init:
+    - git config --global core.autocrlf true
   skip_tags: true
   version: '{build}'
   environment:
@@ -22,6 +24,8 @@
   branches:
     except:
       - master
+  init:
+    - git config --global core.autocrlf true
   skip_tags: true
   version: '{build}'
   build_script:
