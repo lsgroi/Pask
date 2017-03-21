@@ -29,6 +29,7 @@
   <ItemGroup>
     <Folder Include="init\" />
     <Folder Include="init\.build\" />
+    <Folder Include="init\.nuget\" />
     <Folder Include="scripts\" />
     <Folder Include="tasks\" />
     <Folder Include="tools\" />
@@ -43,9 +44,7 @@
     <Compile Include="..\Pask.ps1">
       <Link>init\Pask.ps1</Link>
     </Compile>
-    <Compile Include="init\.build\.gitignore" />
     <Compile Include="init\.build\build.ps1" />
-    <Compile Include="init\go.bat" />
     <Compile Include="packages.config" />
     <Compile Include="Pask.nuspec" />
     <Compile Include="readme.txt" />
@@ -75,6 +74,17 @@
     <Compile Include="tasks\ZipExtract-Artifact.Tests.ps1" />
     <Compile Include="tools\Init.ps1" />
     <Compile Include="version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\.build\.gitignore">
+      <Link>init\.build\.gitignore</Link>
+    </Content>
+    <Content Include="..\.nuget\.gitignore">
+      <Link>init\.nuget\.gitignore</Link>
+    </Content>
+    <Content Include="..\go.bat">
+      <Link>init\go.bat</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="Build" />
