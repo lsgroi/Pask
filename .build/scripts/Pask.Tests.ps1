@@ -437,7 +437,7 @@ Describe "Refresh-Properties" {
 }
 
 Describe "New-Directory" {    
-    Context "Directory does not already exist" {
+    Context "Non existent directory" {
         BeforeAll {
             # Arrange
             $Path = Join-Path $TestDrive "dir"
@@ -455,7 +455,25 @@ Describe "New-Directory" {
         }
     }
 
-    Context "Directory already exists" {
+    Context "Non existent directory from pipeline" {
+        BeforeAll {
+            # Arrange
+            $Path = Join-Path $TestDrive "dir"
+
+            # Act
+            $Result = $Path | New-Directory
+        }
+
+        It "the directory is created" {
+            $Path | Should Exist
+        }
+
+        It "the directory is returned" {
+            $Result.FullName | Should Be $Path
+        }
+    }
+
+    Context "Exisiting directory" {
         BeforeAll {
             # Arrange
             $Path = Join-Path $TestDrive "dir"
@@ -473,6 +491,100 @@ Describe "New-Directory" {
             $Result.FullName | Should Be $Path
         }
     }
+
+    Context "Exisiting directory from pipeline" {
+        BeforeAll {
+            # Arrange
+            $Path = Join-Path $TestDrive "dir"
+            New-Item -Path "$Path" -ItemType Directory
+        
+            # Act
+            $Result = $Path | New-Directory
+        }
+
+        It "the directory is created" {
+            $Path | Should Exist
+        }
+
+        It "the directory is returned" {
+            $Result.FullName | Should Be $Path
+        }
+    }
+
+    Context "Three non existing directories from pipeline" {
+        BeforeAll {
+            # Arrange
+            $Path1 = Join-Path $TestDrive "dir1"
+            $Path2 = Join-Path $TestDrive "dir2"
+            $Path3 = Join-Path $TestDrive "dir3"
+
+            # Act
+            $Result = $Path1, $Path2, $Path3 | New-Directory
+        }
+
+        It "the first directory is created" {
+            $Path1 | Should Exist
+        }
+
+        It "the first directory is returned" {
+            $Result[0].FullName | Should Be $Path1
+        }
+
+        It "the second directory is created" {
+            $Path2 | Should Exist
+        }
+
+        It "the second directory is returned" {
+            $Result[1].FullName | Should Be $Path2
+        }
+
+        It "the third directory is created" {
+            $Path3 | Should Exist
+        }
+
+        It "the third directory is returned" {
+            $Result[2].FullName | Should Be $Path3
+        }
+    }
+
+    Context "Three exisitng directories from pipeline" {
+        BeforeAll {
+            # Arrange
+            $Path1 = Join-Path $TestDrive "dir1"
+            $Path2 = Join-Path $TestDrive "dir2"
+            $Path3 = Join-Path $TestDrive "dir3"
+            New-Item -Path "$Path1" -ItemType Directory
+            New-Item -Path "$Path2" -ItemType Directory
+            New-Item -Path "$Path3" -ItemType Directory
+
+            # Act
+            $Result = $Path1, $Path2, $Path3 | New-Directory
+        }
+
+        It "the first directory is created" {
+            $Path1 | Should Exist
+        }
+
+        It "the first directory is returned" {
+            $Result[0].FullName | Should Be $Path1
+        }
+
+        It "the second directory is created" {
+            $Path2 | Should Exist
+        }
+
+        It "the second directory is returned" {
+            $Result[1].FullName | Should Be $Path2
+        }
+
+        It "the third directory is created" {
+            $Path3 | Should Exist
+        }
+
+        It "the third directory is returned" {
+            $Result[2].FullName | Should Be $Path3
+        }
+    }
 }
 
 Describe "Remove-ItemSilently" {
@@ -488,6 +600,33 @@ Describe "Remove-ItemSilently" {
 
         It "the item is removed" {
             $Item | Should Not Exist
+        }
+    }
+
+    Context "Remove three existing items from pipeline" {
+        BeforeAll {
+            # Arrange
+            $Item1 = Join-Path $TestDrive "item1"
+            $Item2 = Join-Path $TestDrive "item2"
+            $Item3 = Join-Path $TestDrive "item3"
+            New-Item -Path "$Item1" -ItemType Directory
+            New-Item -Path "$Item2" -ItemType Directory
+            New-Item -Path "$Item3" -ItemType Directory
+
+            # Act
+            $Item1, $Item2, $Item3 | Remove-ItemSilently
+        }
+
+        It "the first item is removed" {
+            $Item1 | Should Not Exist
+        }
+
+        It "the second item is removed" {
+            $Item2 | Should Not Exist
+        }
+
+        It "the third item is removed" {
+            $Item3 | Should Not Exist
         }
     }
 

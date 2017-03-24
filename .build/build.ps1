@@ -69,7 +69,7 @@ Task Push-Local {
     
     $Packages = Get-ChildItem (Join-Path $BuildOutputFullPath "*") -Include *.nupkg
 
-	New-Directory $LocalNuGetFeed | Out-Null
+	New-Directory $LocalNuGetSource | Out-Null
 
-	Exec { Push-Package -Packages $Packages -Source "$LocalNuGetFeed" }
+	Exec { Push-Package -Packages $Packages -Source "$LocalNuGetSource" }
 }

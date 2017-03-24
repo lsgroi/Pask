@@ -1,6 +1,13 @@
 Pask - Modular build automation for .NET
 https://github.com/lsgroi/Pask/wiki
 
+
+Version 0.15.0
+-------------------------------------------------------------------------------------
+- Modify local NuGet feed
+- Improve functions New-Directory and Remove-ItemSilently to take an array of items
+  and take parameters from pipeline
+
 Version 0.14.0
 -------------------------------------------------------------------------------------
 - Explicitly ignore NuGet.exe so the latest version is always used

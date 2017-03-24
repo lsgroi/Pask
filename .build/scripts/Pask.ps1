@@ -124,19 +124,33 @@ Set-Alias Refresh-Properties Refresh-BuildProperties -Scope Script
 .SYNOPSIS 
    Creates a new directory, if not found
 
-.PARAMETER Path <string>
+.PARAMETER Path <string[]>
    Absolute or relative path
 
 .OUTPUTS <System.IO.DirectoryInfo>
    The directory
 #>
 function script:New-Directory {
-    param([string]$Path)
+    param([parameter(Mandatory=$true,ValueFromPipeline=$true)][string[]]$Path)
 
-    if (-not (Test-Path "$Path")) { 
-        New-Item -ItemType Directory -Path "$Path" -Force
-    } else {
-        Get-Item -Path "$Path"
+    Begin {
+        $private:Result = @() 
+    }
+
+    Process {
+        if (-not (Test-Path "$Path")) { 
+            $Result += New-Item -ItemType Directory -Path "$Path" -Force
+        } else {
+            $Result += Get-Item -Path "$Path"
+        }
+    }
+
+    End { 
+        if ($Result.Count -eq 1) { 
+            $Result[0] 
+        } else { 
+            $Result 
+        } 
     }
 }
 
@@ -144,22 +158,28 @@ function script:New-Directory {
 .SYNOPSIS 
    Silently remove an item (no output)
 
-.PARAMETER Item <string>
+.PARAMETER Item <string[]>
    Wildcards are permitted
 
 .OUTPUTS
    None
 #> 
 function script:Remove-ItemSilently {
-    param([parameter(ValueFromPipeline)][string]$Item)
+    param([parameter(Mandatory=$true,ValueFromPipeline=$true)][string[]]$Item)
 
-    Remove-Item -Path "$Item" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+    Begin { }
 
-    # Ensure removal of directories exceeding the 260 characters limit
-    Get-ChildItem -Directory -Path "$Item" -Recurse `
-        | Sort -Descending @{Expression = {$_.FullName.Length}} `
-        | Select -ExpandProperty FullName `
-        | ForEach { CMD /C "RD /S /Q ""$($_)""" }
+    Process {
+        Remove-Item -Path "$Item" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+
+        # Ensure removal of directories exceeding the 260 characters limit
+        Get-ChildItem -Directory -Path "$Item" -Recurse `
+            | Sort -Descending @{Expression = {$_.FullName.Length}} `
+            | Select -ExpandProperty FullName `
+            | ForEach { CMD /C "RD /S /Q ""$($_)""" }
+    }
+
+    End { }
 }
 
 <#

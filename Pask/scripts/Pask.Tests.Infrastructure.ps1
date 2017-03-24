@@ -107,7 +107,7 @@ function script:New-Solution {
     }
 
     # Create a NuGet.config defining the local NuGet feed
-    $NuGetConfig = "<?xml version=""1.0"" encoding=""utf-8""?><configuration><packageSources><add key=""Local"" value=""$LocalNuGetFeed"" /></packageSources></configuration>"
+    $NuGetConfig = "<?xml version=""1.0"" encoding=""utf-8""?><configuration><packageSources><add key=""Local"" value=""$LocalNuGetSource"" /></packageSources></configuration>"
     Set-Content -Path (Join-Path $Path "NuGet.config") -Value $NuGetConfig -Force
 
     # Create a NuGet.targets
