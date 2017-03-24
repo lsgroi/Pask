@@ -257,8 +257,6 @@ if ($Package -ne $null) {
     # Add solution tasks
     Get-ChildItem -Path $TasksFullPath -Filter *.ps1 | Foreach { Add-FileToSolutionFolder $_.FullName $TasksSolutionFolder }
 
+    # Save the solution
     $Solution.SaveAs($Solution.FullName)
-
-    # Open the readme.txt
-    $Window = $dte.ItemOperations.OpenFile($(Join-Path $InstallPath "readme.txt"))
 }
