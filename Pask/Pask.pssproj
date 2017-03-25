@@ -47,7 +47,6 @@
     <Compile Include="init\.build\build.ps1" />
     <Compile Include="packages.config" />
     <Compile Include="Pask.nuspec" />
-    <Compile Include="readme.txt" />
     <Compile Include="scripts\Pask.Tests.Infrastructure.ps1" />
     <Compile Include="scripts\Properties.MSBuild.ps1" />
     <Compile Include="scripts\Properties.ps1" />

@@ -124,6 +124,7 @@ function script:New-Solution {
     $SolutionFullName = Join-Path $Path "$Name.sln"
     $DTE.Value.Solution.SaveAs($SolutionFullName)
     $DTE.Value.Solution.Open($SolutionFullName)
+    $DTE.Value.ActiveDocument.Close()
     try {
         $DTE.Value.MainWindow | % { $_.GetType().InvokeMember("Visible", [System.Reflection.BindingFlags]::SetProperty, $null, $_, $true) }
         $DTE.Value.MainWindow | % { $_.GetType().InvokeMember("SetFocus", [System.Reflection.BindingFlags]::InvokeMethod, $null, $_, $null) }
