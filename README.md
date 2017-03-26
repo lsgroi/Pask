@@ -5,7 +5,7 @@ Task-oriented PowerShell build automation for .NET based on a set of conventions
 It leverages [Invoke-Build](https://github.com/nightroman/Invoke-Build) and it consists of a set of predefined tasks and the ability to create custom ones.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/dnd8oe7sct40a39d?svg=true)](https://ci.appveyor.com/project/LucaSgroi/Pask)
-[![NuGet version](https://img.shields.io/nuget/v/pask.svg)](https://www.nuget.org/packages/Pask)
+[![NuGet version](https://img.shields.io/nuget/v/Pask.svg)](https://www.nuget.org/packages/Pask)
 
 ## Getting Started
 Pask is shipped as NuGet package and it should be installed via NuGet Package Manager in Visual Studio 2015.  
