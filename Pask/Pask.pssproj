@@ -57,6 +57,7 @@
     <Compile Include="tasks\Build-WebDeployPackage.ps1" />
     <Compile Include="tasks\Build-WebDeployPackage.Tests.ps1" />
     <Compile Include="tasks\Build.ps1" />
+    <Compile Include="tasks\Parallel.Tests.ps1" />
     <Compile Include="tasks\Build.Tests.ps1" />
     <Compile Include="tasks\Clean.ps1" />
     <Compile Include="tasks\Clean.Tests.ps1" />

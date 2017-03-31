@@ -2,7 +2,7 @@
 .SYNOPSIS 
     Removes a build property
 
-.PARAMETER NAme <string>
+.PARAMETER Name <string[]>
     The build property's name
 
 .OUTPUTS
@@ -11,7 +11,7 @@
 function script:Remove-BuildProperty {
     param([Parameter(Mandatory=$true)][string[]]$Name)
 
-    $Name | ForEach { 
+    $Name | ForEach {
         Remove-Variable -Name $_ -Scope Script -Force
         ${!BuildProperties!}.Remove($_)
         ${script:!BuildProperties!} = ${!BuildProperties!}
@@ -20,9 +20,28 @@ function script:Remove-BuildProperty {
 
 <#
 .SYNOPSIS 
+    Removes a cache entry
+
+.PARAMETER Key <string[]>
+    The cache key
+
+.OUTPUTS
+    None
+#>
+function script:Remove-PaskCache {
+    param([Parameter(Mandatory=$true)][string[]]$Key)
+
+    $Key | ForEach {
+        ${!PaskCache!}.Remove($_)
+        ${script:!PaskCache!} = ${!PaskCache!}
+    }
+}
+
+<#
+.SYNOPSIS 
     Marks a file as imported
 
-.PARAMETER FullName <string>
+.PARAMETER FullName <string[]>
     The file full name
 
 .OUTPUTS
@@ -41,7 +60,7 @@ function script:Add-File {
 .SYNOPSIS 
     Removes an imported file
 
-.PARAMETER FullName <string>
+.PARAMETER FullName <string[]>
     The file full name
 
 .OUTPUTS

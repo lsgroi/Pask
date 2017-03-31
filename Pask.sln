@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{084A43
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{416DB2AE-FB67-4D78-A02F-C81EB4E1A912}"
 	ProjectSection(SolutionItems) = preProject
-		.build\tasks\SimultaneousTask1.ps1 = .build\tasks\SimultaneousTask1.ps1
-		.build\tasks\SimultaneousTask2.ps1 = .build\tasks\SimultaneousTask2.ps1
 		.build\tasks\Test-PackageInstallation.ps1 = .build\tasks\Test-PackageInstallation.ps1
 	EndProjectSection
 EndProject

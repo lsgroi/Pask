@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "ClassLibrary\ClassLibrary.csproj", "{55B7998F-1154-4D88-BCC1-EAD99A252146}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{47E7486C-74CC-4781-BBEC-37B73DB0C11E}"
+	ProjectSection(SolutionItems) = preProject
+		.build\build.ps1 = .build\build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tasks", "tasks", "{AB16CA3D-AD0C-49A0-B35C-A8A3AE5A70E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{F09C5E3C-2B57-4ED3-A400-9860764E3413}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary.Tests", "ClassLibrary.Tests\ClassLibrary.Tests.csproj", "{5BCDD7C0-6D53-4C2E-827E-45DA012E2894}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55B7998F-1154-4D88-BCC1-EAD99A252146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55B7998F-1154-4D88-BCC1-EAD99A252146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55B7998F-1154-4D88-BCC1-EAD99A252146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55B7998F-1154-4D88-BCC1-EAD99A252146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BCDD7C0-6D53-4C2E-827E-45DA012E2894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCDD7C0-6D53-4C2E-827E-45DA012E2894}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCDD7C0-6D53-4C2E-827E-45DA012E2894}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCDD7C0-6D53-4C2E-827E-45DA012E2894}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AB16CA3D-AD0C-49A0-B35C-A8A3AE5A70E6} = {47E7486C-74CC-4781-BBEC-37B73DB0C11E}
+		{F09C5E3C-2B57-4ED3-A400-9860764E3413} = {47E7486C-74CC-4781-BBEC-37B73DB0C11E}
+	EndGlobalSection
+EndGlobal

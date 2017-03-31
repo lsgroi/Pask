@@ -436,6 +436,53 @@ Describe "Refresh-Properties" {
     }
 }
 
+Describe "Pask-Cache" {
+    BeforeAll {
+        # Arrange
+        $Key = [System.IO.Path]::GetRandomFileName()
+
+        # Act
+        Pask-Cache $Key -Value "cache-value"
+    }
+
+    AfterAll {
+        # Cleanup
+        Remove-PaskCache $Key
+    }
+
+    Context "Get all cache entries" {
+        BeforeAll {
+            # Arrange
+            $Key2 = [System.IO.Path]::GetRandomFileName()
+            Pask-Cache $Key2 -Value "another-cache-value"
+
+            # Act
+            $Cache = Pask-Cache
+        }
+
+        It "gets known cache entries" {
+            $Cache.$Key | Should Be "cache-value"
+            $Cache.$Key2 | Should Be "another-cache-value"
+        }
+    }
+
+    Context "Get a cache entry" {
+        It "gets the cache value" {
+            Pask-Cache $Key | Should Be "cache-value"
+        }
+    }
+
+    Context "Set an existing cache entry" {
+        BeforeAll {
+            Pask-Cache $Key -Value "new-cache-value"
+        }
+
+        It "overrides the cache value" {
+            Pask-Cache $Key | Should Be "new-cache-value"
+        }
+    }
+}
+
 Describe "New-Directory" {    
     Context "Non existent directory" {
         BeforeAll {
@@ -775,11 +822,21 @@ Describe "Get-PackagesDir" {
         New-Item -Path (Join-Path $PaskFullPath ".nuget") -ItemType Directory
         $NuGet = (Join-Path $PaskFullPath ".nuget\NuGet.exe")
         Mock Get-NuGetExe { return $NuGet }
+        Mock Pask-Cache { }
     }
 
     Context "NuGet executable does not exist" {
+        BeforeAll {
+            # Act
+            $Result = Get-PackagesDir
+        }
+
         It "gets the default packages directory" {
-            Get-PackagesDir | Should Be (Join-Path $TestDrive "solution directory\packages")
+            $Result | Should Be (Join-Path $TestDrive "solution directory\packages")
+        }
+
+        It "caches the packages directory" {
+            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq (Join-Path $TestDrive "solution directory\packages") }
         }
     }
 
@@ -788,10 +845,17 @@ Describe "Get-PackagesDir" {
             # Arrange
             Set-Content -Path $NuGet -Value "" -Force
             Mock Invoke-Command { return "WARNING: Key 'repositoryPath' not found." }
+
+            # Act
+            $Result = Get-PackagesDir
         }
 
         It "gets the default packages directory" {
-            Get-PackagesDir | Should Be (Join-Path $TestDrive "solution directory\packages")
+            $Result | Should Be (Join-Path $TestDrive "solution directory\packages")
+        }
+
+        It "caches the packages directory" {
+            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq (Join-Path $TestDrive "solution directory\packages") }
         }
     }
 
@@ -801,10 +865,35 @@ Describe "Get-PackagesDir" {
             Set-Content -Path $NuGet -Value "" -Force
             $repositoryPath = (Join-Path $TestDrive "custom packages directory")
             Mock Invoke-Command { return $repositoryPath }
+
+            # Act
+            $Result = Get-PackagesDir
         }
 
         It "gets the custom packages directory" {
-            Get-PackagesDir | Should Be $repositoryPath
+            $Result | Should Be $repositoryPath
+        }
+
+        It "caches the packages directory" {
+            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq $repositoryPath }
+        }
+    }
+
+    Context "From the cache" {
+        BeforeAll {
+            # Arrange
+            Mock Pask-Cache { return "packages_dir" } -ParameterFilter { $key -eq "Get-PackagesDir" }
+
+            # Act
+            $Result = Get-PackagesDir
+        }
+
+        It "gets the cached packages directory" {
+            $Result | Should Be "packages_dir"
+        }
+
+        It "does not cache the packages directory" {
+            Assert-MockCalled Pask-Cache 0  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq "packages_dir" }
         }
     }
 }
@@ -2528,31 +2617,6 @@ Describe "Get-ProjectSemanticVersion" {
 
         It "returns the version" {
             Get-ProjectSemanticVersion | Should Be "1.2.0"
-        }
-    }
-}
-
-Describe "Jobs" {
-    Context "Invoke two simultaneous tasks" {
-        BeforeAll {
-            # Arrange
-            Set-BuildProperty -Name InputProperty1 -Value "value of InputProperty1"
-
-            # Act
-            Jobs -Task SimultaneousTask1, SimultaneousTask2 -InputProperty2 "value of InputProperty2" -Result Result
-        }
-
-        It "invokes the first task without errors" {
-            $Result.Tasks | Where { $_.Name -eq "SimultaneousTask1" } | Select -ExpandProperty Error | Should BeNullOrEmpty
-        }
-
-        It "invokes the second task without errors" {
-            $Result.Tasks | Where { $_.Name -eq "SimultaneousTask2" } | Select -ExpandProperty Error | Should BeNullOrEmpty
-        }
-
-        AfterAll {
-            # Cleanup
-            Remove-BuildProperty -Name InputProperty1
         }
     }
 }

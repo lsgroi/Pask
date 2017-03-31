@@ -48,15 +48,24 @@ param(
     
     # Pask specific parameters
     [string]$SolutionFilePath,
-    [string]$SolutionName = (Get-ChildItem -Path (Join-Path $PSScriptRoot $SolutionFilePath) *.sln | Sort-Object -Descending | Select-Object -First 1).BaseName,
-    [string]$ProjectName = $SolutionName,
+    [string]$SolutionName,
+    [string]$ProjectName,
     [switch]$Tree
 )
 
 $ErrorActionPreference = "Stop"
 
+# Default parameters
+$private:ScriptFullPath = if ($PSScriptRoot -ne $null) { $PSScriptRoot } else { Split-Path $MyInvocation.MyCommand.Path -Parent }
+if (-not $SolutionName) {
+    $SolutionName = (Get-ChildItem -Path (Join-Path $ScriptFullPath $SolutionFilePath) *.sln | Sort-Object -Descending | Select-Object -First 1).BaseName
+}
+if (-not $ProjectName) {
+    $ProjectName = $SolutionName
+}
+
 # Include Pask script
-$private:PaskScriptFullName = Join-Path $PSScriptRoot ".build\scripts\Pask.ps1"
+$private:PaskScriptFullName = Join-Path $ScriptFullPath ".build\scripts\Pask.ps1"
 . $PaskScriptFullName
 
 # Expose properties passed to the script
@@ -65,7 +74,7 @@ for ($i=0; $i -lt $Properties.Count; $i+=2) {
 }
 
 # Set default properties
-Set-BuildProperty -Name PaskFullPath -Value $PSScriptRoot
+Set-BuildProperty -Name PaskFullPath -Value $ScriptFullPath
 Set-BuildProperty -Name SolutionName -Value $SolutionName
 Set-BuildProperty -Name SolutionFullPath -Value (Join-Path $PaskFullPath $SolutionFilePath)
 Set-BuildProperty -Name SolutionFullName -Value (Join-Path $SolutionFullPath "$SolutionName.sln")
@@ -98,11 +107,11 @@ if ($Tree) {
     Import-Script Show-BuildTree
     Show-BuildTree -File "$($BuildScript.FullName)" -Task $Task
 } else {
-    Invoke-Build -File "$($BuildScript.FullName)" -Task $Task -Result "!BuildResult!" -Safe:$Safe -Summary:$Summary
+    Invoke-Build -File "$($BuildScript.FullName)" -Task $Task -Result "!InvokeBuildResult!" -Safe:$Safe -Summary:$Summary
     if ($Result -and $Result -is [string]) {
-        New-Variable -Name $Result -Force -Scope 1 -Value ${!BuildResult!}
+        New-Variable -Name $Result -Force -Scope 1 -Value ${!InvokeBuildResult!}
     } elseif ($Result) {
-        $Result.Value = ${!BuildResult!}
+        $Result.Value = ${!InvokeBuildResult!}
     }
 }
 Remove-Item "$($BuildScript.FullName)" -Force

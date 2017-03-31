@@ -67,13 +67,17 @@ function script:Invoke-Pask {
     $TargetPaskFullName = Join-Path $TargetPaskFullPath "Pask.ps1"
 
     if($SolutionFilePath -and $SolutionName) {
-        Exec { & $TargetPaskFullName -SolutionFilePath $SolutionFilePath -SolutionName $SolutionName -Task $Task -Properties $Properties }
+        Exec { PowerShell -Command { param($TargetPaskFullName, $SolutionFilePath, $SolutionName, $Task, $Properties)  & "$TargetPaskFullName" -SolutionFilePath $SolutionFilePath -SolutionName $SolutionName -Task $Task -Properties $Properties } `
+                          -args @($TargetPaskFullName, $SolutionFilePath, $SolutionName, $Task, $Properties) }
     } elseif ($SolutionFilePath) { 
-        Exec { & $TargetPaskFullName -SolutionFilePath $SolutionFilePath -Task $Task -Properties $Properties }
+        Exec { PowerShell -Command { param($TargetPaskFullName, $SolutionFilePath, $Task, $Properties) & "$TargetPaskFullName" -SolutionFilePath $SolutionFilePath -Task $Task -Properties $Properties } `
+                          -args @($TargetPaskFullName, $SolutionFilePath, $Task, $Properties) }
     } elseif ($SolutionName) { 
-        Exec { & $TargetPaskFullName -SolutionName $SolutionName -Task $Task -Properties $Properties }
+        Exec { PowerShell -Command { param($TargetPaskFullName, $SolutionName, $Task, $Properties) & "$TargetPaskFullName" -SolutionName $SolutionName -Task $Task -Properties $Properties } `
+                          -args @($TargetPaskFullName, $SolutionName, $Task, $Properties) }
     } else {
-        Exec { & $TargetPaskFullName -Task $Task -Properties $Properties }
+        Exec { PowerShell -Command { param($TargetPaskFullName, $Task, $Properties) & "$TargetPaskFullName" -Task $Task -Properties $Properties } `
+                          -args @($TargetPaskFullName, $Task, $Properties) }
     }
 }
 

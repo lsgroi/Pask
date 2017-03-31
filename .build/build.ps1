@@ -1,5 +1,5 @@
 Import-Script Pask.Tests.Infrastructure
-Import-Task Clean, Version-BuildServer, Test-Pester, Test-PackageInstallation, SimultaneousTask1, SimultaneousTask2
+Import-Task Clean, Version-BuildServer, Test-Pester, Test-PackageInstallation
 
 # Synopsis: Default task; pack, test and push locally
 Task . Clean, Pack-Nuspec, Test, Push-Local
