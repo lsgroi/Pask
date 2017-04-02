@@ -1,5 +1,7 @@
 Import-Script Pask.Tests.Infrastructure
-Import-Task Clean, Pack-Nuspec, Test-Pester, Push-Local, Push, Version-BuildServer, Test-PackageInstallation
+Set-Property GitHubOwner -Value "lsgroi"
+Set-Property GitHubRepo -Value $ProjectName
+Import-Task Clean, Pack-Nuspec, Test-Pester, Push-Local, Push, Version-BuildServer, Test-PackageInstallation, New-GitHubRelease
 
 Enter-Build {
     # Before the first task in the script scope, remove any Pask package fro mthe pacakges directory,
@@ -17,4 +19,4 @@ Task Test Pack-Nuspec, Test-Pester
 Task PreRelease Version-BuildServer, Clean, Pack-Nuspec, Test
 
 # Synopsis: Release the package
-Task Release Version-BuildServer, Clean, Pack-Nuspec, Test, Push
+Task Release Version-BuildServer, Clean, Pack-Nuspec, Test, Push, New-GitHubRelease

@@ -52,6 +52,8 @@
     <Compile Include="scripts\Properties.ps1" />
     <Compile Include="scripts\Properties.WebApplication.ps1" />
     <Compile Include="scripts\Show-BuildTree.ps1" />
+    <Compile Include="tasks\Result.Tests.ps1" />
+    <Compile Include="tasks\New-GitHubRelease.ps1" />
     <Compile Include="tasks\Build-WebApplication.ps1" />
     <Compile Include="tasks\Build-WebApplication.Tests.ps1" />
     <Compile Include="tasks\Build-WebDeployPackage.ps1" />

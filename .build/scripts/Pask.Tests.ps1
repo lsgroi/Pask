@@ -1687,7 +1687,7 @@ Describe "Import-Task" {
         }
 
         It "imports one file" {
-            Assert-MockCalled Import-File -ParameterFilter { $File -eq "SingleTask" -and $Path -eq "tasks" -and $Safe -eq $false }
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "SingleTask" -and $Path -eq "tasks" }
         }
     }
 
@@ -1698,7 +1698,7 @@ Describe "Import-Task" {
         }
 
         It "imports two files" {
-            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Task-1" -and $File[1] -eq "Task-2" -and $Path -eq "tasks" -and $Project -eq "Pask-CustomProject" -and $Safe -eq $false }
+            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Task-1" -and $File[1] -eq "Task-2" -and $Path -eq "tasks" -and $Project -eq "Pask-CustomProject" }
         }
     }
 
@@ -1709,7 +1709,7 @@ Describe "Import-Task" {
         }
 
         It "imports two files" {
-            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Task-1" -and $File[1] -eq "Task-2" -and $Path -eq "tasks" -and $Package -eq "Pask-CustomPackage" -and $Safe -eq $false }
+            Assert-MockCalled Import-File -ParameterFilter { $File.Count -eq 2 -and $File[0] -eq "Task-1" -and $File[1] -eq "Task-2" -and $Path -eq "tasks" -and $Package -eq "Pask-CustomPackage" }
         }
     }
 
@@ -1720,7 +1720,7 @@ Describe "Import-Task" {
         }
 
         It "imports two files" {
-            Assert-MockCalled Import-File -ParameterFilter { $File -eq "Task-Custom" -and $Path -eq "tasks" -and $Project -eq "Pask-CustomProject" -and $Package -eq "Pask-CustomPackage" -and $Safe -eq $false }
+            Assert-MockCalled Import-File -ParameterFilter { $File -eq "Task-Custom" -and $Path -eq "tasks" -and $Project -eq "Pask-CustomProject" -and $Package -eq "Pask-CustomPackage" }
         }
     }
 
@@ -2144,6 +2144,7 @@ Describe "Set-Project" {
         $OriginalProjectName = $ProjectName
         $OriginalProjectFullPath = $ProjectFullPath
         $OriginalProjectFullName = $ProjectFullName
+        $OriginalArtifactName = $ArtifactName
         $OriginalArtifactFullPath = $ArtifactFullPath
         $BuildOutputFullPath = Join-Path $TestDrive "output"
         Mock Get-SolutionProjects { 
@@ -2161,6 +2162,7 @@ Describe "Set-Project" {
         BeforeAll {
             # Arrange
             Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project1/Project1.csproj") }
+            Set-BuildProperty -Name ArtifactName -Value $null
 
             # Act
             Set-Project -Name Foo
@@ -2178,6 +2180,10 @@ Describe "Set-Project" {
             $ProjectFullName | Should Be (Join-Path $TestDrive "Project1/Project1.csproj")
         }
 
+        It "should define the artifact name" {
+            $ArtifactName | Should Be "Project1"
+        }
+
         It "should define the artifact full path" {
             $ArtifactFullPath | Should Be (Join-Path (Join-Path $TestDrive "output") "Project1")
         }
@@ -2191,6 +2197,7 @@ Describe "Set-Project" {
         BeforeAll {
             # Arrange
             Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project2/Project2.csproj") }
+            Set-BuildProperty -Name ArtifactName -Value $null
 
             # Act
             Set-Project -Name Project2
@@ -2208,6 +2215,10 @@ Describe "Set-Project" {
             $ProjectFullName | Should Be (Join-Path $TestDrive "Project2/Project2.csproj")
         }
 
+        It "should define the artifact name" {
+            $ArtifactName | Should Be "Project2"
+        }
+
         It "should define the artifact full path" {
             $ArtifactFullPath | Should Be (Join-Path (Join-Path $TestDrive "output") "Project2")
         }
@@ -2217,11 +2228,32 @@ Describe "Set-Project" {
         }
     }
 
+    Context "Custom artifact name" {
+        BeforeAll {
+            # Arrange
+            Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project1/Project1.csproj") }
+            Set-BuildProperty -Name ArtifactName -Value $null
+            $ArtifactName = "OtherProject"
+
+            # Act
+            Set-Project -Name Foo
+        }
+
+        It "should define the artifact name" {
+            $ArtifactName | Should Be "OtherProject"
+        }
+
+        It "should define the artifact full path" {
+            $ArtifactFullPath | Should Be (Join-Path (Join-Path $TestDrive "output") "OtherProject")
+        }
+    }
+
     AfterAll {
         # Cleanup
         Set-BuildProperty -Name ProjectName -Value $OriginalProjectName
         Set-BuildProperty -Name ProjectFullPath -Value $OriginalProjectFullPath
         Set-BuildProperty -Name ProjectFullName -Value $OriginalProjectFullName
+        Set-BuildProperty -Name ArtifactName -Value $OriginalArtifactName
         Set-BuildProperty -Name ArtifactFullPath -Value $OriginalArtifactFullPath
     }
 }

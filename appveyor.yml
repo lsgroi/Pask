@@ -11,6 +11,8 @@
   environment:
     NuGetApiKey:
       secure: zA+kpGYRXyC/b/zfaoeGec4jTl+Ahc6hLbIeOoZL2hPjp/3M5jPhyD8awfjU5s+6
+    GitHubToken:
+      secure: I74wB8tW0coqem3AUmm4Vlo0GZjcm7wq0+yLC9NygN+HDHwBUNWNuhg94hZz3IKl
   build_script:
     - ps: .\Pask.ps1 Release
   artifacts:

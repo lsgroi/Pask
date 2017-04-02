@@ -6,18 +6,16 @@ Describe "ZipExtract-Artifact" {
         # Arrange
         $TestSolutionFullPath = Join-Path $Here "ZipExtract-Artifact"
         Install-Pask -SolutionFullPath $TestSolutionFullPath
-        Invoke-Pask $TestSolutionFullPath -Task Clean, Build, New-Artifact, Zip-Artifact
-    }
-
-    It "creates the zip artifact" {
-        Join-Path $TestSolutionFullPath ".build\output\ClassLibrary.*.zip" | Should Exist
     }
 
     Context "Zip and extract an artifact" {
         BeforeAll {
             # Act
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
-            Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact
+            Invoke-Pask $TestSolutionFullPath -Task Clean, Build, New-Artifact, Zip-Artifact, Extract-Artifact
+        }
+
+        It "creates the zip artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\ClassLibrary.*.zip" | Should Exist
         }
 
         It "extracts the artifact's assembly" {
@@ -30,11 +28,36 @@ Describe "ZipExtract-Artifact" {
         }
     }
 
+    Context "Extract an artifact with custom name" {
+        BeforeAll {
+            # Arrange
+            Invoke-Pask $TestSolutionFullPath -Task Clean, Build, New-Artifact, Zip-Artifact
+            Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
+            $ZipArtifact = Get-ChildItem -Path (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary.*.zip")
+            Rename-Item -Path $ZipArtifact.FullName -NewName ($ZipArtifact.Name -replace "ClassLibrary", "NewClassLibrary")
+            
+            # Act
+            Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact -ArtifactName "NewClassLibrary"
+        }
+
+        It "extracts the artifact's assembly" {
+            Join-Path $TestSolutionFullPath ".build\output\NewClassLibrary\ClassLibrary.dll" | Should Exist
+        }
+
+        It "extracts the artifact's content" {
+            Join-Path $TestSolutionFullPath ".build\output\NewClassLibrary\TextFile1.txt" | Should Exist
+            Join-Path $TestSolutionFullPath ".build\output\NewClassLibrary\Content\TextFile2.txt" | Should Exist
+        }
+    }
+
     Context "Zip an artifact and extract filtered files" {
         BeforeAll {
             # Act
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
-            Invoke-Pask $TestSolutionFullPath -Task Extract-Artifact -FileNameToExtract @("TextFile2.txt")
+            Invoke-Pask $TestSolutionFullPath -Task Clean, Build, New-Artifact, Zip-Artifact, Extract-Artifact -FileNameToExtract @("TextFile2.txt")
+        }
+
+        It "creates the zip artifact" {
+            Join-Path $TestSolutionFullPath ".build\output\ClassLibrary.*.zip" | Should Exist
         }
 
         It "extracts the filtered files" {

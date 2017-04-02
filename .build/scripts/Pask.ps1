@@ -775,7 +775,8 @@ function script:Set-Project {
     }
 
     Set-BuildProperty -Name ProjectFullName -Value (Get-ProjectFullName)
-    Set-BuildProperty -Name ArtifactFullPath -Value (Join-Path $BuildOutputFullPath $script:ProjectName)
+    Set-BuildProperty -Name ArtifactName -Default $script:ProjectName
+    Set-BuildProperty -Name ArtifactFullPath -Value { Join-Path $BuildOutputFullPath $ArtifactName }
 
     Refresh-Properties
 }
@@ -1083,6 +1084,7 @@ function script:Get-ProjectSemanticVersion {
    Invokes tasks in parallel
 
 .PARAMETER Task <string[]>
+   One or more tasks to be invoked in parallel
 
 .PARAMETER Result
    Tells to output build information using a variable.
@@ -1094,7 +1096,7 @@ function script:Get-ProjectSemanticVersion {
    Maximum overall build time in milliseconds.
 
 .PARAMETER Result
-   Maximum number of builds invoked at the same time.
+   Tells to output build information using a variable.
 
 .OUTPUTS
    Output of invoked builds and other log messages
@@ -1111,7 +1113,7 @@ function script:Jobs {
         [Parameter(ValueFromRemainingArguments=$true)]$TaskProperties
     )
 
-    # Create the list of properties for the new parallel build script
+    # Create the list of properties for the new parallel build scripts
     $Properties = Get-BuildProperties
     for ($i=0; $i -lt $TaskProperties.Count; $i+=2) {
         $Key = ($TaskProperties[$i] -replace '^-+') 
@@ -1123,8 +1125,8 @@ function script:Jobs {
         }
     }
 
-    # Create the parallel build script
-    $ParallelBuildScript = New-Item -ItemType File -Name "$([System.IO.Path]::GetRandomFileName()).ps1" -Path $Env:Temp -Value {
+    # Body of parallel build script
+    $ParallelBuildScript = {
         param(
             [Alias("Files")] $private:Files,
             [Alias("Properties")] $private:Properties=@{}
@@ -1145,8 +1147,14 @@ function script:Jobs {
         . "$(Join-Path $BuildFullPath "build.ps1")"
     }
 
-    # Invoke to parallel tasks
-    Invoke-Builds @(@{File=$ParallelBuildScript.FullName; Task=$Task; "private:Files"=(Get-Files); "private:Properties"=$Properties}) `
+    # Create the parallel builds
+    $Build = $Task | ForEach {
+        $BuildFile = New-Item -ItemType File -Name "$([System.IO.Path]::GetRandomFileName()).ps1" -Path $Env:Temp -Value $ParallelBuildScript
+        return @{File=$BuildFile.FullName; Task=$_; "private:Files"=(Get-Files); "private:Properties"=$Properties}
+    }
+
+    # Invoke the builds in parallel
+    Invoke-Builds $Build `
                   -Result "!InvokeBuildsResult!" `
                   -Timeout $Timeout `
                   -MaximumBuilds $MaximumBuilds
@@ -1158,6 +1166,6 @@ function script:Jobs {
         $Result.Value = ${!InvokeBuildsResult!}
     }
 
-    # Remove the parallel build script
-    Remove-Item "$($ParallelBuildScript.FullName)" -Force
+    # Remove the parallel build scripts
+    $Build | ForEach { Remove-Item $_.File -Force }
 }

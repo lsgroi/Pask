@@ -28,15 +28,12 @@ Task ParallelTask2 {
 }
 
 # Synopsis: Build the projects simultaneously
-Task Build-Projects {
+Task Build-Projects Clean, {
     Jobs -Task Build-ClassLibrary, Build-ClassLibraryTests -Result BuildResult
-
-    # Assert that the Clean task is invoked once
-    Equals ($BuildResult.Tasks | Where { $_.Name -eq "Clean" } | Measure | Select -ExpandProperty Count) 1
 }
 
 # Synopsis: Build ClassLibrary project only
-Task Build-ClassLibrary Clean, {
+Task Build-ClassLibrary {
     Use $MSBuildVersion MSBuild
     $Project = Join-Path $SolutionFullPath "ClassLibrary\ClassLibrary.csproj"
     "Building '$Project'`r`n"
@@ -44,7 +41,7 @@ Task Build-ClassLibrary Clean, {
 }
 
 # Synopsis: Build ClassLibrary.Tests project only
-Task Build-ClassLibraryTests Clean, {
+Task Build-ClassLibraryTests {
     Use $MSBuildVersion MSBuild
     $Project = Join-Path $SolutionFullPath "ClassLibrary.Tests\ClassLibrary.Tests.csproj"
     "Building '$Project'`r`n"
