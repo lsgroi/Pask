@@ -238,8 +238,10 @@ if ($Package -ne $null) {
     # Add .build\.gitignore
     Copy-File (Join-Path $InstallPath "init\.build\.gitignore") (Join-Path $BuildFullPath ".gitignore") -Message "Creating '.build\.gitignore'."
 
-    # Add .nuget\.gitignore
-    Copy-File (Join-Path $InstallPath "init\.nuget\.gitignore") (Join-Path $NuGetFullPath ".gitignore") -Message "Creating '.nuget\.gitignore'."
+    # Add .nuget\.gitignore (first install only)
+    if (-not (Test-Path (Join-Path $SolutionFullPath "go.bat"))) {
+        Copy-File (Join-Path $InstallPath "init\.nuget\.gitignore") (Join-Path $NuGetFullPath ".gitignore") -Message "Creating '.nuget\.gitignore'."
+    }
 
     # Add go.bat
     Copy-File (Join-Path $InstallPath "init\go.bat") (Join-Path $SolutionFullPath "go.bat") -Message "Creating 'go.bat'."
