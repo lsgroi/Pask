@@ -271,8 +271,8 @@ function script:Test-PackageInstallation {
 
     # Arrange
         $SolutionFullName = Join-Path $SolutionFullPath "$SolutionName.sln"
-        Write-Host "Loading Visual Studio 2015 ..."
-        $DTE = New-Object -ComObject "VisualStudio.DTE.14.0"
+        Write-Host "Loading Visual Studio 2017 ..."
+        $DTE = New-Object -ComObject "VisualStudio.DTE.15.0"
  
         try {
             New-Solution ([ref]$DTE) "$SolutionFullPath" $SolutionName

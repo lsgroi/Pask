@@ -14,7 +14,7 @@
         <summary>Modular task-oriented PowerShell build automation for .NET</summary>
         <description>Pask provides a set of predefined PowerShell build automation tasks for .NET and the ability to create custom ones. It relies on Invoke-Build DSL.</description>
         <tags>Invoke-Build PowerShell BuildAutomation</tags>
-        <copyright>Copyright © 2016 Luca Sgroi under the Apache License</copyright>
+        <copyright>Copyright © 2017 Luca Sgroi under the Apache License</copyright>
         <releaseNotes>https://github.com/lsgroi/Pask/releases</releaseNotes>
         <dependencies>
             <dependency id="Invoke-Build" version="3.3.2" />

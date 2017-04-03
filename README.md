@@ -8,7 +8,7 @@ It leverages [Invoke-Build](https://github.com/nightroman/Invoke-Build) and it c
 [![NuGet version](https://img.shields.io/nuget/v/Pask.svg)](https://www.nuget.org/packages/Pask)
 
 ## Getting Started
-Pask is shipped as NuGet package and it should be installed via NuGet Package Manager in Visual Studio 2015.  
+Pask is shipped as NuGet package and it should be installed via NuGet Package Manager in Visual Studio 2015/2017.  
 To run a build, open a PowerShell session and execute the build runner:
 ```
 PS C:\Path_to_your_solution> .\Pask.ps1
@@ -35,4 +35,4 @@ Pask is designed to be extended to reduce the amount of boilerplate code in your
 : Detailed documentation of conventions and patterns
 - The project was inspired by [PowerTasks](https://github.com/shaynevanasperen/PowerTasks) and [psakify](https://github.com/SeatwaveOpenSource/psakify)
 
-Pask is Copyright &copy; 2016 Luca Sgroi under the [Apache License](LICENSE.txt).
+Pask is Copyright &copy; 2017 Luca Sgroi under the [Apache License](LICENSE.txt).
