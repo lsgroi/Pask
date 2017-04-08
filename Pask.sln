@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F5034706-568F-408A-B7B3-4D38C6DB8A32}") = "Pask", "Pask\Pask.pssproj", "{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}"
 EndProject
@@ -23,8 +23,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{9CAD6729-4D84-4421-AF54-C943CB0992FF}"
 	ProjectSection(SolutionItems) = preProject
 		.build\scripts\Pask.Tests.Infrastructure.ps1 = .build\scripts\Pask.Tests.Infrastructure.ps1
-		.build\scripts\Pask.Utilities.ps1 = .build\scripts\Pask.Utilities.ps1
-		.build\scripts\Pask.Utilities.Tests.ps1 = .build\scripts\Pask.Utilities.Tests.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1CAAB678-0A58-4797-8D42-E27F05F855E7}"

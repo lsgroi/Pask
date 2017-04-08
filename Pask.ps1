@@ -81,7 +81,6 @@ Set-BuildProperty -Name SolutionFullPath -Value (Join-Path $PaskFullPath $Soluti
 Set-BuildProperty -Name SolutionFullName -Value (Join-Path $SolutionFullPath "$SolutionName.sln")
 Set-BuildProperty -Name BuildFullPath -Value (Join-Path $PaskFullPath ".build")
 Set-BuildProperty -Name BuildOutputFullPath -Value (Join-Path $BuildFullPath "output")
-Set-BuildProperty -Name TestsArtifactFullPath -Value (Join-Path $BuildOutputFullPath "Tests")
 Set-BuildProperty -Name TestsResultsFullPath -Value (Join-Path $BuildOutputFullPath "TestsResults")
 
 # Test solution existence
