@@ -54,10 +54,10 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-
-# Default parameters
 $private:CurrentLocation = Get-Location
 $private:ScriptFullPath = if ($PSScriptRoot -ne $null) { $PSScriptRoot } else { Split-Path $MyInvocation.MyCommand.Path -Parent }
+
+# Default parameters
 if (-not $SolutionName) {
     $SolutionName = (Get-ChildItem -Path (Join-Path $ScriptFullPath $SolutionFilePath) *.sln | Sort-Object -Descending | Select-Object -First 1).BaseName
 }
@@ -66,8 +66,7 @@ if (-not $ProjectName) {
 }
 
 # Include Pask script
-$private:PaskScriptFullName = Join-Path $ScriptFullPath ".build\scripts\Pask.ps1"
-. $PaskScriptFullName
+. (Join-Path $ScriptFullPath ".build\scripts\Pask.ps1")
 
 # Expose properties passed to the script
 for ($i=0; $i -lt $Properties.Count; $i+=2) {
@@ -91,8 +90,7 @@ Write-BuildMessage -Message "Restore NuGet development dependencies" -Foreground
 Restore-NuGetDevelopmentPackages
 
 # Dot source Invoke-Build
-$private:InvokeBuildScript = Join-Path (Get-PackageDir "Invoke-Build") "tools\Invoke-Build.ps1"
-. $private:InvokeBuildScript
+. (Join-Path (Get-PackageDir "Invoke-Build") "tools\Invoke-Build.ps1")
 
 # Define the default project
 Set-Project -Name $ProjectName
@@ -101,21 +99,21 @@ Set-Project -Name $ProjectName
 $private:BuildScript = New-Item -ItemType File -Name "$([System.IO.Path]::GetRandomFileName()).ps1" -Path $Env:Temp -Value {
     Import-Script Init -Safe
     Import-Properties -All
-    . "$(Join-Path $BuildFullPath "build.ps1")"
+    . (Join-Path $BuildFullPath "build.ps1")
 }
 if ($Tree) {
     Write-BuildMessage -Message "Show build task tree" -ForegroundColor "Cyan"
     Import-Script Show-BuildTree
-    Show-BuildTree -File "$($BuildScript.FullName)" -Task $private:PaskTask
+    Show-BuildTree -File $BuildScript.FullName -Task $private:PaskTask
 } else {
-    Invoke-Build -File "$($BuildScript.FullName)" -Task $private:PaskTask -Result "!InvokeBuildResult!" -Safe:$private:PaskSafe -Summary:$private:PaskSummary
+    Invoke-Build -File $BuildScript.FullName -Task $private:PaskTask -Result "!InvokeBuildResult!" -Safe:$private:PaskSafe -Summary:$private:PaskSummary
     if ($private:PaskResult -and $private:PaskResult -is [string]) {
         New-Variable -Name $private:PaskResult -Force -Scope 1 -Value ${!InvokeBuildResult!}
     } elseif ($private:PaskResult) {
         $private:PaskResult.Value = ${!InvokeBuildResult!}
     }
 }
-Remove-Item "$($BuildScript.FullName)" -Force
+Remove-Item $BuildScript.FullName -Force
 
-# Dot-sourcing Invoke-Build the current location changes to $BuildRoot
+# By dot-sourcing Invoke-Build, the current location changes to $BuildRoot
 Set-Location -Path $private:CurrentLocation.Path

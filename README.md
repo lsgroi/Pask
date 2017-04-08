@@ -29,10 +29,8 @@ It allows to catch failed builds earlier by running the same process on a CI ser
 Pask is designed to be extended to reduce the amount of boilerplate code in your build scripts by creating extensions with single responsibility.
 
 ## Resources
-- [Invoke-Build](https://github.com/nightroman/Invoke-Build/wiki)
-: Wiki, script tutorials and examples
-- [Project Wiki](https://github.com/lsgroi/Pask/wiki)
-: Detailed documentation of conventions and patterns
+- [Project Wiki](https://github.com/lsgroi/Pask/wiki): Detailed documentation of conventions and patterns
+- [Invoke-Build](https://github.com/nightroman/Invoke-Build/wiki): Wiki, script tutorials and examples
 - The project was inspired by [PowerTasks](https://github.com/shaynevanasperen/PowerTasks) and [psakify](https://github.com/SeatwaveOpenSource/psakify)
 
 Pask is Copyright &copy; 2017 Luca Sgroi under the [Apache License](LICENSE).

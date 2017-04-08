@@ -1,4 +1,4 @@
-Import-Task Version-BuildServer, Version-Assemblies, Restore-NuGetPackages, Clean, Build
+Import-Task Restore-NuGetPackages, Clean, Build, Version-BuildServer, Version-Assemblies
 
 # Synopsis: Default task
 Task . Restore-NuGetPackages, Clean, Build

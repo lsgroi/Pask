@@ -11,9 +11,9 @@ Task Version-Assemblies {
     $AssemblyInformationalVersionRegex = 'AssemblyInformationalVersion\s*\(\s*\"(.+)?"\s*\)'
 
     # Version information override for an assembly
-    $AssemblyVersion = "AssemblyVersion(""$($Version.Major).0.0.0"")"
-    $AssemblyFileVersion = "AssemblyFileVersion(""$($Version.AssemblySemVer)"")"
-    $AssemblyInformationalVersion = "AssemblyInformationalVersion(""$($Version.InformationalVersion)"")"
+    $AssemblyVersion = "AssemblyVersion(""{0}.0.0.0"")" -f $Version.Major
+    $AssemblyFileVersion = "AssemblyFileVersion(""{0}"")" -f $Version.AssemblySemVer
+    $AssemblyInformationalVersion = "AssemblyInformationalVersion(""{0}"")" -f $Version.InformationalVersion
 
     # Limit the search of AssemblyInfo files to project folder depth 2
     $Files = Get-SolutionProjects `
@@ -21,7 +21,7 @@ Task Version-Assemblies {
     | Where { $_.Name -match "AssemblyInfo.cs" } }
 
     if ($Files) {
-        "Apply $($Version.InformationalVersion) to $($Files.count) AssemblyInfo files"
+        "Apply {0} to {1} AssemblyInfo files" -f $Version.InformationalVersion, $Files.Count
 
         foreach ($File in $Files) {
             if (-not ($ExcludeAssemblyInfo | Where { $File.FullName.EndsWith($_) })) {

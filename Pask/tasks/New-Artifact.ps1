@@ -1,5 +1,6 @@
 Import-Properties -Package Pask
 Import-Script Properties.MSBuild, Properties.WebApplication -Package Pask
+
 Set-Property RemoveArtifactPDB -Default $true
 
 # Synopsis: Create the artifact by copying MSBuild output to the build output directory
@@ -19,7 +20,7 @@ Task New-Artifact {
         # Copy the zip web deployment package into the artifact directory
         Exec { Robocopy "$WebApplicationOutputFullPath" "$BuildOutputFullPath" "$ProjectName.zip" /256 /XO /NP /NFL /NDL /NJH /NJS } (0..7)
         # Rename the zip web package to include the version
-        Move-Item (Join-Path $BuildOutputFullPath "$ProjectName.zip") (Join-Path $BuildOutputFullPath "$ProjectName.$($Version.InformationalVersion).zip") -Force
+        Move-Item (Join-Path $BuildOutputFullPath "$ProjectName.zip") (Join-Path $BuildOutputFullPath ("$ProjectName.{0}.zip" -f $Version.InformationalVersion)) -Force
         # Copy the web application artifact
         Exec { Robocopy "$WebDeployPackageOutputFullPath" "$ArtifactFullPath" /256 /MIR /XO /NP /NFL /NDL /NJH /NJS } (0..7)
     } elseif (Test-Path $WebApplicationOutputFullPath) {
