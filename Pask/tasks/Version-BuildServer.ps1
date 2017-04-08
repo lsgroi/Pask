@@ -8,7 +8,7 @@ Task Version-BuildServer {
         "##vso[build.updatebuildnumber]{0}" -f $Version.InformationalVersion
     } elseif($env:APPVEYOR) {
         $Uri = [System.IO.Path]::Combine($env:APPVEYOR_API_URL, "api\build").Replace('\', '/')
-        $Data = "{ `"version`": `"{0}`" }" -f $Version.InformationalVersion
+        $Data = "{ `"version`": `"$($Version.InformationalVersion)`" }"
         $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Data)
         $Response = Invoke-WebRequest -Uri $Uri -Method Put -ContentType "application/json" -Body $Bytes
     }
