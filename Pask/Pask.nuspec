@@ -13,7 +13,7 @@
         <iconUrl>https://raw.githubusercontent.com/lsgroi/Pask/master/Pask.png</iconUrl>
         <summary>Modular task-oriented PowerShell build automation for .NET</summary>
         <description>Pask is a modular task-oriented PowerShell build automation for .NET. It provides a set of predefined tasks and the ability to create custom ones.</description>
-        <tags>PowerShell BuildAutomation Invoke-Build</tags>
+        <tags>PowerShell Build Automation Script Invoke-Build MSBuild</tags>
         <copyright>Copyright © 2017 Luca Sgroi under the Apache License</copyright>
         <releaseNotes>https://github.com/lsgroi/Pask/releases</releaseNotes>
         <dependencies>
