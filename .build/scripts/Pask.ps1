@@ -863,7 +863,7 @@ function script:Test-GitRepository {
         return $false
     } else {
         try {
-            & $GitExe rev-parse --is-inside-work-tree 2>&1 | Out-Null
+            & $GitExe -C "$($PaskFullPath.Trim('\'))" rev-parse --is-inside-work-tree 2>&1 | Out-Null
         } catch {
             return $false
         }
