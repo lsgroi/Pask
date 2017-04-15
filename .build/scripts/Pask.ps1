@@ -811,6 +811,7 @@ function script:Get-ProjectBuildOutputDir {
     param([Parameter(Mandatory=$true,ValueFromPipeline=$true)][string]$ProjectName)
 
     Begin { 
+        Import-Script Properties.MSBuild -Package Pask
         $private:Result = @() 
         $private:SolutionProjects = Get-SolutionProjects
     }

@@ -1,4 +1,3 @@
-Import-Properties -Package Pask
 Import-Script Properties.MSBuild -Package Pask
 
 # Synopsis: Build the solution using MSBuild
@@ -16,6 +15,6 @@ Task Build {
         $MSBuildPlatform = "/p:Platform=""$BuildPlatform""" 
     }
 
-    "Building '$(Split-Path -Path $Project -Leaf)'`r`n"
+    "Building '{0}'`r`n" -f (Split-Path -Path $Project -Leaf)
     Exec { MSBuild "$Project" /t:Build /p:Configuration=$BuildConfiguration $MSBuildPlatform /Verbosity:quiet }
 }

@@ -6,8 +6,8 @@ Task Zip-Artifact {
 
     $7za = Join-Path (Get-PackageDir "7-Zip.CommandLine") "tools\7za.exe"
 	
-    $ZipFile = "$ArtifactFullPath.$($Version.InformationalVersion).zip"
+    $ZipFile = "$ArtifactFullPath.{0}.zip" -f $Version.InformationalVersion
 	
     "Creating archive $ZipFile"
-    Exec { & "$7za" u -tzip "$ZipFile" "-ir!$(Join-Path "$ArtifactFullPath" "*")" -mx9 | Out-Null }
+    Exec { & "$7za" u -tzip "$ZipFile" ("-ir!{0}" -f (Join-Path $ArtifactFullPath "*")) -mx9 | Out-Null }
 }

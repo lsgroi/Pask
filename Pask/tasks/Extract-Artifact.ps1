@@ -1,5 +1,3 @@
-Import-Properties -Package Pask
-
 # Array of specific file names to extract only (e.g. MyAssembly.dll)
 Set-Property FileNameToExtract -Default @()
 

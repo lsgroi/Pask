@@ -2295,6 +2295,7 @@ Describe "Remove-PdbFiles" {
 Describe "Get-ProjectBuildOutputDir" {
     BeforeAll {
         # Arrange
+        Mock Import-Script { } -ParameterFilter { $Script -eq "Properties.MSBuild" -and $Package -eq "Pask" }
         Mock Get-SolutionProjects { 
             $Result = @()
             $Result += New-Object PSObject -Property @{ Name = "Project1"; Directory = (Join-Path $TestDrive "Project1") }
@@ -2312,6 +2313,10 @@ Describe "Get-ProjectBuildOutputDir" {
 
             # Act
             $Result = @("Project1", "Project2", "Project3") | Get-ProjectBuildOutputDir
+        }
+
+        It "imports the MSBuild properties" {
+            Assert-MockCalled Import-Script
         }
 
         It "returns three build output directories" {
@@ -2337,10 +2342,17 @@ Describe "Get-ProjectBuildOutputDir" {
             $BuildConfiguration = "CustomConfiguration"
             $BuildPlatform = "x86"
             New-Directory (Join-Path $TestDrive "Project2\bin\x86\CustomConfiguration") | Out-Null
+
+            # Act
+            $Result = Get-ProjectBuildOutputDir "Project2"
+        }
+
+        It "imports the MSBuild properties" {
+            Assert-MockCalled Import-Script
         }
 
         It "returns the project ouptut directory" {
-            Get-ProjectBuildOutputDir "Project2" | Should Be (Join-Path $TestDrive "Project2\bin\x86\CustomConfiguration")
+            $Result | Should Be (Join-Path $TestDrive "Project2\bin\x86\CustomConfiguration")
         }
     }
 
@@ -2349,10 +2361,17 @@ Describe "Get-ProjectBuildOutputDir" {
             # Arrange
             $BuildConfiguration = "Release"
             New-Directory (Join-Path $TestDrive "Project2\bin\$BuildConfiguration") | Out-Null
+
+            # Act
+            $Result = Get-ProjectBuildOutputDir "Project2"
+        }
+
+        It "imports the MSBuild properties" {
+            Assert-MockCalled Import-Script
         }
 
         It "returns the project ouptut directory" {
-            Get-ProjectBuildOutputDir "Project2" | Should Be (Join-Path $TestDrive "Project2\bin\Release")
+            $Result | Should Be (Join-Path $TestDrive "Project2\bin\Release")
         }
     }
 
@@ -2361,10 +2380,17 @@ Describe "Get-ProjectBuildOutputDir" {
             # Arrange
             $BuildConfiguration = "Release"
             New-Directory (Join-Path $TestDrive "Project2\bin") | Out-Null
+
+            # Act
+            $Result = Get-ProjectBuildOutputDir "Project2"
+        }
+
+        It "imports the MSBuild properties" {
+            Assert-MockCalled Import-Script
         }
 
         It "returns the project ouptut directory" {
-            Get-ProjectBuildOutputDir "Project2" | Should Be (Join-Path $TestDrive "Project2\bin")
+            $Result | Should Be (Join-Path $TestDrive "Project2\bin")
         }
     }
 
@@ -2372,10 +2398,17 @@ Describe "Get-ProjectBuildOutputDir" {
         BeforeAll {
             # Arrange
             New-Directory (Join-Path $TestDrive "Project2") | Out-Null
+
+            # Act
+            $Result = Get-ProjectBuildOutputDir "Project2"
+        }
+
+        It "imports the MSBuild properties" {
+            Assert-MockCalled Import-Script
         }
 
         It "returns empty result" {
-            Get-ProjectBuildOutputDir "Project2" | Should BeNullOrEmpty
+            $Result | Should BeNullOrEmpty
         }
     }
 
@@ -2383,10 +2416,17 @@ Describe "Get-ProjectBuildOutputDir" {
         BeforeAll {
             # Arrange
             $Projects = @()
+
+            # Act
+            $Result = $Projects | Get-ProjectBuildOutputDir
+        }
+
+        It "imports the MSBuild properties" {
+            Assert-MockCalled Import-Script
         }
 
         It "returns empty result" {
-            ($Projects | Get-ProjectBuildOutputDir).Count | Should Be 0
+            $Result.Count | Should Be 0
         }
     }
 
