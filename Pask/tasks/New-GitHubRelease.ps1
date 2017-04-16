@@ -1,11 +1,11 @@
 Import-Properties -Package Pask
 
-Set-Property GitHubOwner
-Set-Property GitHubRepo
-Set-Property ReleaseAssetPattern -Default $ProjectName
+Set-Property ReleaseAssetPattern -Default ""
 
 # Synopsis: Create a new release on GitHub
 Task New-GitHubRelease {
+    Set-Property GitHubOwner
+    Set-Property GitHubRepo
     Set-Property GitHubToken
 
     # This will throw an error if git isn't available
@@ -30,7 +30,7 @@ Task New-GitHubRelease {
     $Release = Invoke-RestMethod -Headers $Headers -Uri $ReleaseUri -Method Post -Body $Body -ErrorAction Stop
     " - created release {0}" -f $Release.html_url
 
-    if (Test-Path $BuildOutputFullPath) {
+    if (Test-Path $BuildOutputFullPath -and $ReleaseAssetPattern) {
         Get-ChildItem -Path $BuildOutputFullPath -File | Where { $_.Name -match $ReleaseAssetPattern } | ForEach {
             $UploadUri = '{0}?name={1}' -f ($Release.upload_url -split '{')[0], $_.Name
             "Uploading release asset {0}" -f $_.Name
