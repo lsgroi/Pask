@@ -2,8 +2,9 @@
 .SYNOPSIS
    This script defines a collection of code snippets used by Pask
 
-.PARAMETER BuildProperties <hashtable>
+.PARAMETER BuildProperties <System.Collections.Specialized.OrderedDictionary>
     The build properties in scope
+    The order in which the properties are added is important to maintain consistency when refreshing them 
 
 .PARAMETER Files <System.Collections.ArrayList>
     The files imported in the scope
@@ -13,7 +14,7 @@
 #>
 
 param(
-    [hashtable] [Alias("BuildProperties")] ${!BuildProperties!} = @{},
+    [System.Collections.Specialized.OrderedDictionary] [Alias("BuildProperties")] ${!BuildProperties!} = @{},
     [System.Collections.ArrayList] [Alias("Files")] ${!Files!} = @($MyInvocation.MyCommand.Definition)
 )
 
@@ -69,7 +70,7 @@ function script:Set-BuildProperty {
         $private:PropertyValue 
     }
 
-    if(-not ${!BuildProperties!}.ContainsKey($Name)) {
+    if(-not ${!BuildProperties!}.Contains($Name)) {
         New-Variable -Name $Name -Value $private:VariableValue -Scope Script -Force
         ${script:!BuildProperties!} = ${!BuildProperties!} + @{$Name=$private:PropertyValue}
     } else {
@@ -88,7 +89,7 @@ Set-Alias Set-Property Set-BuildProperty -Scope Script
 .SYNOPSIS 
     Gets all build properties
 
-.OUTPUTS <hashtable>
+.OUTPUTS <System.Collections.Specialized.OrderedDictionary>
     ------------------- EXAMPLE -------------------
     @{
         Configuration = Debug
@@ -97,7 +98,7 @@ Set-Alias Set-Property Set-BuildProperty -Scope Script
 #>
 function script:Get-BuildProperties {
     ${!BuildProperties!}.GetEnumerator() | Foreach -Begin {
-        $Result = @{}
+        $Result = [ordered]@{}
     } -Process {
         $Value = Get-Variable -Name $_.Key -ValueOnly
         $Result.Add($_.Key, $Value)
@@ -1119,7 +1120,7 @@ function script:Jobs {
     for ($i=0; $i -lt $TaskProperties.Count; $i+=2) {
         $Key = ($TaskProperties[$i] -replace '^-+') 
         $Value = $TaskProperties[$i+1]
-        if ($Properties.ContainsKey($Key)) {
+        if ($Properties.Contains($Key)) {
             $Properties.Set_Item($Key, $Value)
         } else {
             $Properties.Add($Key, $Value)
