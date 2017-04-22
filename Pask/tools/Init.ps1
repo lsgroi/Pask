@@ -32,11 +32,11 @@ if ($Project -eq $null) {
    None
 #>
 function Copy-File {
-	param([string]$Source, [string]$Destination, [switch]$Force, [string]$Message, [switch]$PassThru)
+    param([string]$Source, [string]$Destination, [switch]$Force, [string]$Message, [switch]$PassThru)
 
-	$FileName = Split-Path -Path $Destination -Leaf
-	
-	if (-not (Test-Path $Destination) -or $Force) {
+    $FileName = Split-Path -Path $Destination -Leaf
+    
+    if (-not (Test-Path $Destination) -or $Force) {
         if ($Message) {
             Write-Host $Message
         } else {
@@ -48,7 +48,7 @@ function Copy-File {
         } else {
             Copy-Item $Source $Destination
         }
-	}
+    }
 }
 
 <#
@@ -64,16 +64,16 @@ function Copy-File {
 .OUTPUTS
    None
 #>
-function Add-FileToSolutionFolder {	
-	param([string]$File, $SolutionFolder)
+function Add-FileToSolutionFolder {    
+    param([string]$File, $SolutionFolder)
 
-	$FileName = Split-Path -Path $File -Leaf
-	$ProjectItems = Get-Interface $SolutionFolder.ProjectItems ([EnvDTE.ProjectItems])
+    $FileName = Split-Path -Path $File -Leaf
+    $ProjectItems = Get-Interface $SolutionFolder.ProjectItems ([EnvDTE.ProjectItems])
 
-	if($ProjectItems -and $($ProjectItems.GetEnumerator() | Where { $_.FileNames(1) -eq $File }) -eq $null) {
-		Write-Host "Adding '$FileName' to solution folder '$($SolutionFolder.Name)'."
-		$ProjectItems.AddFromFile($File) | Out-Null
-	}
+    if($ProjectItems -and $($ProjectItems.GetEnumerator() | Where { $_.FileNames(1) -eq $File }) -eq $null) {
+        Write-Host "Adding '$FileName' to solution folder '$($SolutionFolder.Name)'."
+        $ProjectItems.AddFromFile($File) | Out-Null
+    }
 }
 
 <#
@@ -92,8 +92,8 @@ function Add-FileToSolutionFolder {
 .OUTPUTS <EnvDTE.Project>
    The solution folder
 #>
-function Add-SolutionFolder {	
-	param(
+function Add-SolutionFolder {    
+    param(
         [Parameter(Position=0)] 
         [string]$Name,
 
@@ -143,12 +143,12 @@ function Add-SolutionFolder {
    None
 #>
 function Remove-ProjectItem {
-	param($ProjectItem)
+    param($ProjectItem)
 
-	if($ProjectItem -ne $null) {
-		Write-Host "Removing from the solution '$($ProjectItem.Name)'."
-		$ProjectItem.Delete() | Out-Null
-	}
+    if($ProjectItem -ne $null) {
+        Write-Host "Removing from the solution '$($ProjectItem.Name)'."
+        $ProjectItem.Delete() | Out-Null
+    }
 }
 
 $Solution = Get-Interface $dte.Solution ([EnvDTE80.Solution2])
@@ -164,54 +164,54 @@ if ($Package -ne $null) {
 
     . (Join-Path $InstallPath "scripts\$($Package.Id).ps1")
 
-	$SolutionName = ($Solution.Properties | Where { $_.Name -eq "Name" }).Value
+    $SolutionName = ($Solution.Properties | Where { $_.Name -eq "Name" }).Value
     $NuGetSolutionFolder = $Solution.Projects | Where { $_.Name -eq ".nuget" }
-	$BuildFullPath = Join-Path $SolutionFullPath ".build"
+    $BuildFullPath = Join-Path $SolutionFullPath ".build"
 
-	# Add '.build' solution folder
+    # Add '.build' solution folder
     $BuildSolutionFolder = Add-SolutionFolder ".build" -Solution $Solution
     $TasksSolutionFolder = Add-SolutionFolder "tasks" -SolutionFolder $BuildSolutionFolder
     $BuildScriptsSolutionFolder = Add-SolutionFolder "scripts" -SolutionFolder $BuildSolutionFolder
         
     if ($NuGetSolutionFolder -ne $null) {
         # Remove NuGet.exe from the solution
-		Remove-ProjectItem ($NuGetSolutionFolder.ProjectItems | Where { $_.Name -eq "NuGet.exe" })
-	}
+        Remove-ProjectItem ($NuGetSolutionFolder.ProjectItems | Where { $_.Name -eq "NuGet.exe" })
+    }
 
     # Change NuGet.targets to download NuGet.exe if it does not already exist
-	$NuGetTargetsFile = Join-Path (Join-Path $SolutionFullPath ".nuget") "NuGet.targets"
-	if (Test-Path $NuGetTargetsFile) {
+    $NuGetTargetsFile = Join-Path (Join-Path $SolutionFullPath ".nuget") "NuGet.targets"
+    if (Test-Path $NuGetTargetsFile) {
         [xml]$NuGetTargets = New-Object System.Xml.XmlDocument
         $NuGetTargets.PreserveWhitespace = $true
         try {
-		    $NuGetTargets.Load($NuGetTargetsFile)
+            $NuGetTargets.Load($NuGetTargetsFile)
             if ($NuGetTargets.Project.PropertyGroup -is [System.Array]) {
-		        $NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
+                $NuGetTargets.Project.PropertyGroup[0].DownloadNuGetExe.InnerText = "true"
             } else {
                 $NuGetTargets.Project.PropertyGroup.DownloadNuGetExe.InnerText = "true"
             }
-		    $NuGetTargets.Save($NuGetTargetsFile)
+            $NuGetTargets.Save($NuGetTargetsFile)
         } catch {
             Write-Warning "Cannot update 'NuGet.targets' - invalid format."
         } finally {
             $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
             Add-FileToSolutionFolder $NuGetTargetsFile $NuGetSolutionFolder
         }
-	}
+    }
     
     # Add Nuget.config to the solution
-	$NuGetConfigFile = Join-Path (Join-Path $SolutionFullPath ".nuget") "NuGet.config"
-	if (Test-Path $NuGetConfigFile) {
+    $NuGetConfigFile = Join-Path (Join-Path $SolutionFullPath ".nuget") "NuGet.config"
+    if (Test-Path $NuGetConfigFile) {
         # Inside the '.nuget' directory
         $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
         Add-FileToSolutionFolder $NuGetConfigFile $NuGetSolutionFolder
-	} else {
+    } else {
         # In the solution directory
         $NuGetConfigFile = Join-Path $SolutionFullPath "NuGet.config"
         if (Test-Path $NuGetConfigFile) {
             $NuGetSolutionFolder = Add-SolutionFolder ".nuget" -Solution $Solution
             Add-FileToSolutionFolder $NuGetConfigFile $NuGetSolutionFolder
-	    }
+        }
     }
    
     # Creating .build directory

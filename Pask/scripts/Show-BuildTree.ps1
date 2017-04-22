@@ -8,16 +8,16 @@
 	for the specified tasks. Tasks are not invoked.
 	Invoke-Build.ps1 should be in the script directory or in the path.
 .Parameter Task
-		Task names.
-		If it is "*" then all root tasks are used.
-		If it is omitted or "." then the default task is used.
+	Task names.
+	If it is "*" then all root tasks are used.
+	If it is omitted or "." then the default task is used.
 .Parameter File
-		The build script.
-		If it is omitted then the default script is used.
+	The build script.
+	If it is omitted then the default script is used.
 .Parameter Parameters
-		Build script parameters needed in special cases when they alter tasks.
+	Build script parameters needed in special cases when they alter tasks.
 .Parameter Upstream
-		Tells to show upstream tasks for each task.
+	Tells to show upstream tasks for each task.
 .Inputs
 	None.
 .Outputs

@@ -1108,10 +1108,10 @@ function script:Get-ProjectSemanticVersion {
 #>
 function script:Jobs {
     param(
-        [Parameter(Position=0)][string[]]$Task,
+        [Parameter(Position=0,Mandatory=$true)][string[]]$Task,
         $Result,
         [int]$Timeout=[int]::MaxValue,
-	    [int]$MaximumBuilds=[Environment]::ProcessorCount,
+        [int]$MaximumBuilds=[Environment]::ProcessorCount,
         [Parameter(ValueFromRemainingArguments=$true)]$TaskProperties
     )
 

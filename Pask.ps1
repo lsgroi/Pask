@@ -39,18 +39,18 @@ Tells to visualize specified build task tree as indented text with brief task de
 #>
 
 param(
+    # Pask specific parameters
+    [string]$SolutionFilePath,
+    [string]$SolutionName,
+    [string]$ProjectName,
+    [switch]$Tree,
+
     # Invoke-Build specific parameters
     [Alias("Task")][Parameter(Position=0)][string[]]$private:PaskTask = ".",
     [Alias("Result")]$private:PaskResult,
     [Alias("Safe")][switch]$private:PaskSafe,
     [Alias("Summary")][switch]$private:PaskSummary = $true,
-    [Parameter(ValueFromRemainingArguments=$true)]$Properties,
-    
-    # Pask specific parameters
-    [string]$SolutionFilePath,
-    [string]$SolutionName,
-    [string]$ProjectName,
-    [switch]$Tree
+    [Parameter(ValueFromRemainingArguments=$true)]$Properties
 )
 
 $ErrorActionPreference = "Stop"

@@ -9,7 +9,7 @@ Task New-GitHubRelease {
     Set-Property GitHubToken
 
     # This will throw an error if git isn't available
-	Get-Command git | Out-Null
+    Get-Command git | Out-Null
 
     $Headers = @{
         Authorization = 'Basic {0}' -f [System.Convert]::ToBase64String([char[]]$GitHubToken)

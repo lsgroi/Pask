@@ -285,7 +285,7 @@ function script:Test-PackageInstallation {
 
     # Act
             Write-Host "Press 'C' to continue ..."
-	        do { $Key = [Console]::ReadKey($true).Key } until ($Key -eq "C")
+            do { $Key = [Console]::ReadKey($true).Key } until ($Key -eq "C")
             $DTE.Solution.SaveAs($SolutionFullName)
     # Assert
             & $Assertion
