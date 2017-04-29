@@ -694,28 +694,7 @@ Describe "Remove-ItemSilently" {
         }
     }
 
-    Context "Remove item with wildcard" {
-        BeforeAll {
-            # Arrange
-            New-Item -Path (Join-Path $TestDrive "solution") -ItemType Directory
-            New-Item -Path (Join-Path $TestDrive "solution\bin") -ItemType Directory
-            New-Item -Path (Join-Path $TestDrive "solution\project\bin") -ItemType Directory
-            New-Item -Path (Join-Path $TestDrive "solution\project\bin\project.dll") -ItemType File
-
-            # Act
-            Remove-ItemSilently (Join-Path $TestDrive "**\bin")
-        }
-
-        It "the item is removed in the sub directory" {
-            Join-Path $TestDrive "solution\bin" | Should Not Exist
-        }
-
-        It "the item is removed recursively" {
-            Join-Path $TestDrive "solution\project\bin" | Should Not Exist
-        }
-    }
-
-    Context "Remove all content of directory" {
+    Context "Remove content of directory" {
         BeforeAll {
             # Arrange
             New-Item -Path (Join-Path $TestDrive "solution") -ItemType Directory
@@ -729,7 +708,7 @@ Describe "Remove-ItemSilently" {
         }
 
         It "content of the directory is removed" {
-            Join-Path $TestDrive "solution\*" | Should Not Exist
+            Get-Item -Path (Join-Path $TestDrive "solution\*") | Should BeNullOrEmpty
         }
     }
 

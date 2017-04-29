@@ -6,11 +6,8 @@ Task Clean {
     }
     
     Write-BuildMessage "Cleaning '$PaskFullPath'"
-    Get-ChildItem -Directory -Path (Join-Path $PaskFullPath "**\bin"), (Join-Path $PaskFullPath "**\obj") `
+    (@(Get-ChildItem -Directory -Path $PaskFullPath -Recurse -Filter bin) + @(Get-ChildItem -Directory -Path $PaskFullPath -Recurse -Filter obj)) `
         | Sort -Descending @{Expression = {$_.FullName.Length}} `
         | Select -ExpandProperty FullName `
-        | ForEach {
-            Remove-ItemSilently (Join-Path $_ "*")
-            CMD /C "RD /S /Q ""$($_)""" 
-        }
+        | Remove-ItemSilently
 }

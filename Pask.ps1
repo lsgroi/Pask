@@ -89,31 +89,37 @@ if(-not (Test-Path $SolutionFullName)) { Write-Error "Cannot find '$SolutionName
 Write-BuildMessage -Message "Restore NuGet development dependencies" -ForegroundColor "Cyan"
 Restore-NuGetDevelopmentPackages
 
-# Dot source Invoke-Build
-. (Join-Path (Get-PackageDir "Invoke-Build") "tools\Invoke-Build.ps1")
-
-# Define the default project
-Set-Project -Name $ProjectName
-
-# Invoke the build
+# Create the build script
 $private:BuildScript = New-Item -ItemType File -Name "$([System.IO.Path]::GetRandomFileName()).ps1" -Path $Env:Temp -Value {
     Import-Script Init -Safe
     Import-Properties -All
     . (Join-Path $BuildFullPath "build.ps1")
 }
-if ($Tree) {
-    Write-BuildMessage -Message "Show build task tree" -ForegroundColor "Cyan"
-    Import-Script Show-BuildTree
-    Show-BuildTree -File $BuildScript.FullName -Task $private:PaskTask
-} else {
-    Invoke-Build -File $BuildScript.FullName -Task $private:PaskTask -Result "!InvokeBuildResult!" -Safe:$private:PaskSafe -Summary:$private:PaskSummary
-    if ($private:PaskResult -and $private:PaskResult -is [string]) {
-        New-Variable -Name $private:PaskResult -Force -Scope 1 -Value ${!InvokeBuildResult!}
-    } elseif ($private:PaskResult) {
-        $private:PaskResult.Value = ${!InvokeBuildResult!}
-    }
-}
-Remove-Item $BuildScript.FullName -Force
 
-# By dot-sourcing Invoke-Build, the current location changes to $BuildRoot
-Set-Location -Path $private:CurrentLocation.Path
+try {
+    # Dot source Invoke-Build
+    . (Join-Path (Get-PackageDir "Invoke-Build") "tools\Invoke-Build.ps1")
+
+    # Define the default project
+    Set-Project -Name $ProjectName
+
+    # Invoke the build
+    if ($Tree) {
+        Write-BuildMessage -Message "Show build task tree" -ForegroundColor "Cyan"
+        Import-Script Show-BuildTree
+        Show-BuildTree -File $BuildScript.FullName -Task $private:PaskTask
+    } else {
+        Invoke-Build -File $BuildScript.FullName -Task $private:PaskTask -Result "!InvokeBuildResult!" -Safe:$private:PaskSafe -Summary:$private:PaskSummary
+        if ($private:PaskResult -and $private:PaskResult -is [string]) {
+            New-Variable -Name $private:PaskResult -Force -Scope 1 -Value ${!InvokeBuildResult!}
+        } elseif ($private:PaskResult) {
+            $private:PaskResult.Value = ${!InvokeBuildResult!}
+        }
+    }
+} catch {
+    throw $_
+} finally {
+    Remove-Item $BuildScript.FullName -Force
+    # By dot-sourcing Invoke-Build, the current location changes to $BuildRoot
+    Set-Location -Path $private:CurrentLocation.Path
+}

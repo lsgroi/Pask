@@ -215,7 +215,8 @@ function script:New-Directory {
    Silently remove an item (no output)
 
 .PARAMETER Item <string[]>
-   Wildcards are permitted
+   Wildcards are permitted (e.g. '.\dir\*')
+   It does not support wildacrd like '.\**\dir' or '.\*.dll'
 
 .OUTPUTS
    None
@@ -226,13 +227,24 @@ function script:Remove-ItemSilently {
     Begin { }
 
     Process {
-        Remove-Item -Path "$Item" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+        if (-not (Test-Path -Path $Item)) {
+            return
+        }
 
-        # Ensure removal of directories exceeding the 260 characters limit
-        Get-ChildItem -Directory -Path "$Item" -Recurse `
-            | Sort -Descending @{Expression = {$_.FullName.Length}} `
-            | Select -ExpandProperty FullName `
-            | ForEach { CMD /C "RD /S /Q ""$($_)""" }
+        $ItemObject = Get-Item -Path $Item
+
+        if ($ItemObject -is [System.IO.FileInfo]) {
+            Remove-Item -Path $ItemObject.FullName -Force | Out-Null
+        } elseif ($ItemObject -is [System.IO.DirectoryInfo]) {
+            # Ensure removal of directories exceeding the 260 characters limit
+            Get-ChildItem -Path $ItemObject -Recurse `
+                | Sort -Descending @{Expression = {$_.FullName.Length}} `
+                | Select -ExpandProperty FullName `
+                | Remove-ItemSilently
+            CMD /C ("RD /S /Q ""{0}""" -f $ItemObject.FullName)
+        } else {
+            $ItemObject.FullName | Remove-ItemSilently
+        }
     }
 
     End { }
@@ -1155,19 +1167,23 @@ function script:Jobs {
         return @{File=$BuildFile.FullName; Task=$_; "private:Files"=(Get-Files); "private:Properties"=$Properties}
     }
 
-    # Invoke the builds in parallel
-    Invoke-Builds $Build `
-                  -Result "!InvokeBuildsResult!" `
-                  -Timeout $Timeout `
-                  -MaximumBuilds $MaximumBuilds
+    try {
+        # Invoke the builds in parallel
+        Invoke-Builds $Build `
+                      -Result "!InvokeBuildsResult!" `
+                      -Timeout $Timeout `
+                      -MaximumBuilds $MaximumBuilds
 
-    # Output build information using a variable
-    if ($Result -and $Result -is [string]) {
-        New-Variable -Name $Result -Force -Scope 1 -Value ${!InvokeBuildsResult!}
-    } elseif ($Result) {
-        $Result.Value = ${!InvokeBuildsResult!}
+        # Output build information using a variable
+        if ($Result -and $Result -is [string]) {
+            New-Variable -Name $Result -Force -Scope 1 -Value ${!InvokeBuildsResult!}
+        } elseif ($Result) {
+            $Result.Value = ${!InvokeBuildsResult!}
+        }
+    } catch {
+        throw $_
+    } finally {
+        # Remove the parallel build scripts
+        $Build | ForEach { Remove-Item $_.File -Force }
     }
-
-    # Remove the parallel build scripts
-    $Build | ForEach { Remove-Item $_.File -Force }
 }
