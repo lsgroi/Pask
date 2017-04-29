@@ -7,7 +7,7 @@ Task Test-Pester {
     Import-Module -Name "$PesterModule" -Scope Local
 
     # Initialize test results directory
-    New-Directory $TestsResultsFullPath | Out-Null
+    New-Directory $TestResultsFullPath | Out-Null
     
     # Run tests found in the scripts and tasks directories
     # Include the current solution
@@ -23,7 +23,7 @@ Task Test-Pester {
     
     # Define Pester parameters
     $Script = Get-ChildItem -Path $Path -File -Include *.Tests.ps1 -ErrorAction SilentlyContinue
-    $OutputFile = Join-Path $TestsResultsFullPath "Pester.xml"
+    $OutputFile = Join-Path $TestResultsFullPath "Pester.xml"
     
     # Invoke Perster
     $PesterResult = Invoke-Pester -Script $Script -Strict -PassThru -OutputFile "$OutputFile" -OutputFormat NUnitXml -TestName $TestName
