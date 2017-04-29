@@ -17,7 +17,7 @@
         <copyright>Copyright © 2017 Luca Sgroi under the Apache License</copyright>
         <releaseNotes>https://github.com/lsgroi/Pask/releases</releaseNotes>
         <dependencies>
-            <dependency id="Invoke-Build" version="3.3.5" />
+            <dependency id="Invoke-Build" version="3.3.6" />
         </dependencies>
     </metadata>
     <files>
