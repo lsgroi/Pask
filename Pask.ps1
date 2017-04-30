@@ -96,10 +96,10 @@ $private:BuildScript = New-Item -ItemType File -Name "$([System.IO.Path]::GetRan
     . (Join-Path $BuildFullPath "build.ps1")
 }
 
-try {
-    # Dot source Invoke-Build
-    . (Join-Path (Get-PackageDir "Invoke-Build") "tools\Invoke-Build.ps1")
+# Dot source Invoke-Build
+. (Join-Path (Get-PackageDir "Invoke-Build") "tools\Invoke-Build.ps1")
 
+try {
     # Define the default project
     Set-Project -Name $ProjectName
 

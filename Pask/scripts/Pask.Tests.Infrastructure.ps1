@@ -83,7 +83,7 @@ function script:Invoke-Pask {
 
 <#
 .SYNOPSIS 
-   Creates a solution in Visual Studio 2015
+   Creates a solution in Visual Studio
    It consists of a ConsoleApplication and a ClassLibrary
 
 .PARAMETER DTE <object>
@@ -98,7 +98,7 @@ function script:Invoke-Pask {
    None
 
 .EXAMPLE
-   $DTE = New-Object -ComObject "VisualStudio.DTE.14.0"
+   $DTE = New-Object -ComObject "VisualStudio.DTE.15.0"
    New-Solution ([ref]$DTE) "C:\Temp\SolutionDir" "MyTempSolution"
 #>
 function script:New-Solution {
@@ -236,7 +236,7 @@ namespace EnvDteUtils{
 
 <#
 .SYNOPSIS 
-   Allows to test a package installation by creating a solution in Visual Studio and install the package from the local feed
+   Allows to test a package installation by creating a solution in Visual Studio 2017 and install the package from the local feed
 
 .PARAMETER Name <string>
    The package name

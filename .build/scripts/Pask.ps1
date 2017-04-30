@@ -893,12 +893,12 @@ function script:Test-GitRepository {
 #>
 function script:Get-CommitterDate {
     if (-not (Test-GitRepository)) {
-        return [DateTime]::Now
+        return [DateTime]::UtcNow
     }
     
     $Date = Exec { & (Get-GitExe) -C "$($PaskFullPath.Trim('\'))" show --no-patch --format=%ci }
     
-    return [DateTime]::Parse($Date, $null, [System.Globalization.DateTimeStyles]::RoundtripKind)
+    return ([DateTime]::Parse($Date, $null, [System.Globalization.DateTimeStyles]::RoundtripKind)).ToUniversalTime()
 }
 
 <#
