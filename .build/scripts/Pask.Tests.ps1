@@ -926,6 +926,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 EndProject
 "@
             Set-Content -Path $SolutionFullName -Value $SolutionValue
+            Mock Pask-Cache { }
         
             # Act
             $Result = Get-SolutionProjects
@@ -970,6 +971,35 @@ EndProject
         It "gets the third project directory" {
             $Result[2].Directory | Should Be (Join-Path $SolutionFullPath "Tests\Unit")
         }
+
+        It "caches the solution projects" {
+            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-SolutionProjects" -and $value.Count -eq 3 }
+        }
+    }
+
+    Context "From the cache" {
+        BeforeAll {
+            # Arrange
+            $SolutionFullPath = $TestDrive
+            $SolutionFullName = Join-Path $SolutionFullPath "Solution.sln"
+            $SolutionValue = @"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project", "Project\Project.csproj", "{550A4A44-22C6-41CE-A5F0-30E406E56C6F}"
+EndProject
+"@
+            Set-Content -Path $SolutionFullName -Value $SolutionValue
+            Mock Pask-Cache { return "mock-projects" } -ParameterFilter { $key -eq "Get-SolutionProjects" }
+
+            # Act
+            $Result = Get-SolutionProjects
+        }
+
+        It "gets the cached solution projects" {
+            $Result | Should Be "mock-projects"
+        }
+
+        It "does not cache the solution projects" {
+            Assert-MockCalled Pask-Cache 0  -ParameterFilter { $key -eq "Get-SolutionProjects" -and $value.Count -eq 1 }
+        }
     }
 }
 
@@ -1011,6 +1041,8 @@ Describe "Get-SolutionPackages" {
 "@
             New-Item -Path (Join-Path $TestDrive "Project3") -ItemType Directory
             Set-Content -Path (Join-Path $TestDrive "Project3\packages.config") -Value $Project3Packages -Force
+            
+            Mock Pask-Cache { }
 
             # Act
             $Result = Get-SolutionPackages
@@ -1031,6 +1063,10 @@ Describe "Get-SolutionPackages" {
         It "gets the second version of the package" {
             $Result[1].version | Should Be "3.3.1"
         }
+
+        It "caches the solution packages" {
+            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 2 }
+        }
     }
 
     Context "Solution has one project with three packages of which two development dependencies" {
@@ -1042,7 +1078,7 @@ Describe "Get-SolutionPackages" {
                 return $Result
             }
 
-            $Project1Packages = @"
+            $ProjectPackages = @"
 <?xml version="1.0" encoding="utf-8"?>
 <packages>
   <package id="AutoMapper" version="3.3.0" targetFramework="net46" />
@@ -1051,7 +1087,9 @@ Describe "Get-SolutionPackages" {
 </packages>
 "@
             New-Item -Path (Join-Path $TestDrive "Project") -ItemType Directory
-            Set-Content -Path (Join-Path $TestDrive "Project\packages.config") -Value $Project1Packages -Force
+            Set-Content -Path (Join-Path $TestDrive "Project\packages.config") -Value $ProjectPackages -Force
+            
+            Mock Pask-Cache { }
 
             # Act
             $Result = Get-SolutionPackages
@@ -1067,6 +1105,42 @@ Describe "Get-SolutionPackages" {
 
         It "one package should not be a development dependency" {
             $Result | Where { $_.id -eq "AutoMapper" } | Select -ExpandProperty developmentDependency | Should BeNullOrEmpty
+        }
+
+        It "caches the solution packages" {
+            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 3 }
+        }
+    }
+
+    Context "From the cache" {
+        BeforeAll {
+            # Arrange
+            Mock Get-SolutionProjects { 
+                $Result = @()
+                $Result += New-Object PSObject -Property @{ Directory = (Join-Path $TestDrive "Project") }
+                return $Result
+            }
+
+            $ProjectPackages = @"
+<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="Pester" version="2.0.0" developmentDependency="true" />
+</packages>
+"@
+            New-Item -Path (Join-Path $TestDrive "Project") -ItemType Directory
+            Set-Content -Path (Join-Path $TestDrive "Project\packages.config") -Value $ProjectPackages -Force
+            Mock Pask-Cache { return "mock-packages" } -ParameterFilter { $key -eq "Get-SolutionPackages" }
+
+            # Act
+            $Result = Get-SolutionPackages
+        }
+
+        It "gets the cached solution packages" {
+            $Result | Should Be "mock-packages"
+        }
+
+        It "does not cache the solution packages" {
+            Assert-MockCalled Pask-Cache 0  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 1 }
         }
     }
 }
