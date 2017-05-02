@@ -237,13 +237,13 @@ function script:Remove-ItemSilently {
             Remove-Item -Path $ItemObject.FullName -Force | Out-Null
         } elseif ($ItemObject -is [System.IO.DirectoryInfo] -and (Test-Path $ItemObject.FullName)) {
             $Count = 0
-            $Retry = 10
+            $Retry = 100
             do {
                 $Count++
-                CMD /C ("RD /S /Q ""{0}""" -f $ItemObject.FullName) 2>&1 | Out-Null
-            } while ((Test-Path $ItemObject.FullName) -and $Count -le $Retry)
-            if ($Count -gt $Retry) {
-                CMD /C ("RD /S /Q ""{0}""" -f $ItemObject.FullName)
+                try { CMD /C ("RD /S /Q ""{0}""" -f $ItemObject.FullName) 2>&1 | Out-Null } catch { }
+            } while ((Test-Path $ItemObject.FullName) -and $Count -lt $Retry)
+            if ($Count -eq $Retry -and (Test-Path $ItemObject.FullName)) {
+                throw ("Failed to remove {0}" -f $ItemObject.FullName)
             }
         } else {
             $ItemObject.FullName | Remove-ItemSilently
