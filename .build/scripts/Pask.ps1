@@ -237,7 +237,7 @@ function script:Remove-ItemSilently {
             Remove-Item -Path $ItemObject.FullName -Force | Out-Null
         } elseif ($ItemObject -is [System.IO.DirectoryInfo] -and (Test-Path $ItemObject.FullName)) {
             $Count = 0
-            $Retry = 100
+            $Retry = 10
             do {
                 $Count++
                 try { CMD /C ("RD /S /Q ""{0}""" -f $ItemObject.FullName) 2>&1 | Out-Null } catch { }
