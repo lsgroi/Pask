@@ -11,13 +11,16 @@ Describe "Clean" {
     Context "Clean the solution" {
         BeforeAll {
             # Arrange
-            # Create dummy files that the Clean task should clear
+            New-Directory -Path (Join-Path "$TestSolutionFullPath" "bin") | Out-Null
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" "bin\ClassLibrary.dll") -Value "" -Force
             New-Directory -Path (Join-Path "$TestSolutionFullPath" ".build\output") | Out-Null
-            Set-Content -Path (Join-Path "$TestSolutionFullPath" ".build\output\test.txt") -Value "" -Force
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" ".build\output\ClassLibrary.dll") -Value "" -Force
             New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin") | Out-Null
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin\ClassLibrary.dll") -Value "" -Force
             New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj") | Out-Null
-            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\bin\test.txt") -Value "" -Force
-            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj\test.txt") -Value "" -Force
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\obj\ClassLibrary.dll") -Value "" -Force
+            New-Directory -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\node_modules\gulp\bin") | Out-Null
+            Set-Content -Path (Join-Path "$TestSolutionFullPath" "ClassLibrary\node_modules\gulp\bin\gulp.cmd") -Value "" -Force
 
             # Act
             Invoke-Pask $TestSolutionFullPath -Task Clean
@@ -27,12 +30,17 @@ Describe "Clean" {
             Join-Path $TestSolutionFullPath ".build\output\*" | should Not Exist
         }
 
-        It "should clean the bin directory" {
+        It "should clean the project bin directory" {
             Join-Path $TestSolutionFullPath "ClassLibrary\bin" | Should Not Exist
         }
 
-        It "should clean the obj directory" {
+        It "should clean the project obj directory" {
             Join-Path $TestSolutionFullPath "ClassLibrary\obj" | Should Not Exist
+        }
+
+        It "should not clean other bin/obj directories" {
+            Join-Path $TestSolutionFullPath "bin\ClassLibrary.dll" | Should Exist
+            Join-Path $TestSolutionFullPath "ClassLibrary\node_modules\gulp\bin\gulp.cmd" | Should Exist
         }
     }
 }

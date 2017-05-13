@@ -32,7 +32,7 @@ Describe "ZipExtract-Artifact" {
         BeforeAll {
             # Arrange
             Invoke-Pask $TestSolutionFullPath -Task Clean, Build, New-Artifact, Zip-Artifact
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
+            Remove-PaskItem (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary")
             $ZipArtifact = Get-ChildItem -Path (Join-Path $TestSolutionFullPath ".build\output\ClassLibrary.*.zip")
             Rename-Item -Path $ZipArtifact.FullName -NewName ($ZipArtifact.Name -replace "ClassLibrary", "NewClassLibrary")
             

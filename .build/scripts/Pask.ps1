@@ -4,7 +4,7 @@
 
 .PARAMETER BuildProperties <System.Collections.Specialized.OrderedDictionary>
     The build properties in scope
-    The order in which the properties are added is important to maintain consistency when refreshing them 
+    The order in which the properties are added is important to maintain consistency when they are being updated
 
 .PARAMETER Files <System.Collections.ArrayList>
     The files imported in the scope
@@ -31,8 +31,8 @@ param(
 .PARAMETER Default <ScriptBlock>
     The default value
 
-.PARAMETER Refresh <switch>
-    After setting the property, refreshes all build properties with script block value
+.PARAMETER Update <switch>
+    After setting the property, updates all build properties with script block value
 
 .OUTPUTS
     None
@@ -55,7 +55,7 @@ function script:Set-BuildProperty {
         [Parameter(Mandatory=$true,Position=0)][ValidateNotNullOrEmpty()][string]$Name,
         [Parameter(ParameterSetName="ExplicitValue")]$Value,
         [Parameter(ParameterSetName="ValueOfSessionOrDefault")]$Default,
-        [switch]$Refresh
+        [switch]$Update
     )
 
     $private:PropertyValue = switch ($PsCmdlet.ParameterSetName) {
@@ -79,8 +79,8 @@ function script:Set-BuildProperty {
         ${script:!BuildProperties!} = ${!BuildProperties!}
     }
 
-    if ($Refresh) {
-        Refresh-BuildProperties
+    if ($Update) {
+        Update-BuildProperties
     }
 }
 Set-Alias Set-Property Set-BuildProperty -Scope Script
@@ -110,16 +110,16 @@ Set-Alias Get-Properties Get-BuildProperties -Scope Script
 
 <#
 .SYNOPSIS
-    Refreshes build properties with script block value
+    Update build properties with script block value
 
 .OUTPUTS
     None
 #>
-function script:Refresh-BuildProperties {
+function script:Update-BuildProperties {
     $private:BuildProperties = ${!BuildProperties!}.GetEnumerator() | Where { $_.Value -and $_.Value.GetType() -eq [ScriptBlock] } 
     $private:BuildProperties | Foreach { Set-BuildProperty -Name $_.Key -Value $_.Value }
 }
-Set-Alias Refresh-Properties Refresh-BuildProperties -Scope Script
+Set-Alias Update-Properties Update-BuildProperties -Scope Script
 
 <#
 .SYNOPSIS
@@ -136,17 +136,17 @@ Set-Alias Refresh-Properties Refresh-BuildProperties -Scope Script
 
 .EXAMPLE
     Set a cache key with the current function name
-    Pask-Cache $MyInvocation.MyCommand.Name -Value 1
+    Cache-Pask $MyInvocation.MyCommand.Name -Value 1
 
 .EXAMPLE
     Get a cache entry for the current function name
-    Pask-Cache $MyInvocation.MyCommand.Name
+    Cache-Pask $MyInvocation.MyCommand.Name
 
 .EXAMPLE
     Get all cache entries
-    Pask-Cache
+    Cache-Pask
 #>
-function script:Pask-Cache {
+function script:Cache-Pask {
     [CmdletBinding(DefaultParameterSetName="All")] 
     param(
         [Parameter(Position=0)]
@@ -212,26 +212,27 @@ function script:New-Directory {
 
 <#
 .SYNOPSIS 
-   Silently remove an item (no output)
+   Delete an item(s)
 
-.PARAMETER Item <string[]>
+.PARAMETER Path <string[]>
+   The path(s) to the item(s)
    Wildcards are permitted (e.g. '.\dir\*')
    It does not support wildacrd like '.\**\dir' or '.\*.dll'
 
 .OUTPUTS
    None
 #> 
-function script:Remove-ItemSilently {
-    param([parameter(Mandatory=$true,ValueFromPipeline=$true)][string[]]$Item)
+function script:Remove-PaskItem {
+    param([parameter(Mandatory=$true,ValueFromPipeline=$true)][string[]]$Path)
 
     Begin { }
 
     Process {
-        if (-not (Test-Path -Path $Item)) {
+        if (-not (Test-Path -Path $Path)) {
             return
         }
 
-        $ItemObject = Get-Item -Path $Item
+        $ItemObject = Get-Item -Path $Path
 
         if ($ItemObject -is [System.IO.FileInfo] -and (Test-Path $ItemObject.FullName)) {
             Remove-Item -Path $ItemObject.FullName -Force | Out-Null
@@ -246,8 +247,41 @@ function script:Remove-ItemSilently {
                 throw ("Failed to remove {0}" -f $ItemObject.FullName)
             }
         } else {
-            $ItemObject.FullName | Remove-ItemSilently
+            $ItemObject.FullName | Remove-PaskItem
         }
+    }
+
+    End { }
+}
+
+<#
+.SYNOPSIS 
+   Delete the content from a directory
+
+.PARAMETER Path <string[]>
+   The path(s) to the directory
+
+.OUTPUTS
+   None
+#> 
+function script:Clear-Directory {
+    param([parameter(Mandatory=$true,ValueFromPipeline=$true)][string[]]$Path)
+
+    Begin { }
+
+    Process {
+        if (-not (Test-Path -Path $Path)) {
+            return
+        }
+
+        $Item = Get-Item -Path $Path
+
+        $Item | % {
+            if ($_ -is [System.IO.DirectoryInfo]) {
+                Remove-PaskItem -Path (Join-Path $_.FullName "*")
+            }
+        }
+
     }
 
     End { }
@@ -290,7 +324,7 @@ function script:Initialize-NuGetExe {
    The full path
 #> 
 function script:Get-PackagesDir {
-    if(Pask-Cache $MyInvocation.MyCommand.Name) { return Pask-Cache $MyInvocation.MyCommand.Name }
+    if(Cache-Pask $MyInvocation.MyCommand.Name) { return Cache-Pask $MyInvocation.MyCommand.Name }
     $PackagesDir = Join-Path $PaskFullPath "packages"
     $NuGet = Get-NuGetExe
     if (Test-Path $NuGet) {
@@ -305,7 +339,7 @@ function script:Get-PackagesDir {
             Pop-Location
         }
     }
-    Pask-Cache $MyInvocation.MyCommand.Name -Value $PackagesDir
+    Cache-Pask $MyInvocation.MyCommand.Name -Value $PackagesDir
     return $PackagesDir
 }
 
@@ -335,13 +369,19 @@ function script:Restore-NuGetDevelopmentPackages {
     Initialize-NuGetExe
     $PackagesDir = Get-PackagesDir
     $NuGetExe = Get-NuGetExe
-    Get-SolutionPackages | Where { $_.developmentDependency -eq $true } | ForEach {
-        if(-not (Test-Path (Get-PackageDir $_.id))) {
-            Invoke-Command -ErrorAction Stop -ScriptBlock { & $NuGetExe install $_.id -Version $_.version -OutputDirectory "$PackagesDir" -NonInteractive -Verbosity quiet }
+    $PackagesToInstall = Get-SolutionPackages | Where { $_.developmentDependency -eq $true } | Where { -not (Test-Path (Get-PackageDir $_.id)) }
+    
+    if ($PackagesToInstall) {
+        $TempPackagesConfigContent = "<?xml version=""1.0"" encoding=""utf-8""?><packages>{0}</packages>" -f (($PackagesToInstall `
+            | % { "<package id=""{0}"" version=""{1}"" developmentDependency=""true"" />" -f $_.id, $_.version }) -join "")
+        $TempPackagesConfig = New-Item -ItemType File -Name "packages.$([System.IO.Path]::GetRandomFileName()).config" -Path $Env:Temp -Value $TempPackagesConfigContent
+        try {
+            Invoke-Command -ErrorAction Stop -ScriptBlock { & $NuGetExe install "$($TempPackagesConfig.FullName)" -OutputDirectory "$PackagesDir" -NonInteractive -Verbosity quiet }
             if ($LastExitCode) {
-                Write-BuildMessage -Message "Error restoring NuGet package $($_.id).$($_.version)" -ForegroundColor "Red"
-                exit $LastExitCode
+                throw "Error restoring development NuGet packages"
             }
+        } finally {
+            Remove-Item $TempPackagesConfig.FullName -Force
         }
     }
 }
@@ -363,12 +403,12 @@ function script:Restore-NuGetDevelopmentPackages {
 
 .EXAMPLE
    Write a yellow message to the host
-   Write-BuildMessage -Message "Copying assembly" -ForegroundColor "Yellow"
+   Write-BuildMessage "Copying assembly" -ForegroundColor "Yellow"
 
 #>
 function script:Write-BuildMessage {
     param(
-        [Parameter(ValueFromPipeline=$true,Mandatory=$true)][string]$Message,
+        [Parameter(ValueFromPipeline=$true,Mandatory=$true,Position=0)][string]$Message,
         [string]$BackgroundColor,
         [string]$ForegroundColor
     )
@@ -440,7 +480,7 @@ function script:Get-ProjectFullName {
    )
 #>
 function script:Get-SolutionProjects {
-    if(Pask-Cache $MyInvocation.MyCommand.Name) { return Pask-Cache $MyInvocation.MyCommand.Name }
+    if(Cache-Pask $MyInvocation.MyCommand.Name) { return Cache-Pask $MyInvocation.MyCommand.Name }
     $Projects = @()
     Get-Content "$SolutionFullName" |
     Select-String 'Project\(' |
@@ -455,7 +495,7 @@ function script:Get-SolutionProjects {
                 }
             }
         }
-    Pask-Cache $MyInvocation.MyCommand.Name -Value $Projects
+    Cache-Pask $MyInvocation.MyCommand.Name -Value $Projects
     return $Projects
 }
 
@@ -473,7 +513,7 @@ function script:Get-SolutionProjects {
    )
 #>
 function script:Get-SolutionPackages {
-    if(Pask-Cache $MyInvocation.MyCommand.Name) { return Pask-Cache $MyInvocation.MyCommand.Name }
+    if(Cache-Pask $MyInvocation.MyCommand.Name) { return Cache-Pask $MyInvocation.MyCommand.Name }
     
     $Packages = @()
 
@@ -485,7 +525,7 @@ function script:Get-SolutionPackages {
     }
 
     $SolutionPackages = $Packages | Select -Unique id, version, developmentDependency | Sort id, version
-    Pask-Cache $MyInvocation.MyCommand.Name -Value $SolutionPackages
+    Cache-Pask $MyInvocation.MyCommand.Name -Value $SolutionPackages
     return $SolutionPackages
 }
 
@@ -784,14 +824,14 @@ function script:Set-Project {
     $private:Project = Get-SolutionProjects | Where { $_.Name -eq $Name } | Select -First 1
 
     if (-not $private:Project) {
-        Write-BuildMessage -Message "Cannot find project $Name" -ForegroundColor "Yellow"
+        Write-BuildMessage "Cannot find project $Name" -ForegroundColor "Yellow"
         # Find first project in the solution
         $private:Project = Get-SolutionProjects | Select -First 1
         Set-BuildProperty -Name ProjectName -Value $private:Project.Name
         Set-BuildProperty -Name ProjectFullPath -Value $private:Project.Directory
-        Write-BuildMessage -Message "Using default project $script:ProjectName" -ForegroundColor "Yellow"
+        Write-BuildMessage "Using default project $script:ProjectName" -ForegroundColor "Yellow"
     } else {
-        Write-BuildMessage -Message "Set default project $Name" -ForegroundColor "Yellow"
+        Write-BuildMessage "Setting default project $Name"
         Set-BuildProperty -Name ProjectName -Value $Name
         Set-BuildProperty -Name ProjectFullPath -Value $private:Project.Directory
     }
@@ -800,7 +840,7 @@ function script:Set-Project {
     Set-BuildProperty -Name ArtifactName -Default $script:ProjectName
     Set-BuildProperty -Name ArtifactFullPath -Value { Join-Path $BuildOutputFullPath $ArtifactName }
 
-    Refresh-Properties
+    Update-Properties
 }
 
 <#
@@ -816,7 +856,7 @@ function script:Remove-PdbFiles {
     param([string]$Path)
 
     foreach($Item in (Get-ChildItem -Path "$Path" -Recurse -File -Include *.pdb | Select-Object -ExpandProperty FullName)) {
-        Remove-ItemSilently $Item
+        Remove-PaskItem $Item
     }
 }
 
@@ -1196,3 +1236,4 @@ function script:Jobs {
         $Build | ForEach { Remove-Item $_.File -Force }
     }
 }
+Set-Alias Tasks Jobs -Scope Script

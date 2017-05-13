@@ -2,12 +2,11 @@
 Task Clean {
     if (Test-Path $BuildOutputFullPath) {
         Write-BuildMessage "Cleaning '$BuildOutputFullPath'"
-        Remove-ItemSilently (Join-Path $BuildOutputFullPath "*")
+        Clear-Directory $BuildOutputFullPath
     }
     
-    Write-BuildMessage "Cleaning '$PaskFullPath'"
-    (@(Get-ChildItem -Directory -Path $PaskFullPath -Recurse -Filter bin) + @(Get-ChildItem -Directory -Path $PaskFullPath -Recurse -Filter obj)) `
-        | Sort -Descending @{Expression = {$_.FullName.Length}} `
-        | Select -ExpandProperty FullName `
-        | Remove-ItemSilently
+    Write-BuildMessage "Cleaning '$SolutionName' solution projects"
+    $SolutionProjects = Get-SolutionProjects | Select -ExpandProperty Directory
+    @($SolutionProjects | % { Join-Path $_ "bin" }) + @($SolutionProjects | % { Join-Path $_ "obj" }) `
+        | Remove-PaskItem
 }

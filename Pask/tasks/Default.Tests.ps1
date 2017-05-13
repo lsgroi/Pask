@@ -12,7 +12,10 @@ Describe "Default" {
     Context "Invoke the default task within the default solution" {
         BeforeAll {
             # Arrange
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Tests\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other.Tests\bin")
 
             # Act
             Invoke-Pask $TestSolutionFullPath
@@ -34,7 +37,10 @@ Describe "Default" {
     Context "Invoke the default task within a custom solution" {
         BeforeAll {
             # Arrange
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Tests\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other.Tests\bin")
 
             # Act
             Invoke-Pask $TestSolutionFullPath -SolutionName "ClassLibrary.Other"
@@ -52,7 +58,10 @@ Describe "Default" {
     Context "Invoke the default task within the default solution in a specific path" {
         BeforeAll {
             # Arrange
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Tests\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other.Tests\bin")
 
             # Act
             Invoke-Pask $TestSolutionFullPath -SolutionFilePath "Solutions"
@@ -70,7 +79,10 @@ Describe "Default" {
     Context "Invoke the default task within a custom solution in a specific path" {
         BeforeAll {
             # Arrange
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath "**\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Tests\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other\bin")
+            Clear-Directory (Join-Path $TestSolutionFullPath "ClassLibrary.Other.Tests\bin")
 
             # Act
             Invoke-Pask $TestSolutionFullPath -SolutionFilePath "Solutions" -SolutionName "ClassLibrary.Other.Solution"

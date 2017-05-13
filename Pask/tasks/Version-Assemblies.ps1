@@ -34,6 +34,6 @@ Task Version-Assemblies {
             }
         }
     } else {
-        Write-BuildMessage -Message "Found no AssemblyInfo files" -ForegroundColor "Yellow"
+        Write-BuildMessage "Found no AssemblyInfo files" -ForegroundColor "Yellow"
     }
 }

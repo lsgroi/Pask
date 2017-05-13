@@ -11,9 +11,9 @@ Describe "Version-Assemblies" {
     Context "Version assemblies of a class library" {
         BeforeAll {
             # Arrange
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath "ClassLibrary\Properties")
+            Remove-PaskItem (Join-Path $TestSolutionFullPath "ClassLibrary\Properties")
             New-Directory (Join-Path $TestSolutionFullPath "ClassLibrary\Properties") | Out-Null
-            Remove-ItemSilently (Join-Path $TestSolutionFullPath "Tests\ClassLibrary.UnitTests\Properties")
+            Remove-PaskItem (Join-Path $TestSolutionFullPath "Tests\ClassLibrary.UnitTests\Properties")
             New-Directory (Join-Path $TestSolutionFullPath "Tests\ClassLibrary.UnitTests\Properties")
 
             $ClassLibraryAssemblyInfo = @"

@@ -6,7 +6,7 @@ Task . Clean
 
 # Synopsis: Test two tasks running simultaneously
 Task Test-Parallel {
-    Jobs -Task ParallelTask1, ParallelTask2 -InputProperty2 "value of InputProperty2" -InputBoolProperty2 $true -Result ParallelResult
+    Tasks -Task ParallelTask1, ParallelTask2 -InputProperty2 "value of InputProperty2" -InputBoolProperty2 $true -Result ParallelResult
 
     # Assert that the ParallelTask1 had no errors
     Equals ($BuildResult.Tasks | Where { $_.Name -eq "ParallelTask1" } | Select -ExpandProperty Error) $null

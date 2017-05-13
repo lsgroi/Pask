@@ -4,7 +4,7 @@ $Sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace "\.Tests\.", "."
 
 Describe "Set-BuildProperty" {
     BeforeAll {
-        Mock Refresh-BuildProperties { }
+        Mock Update-BuildProperties { }
     }
 
     Context "Set a build property with name null" {
@@ -12,8 +12,8 @@ Describe "Set-BuildProperty" {
             { Set-BuildProperty $null -Value "the value" } | Should Throw
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
     }
 
@@ -22,8 +22,8 @@ Describe "Set-BuildProperty" {
             { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) -Value "the value" -Default "the default value" } | Should Throw
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
     }
 
@@ -32,8 +32,8 @@ Describe "Set-BuildProperty" {
             { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) } | Should Throw
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
     }
 
@@ -50,8 +50,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -73,8 +73,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should BeLike @()
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -83,21 +83,21 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with static value and refresh all the build properties" {
+    Context "Set a new build property with static value and update all the build properties" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
 
             # Act
-            Set-BuildProperty $PropertyName -Value "the value" -Refresh
+            Set-BuildProperty $PropertyName -Value "the value" -Update
         }
 
         It "a local variable should have the static value" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "refreshes all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 1
+        It "updates all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 1
         }
 
         AfterAll {
@@ -120,8 +120,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -144,8 +144,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -169,8 +169,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -193,8 +193,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -218,8 +218,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -242,8 +242,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -267,8 +267,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -290,8 +290,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the default value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -313,8 +313,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should BeLike @()
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -337,8 +337,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the default value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -361,8 +361,8 @@ Describe "Set-BuildProperty" {
             Get-Variable -Name $PropertyName -ValueOnly | Should Be "the value"
         }
 
-        It "does not refresh all the build properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 0
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
         }
 
         AfterAll {
@@ -408,7 +408,7 @@ Describe "Get-Properties" {
     }
 }
 
-Describe "Refresh-BuildProperties" {
+Describe "Update-BuildProperties" {
     BeforeAll {
         # Arrange
         $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -417,10 +417,10 @@ Describe "Refresh-BuildProperties" {
 
         # Act
         $PropertyValue = "the new value"
-        Refresh-BuildProperties
+        Update-BuildProperties
     }
 
-    It "refreshes a build property with script block value" {
+    It "updates a build property with script block value" {
         Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new value"
     }
 
@@ -430,19 +430,19 @@ Describe "Refresh-BuildProperties" {
     }
 }
 
-Describe "Refresh-Properties" {
+Describe "Update-Properties" {
     It "should be alias of Get-BuildProperties" {
-        Get-Alias | Where { $_.Name -eq "Refresh-Properties" } | Select -First 1 | Select -ExpandProperty Definition | Should Be "Refresh-BuildProperties"
+        Get-Alias | Where { $_.Name -eq "Update-Properties" } | Select -First 1 | Select -ExpandProperty Definition | Should Be "Update-BuildProperties"
     }
 }
 
-Describe "Pask-Cache" {
+Describe "Cache-Pask" {
     BeforeAll {
         # Arrange
         $Key = [System.IO.Path]::GetRandomFileName()
 
         # Act
-        Pask-Cache $Key -Value "cache-value"
+        Cache-Pask $Key -Value "cache-value"
     }
 
     AfterAll {
@@ -454,10 +454,10 @@ Describe "Pask-Cache" {
         BeforeAll {
             # Arrange
             $Key2 = [System.IO.Path]::GetRandomFileName()
-            Pask-Cache $Key2 -Value "another-cache-value"
+            Cache-Pask $Key2 -Value "another-cache-value"
 
             # Act
-            $Cache = Pask-Cache
+            $Cache = Cache-Pask
         }
 
         It "gets known cache entries" {
@@ -468,17 +468,17 @@ Describe "Pask-Cache" {
 
     Context "Get a cache entry" {
         It "gets the cache value" {
-            Pask-Cache $Key | Should Be "cache-value"
+            Cache-Pask $Key | Should Be "cache-value"
         }
     }
 
     Context "Set an existing cache entry" {
         BeforeAll {
-            Pask-Cache $Key -Value "new-cache-value"
+            Cache-Pask $Key -Value "new-cache-value"
         }
 
         It "overrides the cache value" {
-            Pask-Cache $Key | Should Be "new-cache-value"
+            Cache-Pask $Key | Should Be "new-cache-value"
         }
     }
 }
@@ -634,7 +634,7 @@ Describe "New-Directory" {
     }
 }
 
-Describe "Remove-ItemSilently" {
+Describe "Remove-PaskItem" {
     Context "Remove existing item from pipeline" {
         BeforeAll {
             # Arrange
@@ -642,7 +642,7 @@ Describe "Remove-ItemSilently" {
             New-Item -Path "$Item" -ItemType Directory
 
             # Act
-            $Item | Remove-ItemSilently
+            $Item | Remove-PaskItem
         }
 
         It "the item is removed" {
@@ -661,7 +661,7 @@ Describe "Remove-ItemSilently" {
             New-Item -Path "$Item3" -ItemType Directory
 
             # Act
-            $Item1, $Item2, $Item3 | Remove-ItemSilently
+            $Item1, $Item2, $Item3 | Remove-PaskItem
         }
 
         It "the first item is removed" {
@@ -686,7 +686,7 @@ Describe "Remove-ItemSilently" {
             New-Item -Path (Join-Path $TestDrive "item\sub1\sub2\file2.txt") -ItemType File
 
             # Act
-            Remove-ItemSilently $Item
+            Remove-PaskItem $Item
         }
 
         It "the item is removed" {
@@ -704,7 +704,7 @@ Describe "Remove-ItemSilently" {
             New-Item -Path (Join-Path $TestDrive "solution\project\bin\project.dll") -ItemType File
 
             # Act
-            Remove-ItemSilently (Join-Path $TestDrive "solution\*")
+            Remove-PaskItem (Join-Path $TestDrive "solution\*")
         }
 
         It "content of the directory is removed" {
@@ -718,11 +718,119 @@ Describe "Remove-ItemSilently" {
             $Item = Join-Path $TestDrive "fake-item"
         
             # Act
-            Remove-ItemSilently $Item
+            Remove-PaskItem $Item
         }
 
         It "the item does not exist" {
             $Item | Should Not Exist
+        }
+    }
+}
+
+Describe "Clear-Directory" {
+    Context "A file from pipeline" {
+        BeforeAll {
+            # Arrange
+            $File = Join-Path $TestDrive "file"
+            New-Item -Path $File -ItemType File
+
+            # Act
+            $File | Clear-Directory
+        }
+
+        It "the file is not removed" {
+            $File | Should Exist
+        }
+    }
+
+    Context "Non existent directory from pipeline" {
+        It "no exception is thrown" {
+            { (Join-Path $TestDrive "non-existent") | Clear-Directory } | Should Not Throw
+        }
+    }
+
+    Context "Empty directory" {
+        BeforeAll {
+            # Arrange
+            $Dir = Join-Path $TestDrive "directory"
+            New-Item -Path $Dir -ItemType Directory
+
+            # Act
+            Clear-Directory -Path $Dir
+        }
+
+        It "the directory should exist" {
+            $Dir | Should Exist
+        }
+
+        It "the directory should be empty" {
+            (Join-Path $Dir "*") | Should Not Exist
+        }
+    }
+
+    Context "Directory with files and folders" {
+        BeforeAll {
+            # Arrange
+            $Dir = Join-Path $TestDrive "directory"
+            New-Item -Path $Dir -ItemType Directory
+            New-Item -Path (Join-Path $Dir "file") -ItemType File
+            New-Item -Path (Join-Path $Dir "sub-directory1") -ItemType Directory
+            New-Item -Path (Join-Path (Join-Path $Dir "sub-directory1") "sub-file") -ItemType File
+            New-Item -Path (Join-Path $Dir "sub-directory2") -ItemType Directory
+            New-Item -Path (Join-Path (Join-Path $Dir "sub-directory2") "sub-file") -ItemType File
+
+            # Act
+            Clear-Directory -Path $Dir
+        }
+
+        It "the directory should exist" {
+            $Dir | Should Exist
+        }
+
+        It "the directory should be empty" {
+            (Join-Path $Dir "*") | Should Not Exist
+        }
+    }
+
+    Context "Three directories" {
+        BeforeAll {
+            # Arrange
+            $Dir1 = Join-Path $TestDrive "directory1"
+            $Dir2 = Join-Path $TestDrive "directory2"
+            $Dir3 = Join-Path $TestDrive "directory3"
+            New-Item -Path $Dir1 -ItemType Directory
+            New-Item -Path (Join-Path $Dir1 "file") -ItemType File
+            New-Item -Path $Dir2 -ItemType Directory
+            New-Item -Path (Join-Path $Dir2 "file") -ItemType File
+            New-Item -Path $Dir3 -ItemType Directory
+            New-Item -Path (Join-Path $Dir3 "file") -ItemType File
+
+            # Act
+            Clear-Directory -Path $Dir1, $Dir2, $Dir3
+        }
+
+        It "the first directory should exist" {
+            $Dir1 | Should Exist
+        }
+
+        It "the first directory should be empty" {
+            (Join-Path $Dir1 "*") | Should Not Exist
+        }
+
+        It "the second directory should exist" {
+            $Dir2 | Should Exist
+        }
+
+        It "the second directory should be empty" {
+            (Join-Path $Dir2 "*") | Should Not Exist
+        }
+
+        It "the third directory should exist" {
+            $Dir3 | Should Exist
+        }
+
+        It "the third directory should be empty" {
+            (Join-Path $Dir3 "*") | Should Not Exist
         }
     }
 }
@@ -801,7 +909,7 @@ Describe "Get-PackagesDir" {
         New-Item -Path (Join-Path $PaskFullPath ".nuget") -ItemType Directory
         $NuGet = (Join-Path $PaskFullPath ".nuget\NuGet.exe")
         Mock Get-NuGetExe { return $NuGet }
-        Mock Pask-Cache { }
+        Mock Cache-Pask { }
     }
 
     Context "NuGet executable does not exist" {
@@ -815,7 +923,7 @@ Describe "Get-PackagesDir" {
         }
 
         It "caches the packages directory" {
-            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq (Join-Path $TestDrive "solution directory\packages") }
+            Assert-MockCalled Cache-Pask 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq (Join-Path $TestDrive "solution directory\packages") }
         }
     }
 
@@ -834,7 +942,7 @@ Describe "Get-PackagesDir" {
         }
 
         It "caches the packages directory" {
-            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq (Join-Path $TestDrive "solution directory\packages") }
+            Assert-MockCalled Cache-Pask 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq (Join-Path $TestDrive "solution directory\packages") }
         }
     }
 
@@ -854,14 +962,14 @@ Describe "Get-PackagesDir" {
         }
 
         It "caches the packages directory" {
-            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq $repositoryPath }
+            Assert-MockCalled Cache-Pask 1  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq $repositoryPath }
         }
     }
 
     Context "From the cache" {
         BeforeAll {
             # Arrange
-            Mock Pask-Cache { return "packages_dir" } -ParameterFilter { $key -eq "Get-PackagesDir" }
+            Mock Cache-Pask { return "packages_dir" } -ParameterFilter { $key -eq "Get-PackagesDir" }
 
             # Act
             $Result = Get-PackagesDir
@@ -872,7 +980,7 @@ Describe "Get-PackagesDir" {
         }
 
         It "does not cache the packages directory" {
-            Assert-MockCalled Pask-Cache 0  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq "packages_dir" }
+            Assert-MockCalled Cache-Pask 0  -ParameterFilter { $key -eq "Get-PackagesDir" -and $value -eq "packages_dir" }
         }
     }
 }
@@ -926,7 +1034,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 EndProject
 "@
             Set-Content -Path $SolutionFullName -Value $SolutionValue
-            Mock Pask-Cache { }
+            Mock Cache-Pask { }
         
             # Act
             $Result = Get-SolutionProjects
@@ -973,7 +1081,7 @@ EndProject
         }
 
         It "caches the solution projects" {
-            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-SolutionProjects" -and $value.Count -eq 3 }
+            Assert-MockCalled Cache-Pask 1  -ParameterFilter { $key -eq "Get-SolutionProjects" -and $value.Count -eq 3 }
         }
     }
 
@@ -987,7 +1095,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project", "Project\Project.
 EndProject
 "@
             Set-Content -Path $SolutionFullName -Value $SolutionValue
-            Mock Pask-Cache { return "mock-projects" } -ParameterFilter { $key -eq "Get-SolutionProjects" }
+            Mock Cache-Pask { return "mock-projects" } -ParameterFilter { $key -eq "Get-SolutionProjects" }
 
             # Act
             $Result = Get-SolutionProjects
@@ -998,7 +1106,7 @@ EndProject
         }
 
         It "does not cache the solution projects" {
-            Assert-MockCalled Pask-Cache 0  -ParameterFilter { $key -eq "Get-SolutionProjects" -and $value.Count -eq 1 }
+            Assert-MockCalled Cache-Pask 0  -ParameterFilter { $key -eq "Get-SolutionProjects" -and $value.Count -eq 1 }
         }
     }
 }
@@ -1042,7 +1150,7 @@ Describe "Get-SolutionPackages" {
             New-Item -Path (Join-Path $TestDrive "Project3") -ItemType Directory
             Set-Content -Path (Join-Path $TestDrive "Project3\packages.config") -Value $Project3Packages -Force
             
-            Mock Pask-Cache { }
+            Mock Cache-Pask { }
 
             # Act
             $Result = Get-SolutionPackages
@@ -1065,7 +1173,7 @@ Describe "Get-SolutionPackages" {
         }
 
         It "caches the solution packages" {
-            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 2 }
+            Assert-MockCalled Cache-Pask 1  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 2 }
         }
     }
 
@@ -1089,7 +1197,7 @@ Describe "Get-SolutionPackages" {
             New-Item -Path (Join-Path $TestDrive "Project") -ItemType Directory
             Set-Content -Path (Join-Path $TestDrive "Project\packages.config") -Value $ProjectPackages -Force
             
-            Mock Pask-Cache { }
+            Mock Cache-Pask { }
 
             # Act
             $Result = Get-SolutionPackages
@@ -1108,7 +1216,7 @@ Describe "Get-SolutionPackages" {
         }
 
         It "caches the solution packages" {
-            Assert-MockCalled Pask-Cache 1  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 3 }
+            Assert-MockCalled Cache-Pask 1  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 3 }
         }
     }
 
@@ -1129,7 +1237,7 @@ Describe "Get-SolutionPackages" {
 "@
             New-Item -Path (Join-Path $TestDrive "Project") -ItemType Directory
             Set-Content -Path (Join-Path $TestDrive "Project\packages.config") -Value $ProjectPackages -Force
-            Mock Pask-Cache { return "mock-packages" } -ParameterFilter { $key -eq "Get-SolutionPackages" }
+            Mock Cache-Pask { return "mock-packages" } -ParameterFilter { $key -eq "Get-SolutionPackages" }
 
             # Act
             $Result = Get-SolutionPackages
@@ -1140,7 +1248,7 @@ Describe "Get-SolutionPackages" {
         }
 
         It "does not cache the solution packages" {
-            Assert-MockCalled Pask-Cache 0  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 1 }
+            Assert-MockCalled Cache-Pask 0  -ParameterFilter { $key -eq "Get-SolutionPackages" -and $value.Count -eq 1 }
         }
     }
 }
@@ -2207,7 +2315,7 @@ Describe "Set-Project" {
                 $Result += New-Object PSObject -Property @{ Name = "Project3"; Directory = (Join-Path $TestDrive "Project3") } 
                 return $Result
             }
-        Mock Refresh-BuildProperties { }
+        Mock Update-BuildProperties { }
         Mock Write-BuildMessage { }
     }
 
@@ -2241,8 +2349,8 @@ Describe "Set-Project" {
             $ArtifactFullPath | Should Be (Join-Path (Join-Path $TestDrive "output") "Project1")
         }
 
-        It "should refresh the properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 1
+        It "should update the properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 1
         }
     }
 
@@ -2276,8 +2384,8 @@ Describe "Set-Project" {
             $ArtifactFullPath | Should Be (Join-Path (Join-Path $TestDrive "output") "Project2")
         }
 
-        It "should refresh the properties" {
-            Assert-MockCalled Refresh-BuildProperties -Exactly 1
+        It "should update the properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 1
         }
     }
 

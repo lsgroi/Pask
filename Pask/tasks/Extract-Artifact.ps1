@@ -12,7 +12,7 @@ Task Extract-Artifact {
     $7za = Join-Path (Get-PackageDir "7-Zip.CommandLine") "tools\7za.exe"
 	
     # Remove and re-create the artifact directory
-    Remove-ItemSilently $ArtifactFullPath
+    Remove-PaskItem $ArtifactFullPath
     New-Directory $ArtifactFullPath | Out-Null
 	
     if ($ZipArtifact) {

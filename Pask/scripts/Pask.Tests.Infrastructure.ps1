@@ -26,7 +26,7 @@ function script:Install-NuGetPackage {
     $PackageFullName = Join-Path $PackageFullPath "$PackageBaseName.nupkg"
     $ArtifactFullPath = (Get-ChildItem -Path (Join-Path $BuildOutputFullPath "*") -File -Include "$Name*.nupkg" | Select-Object -Last 1).FullName
 
-    Remove-ItemSilently "$PackageFullPath"
+    Remove-PaskItem "$PackageFullPath"
     New-Directory -Path "$PackageFullPath" | Out-Null
     Copy-Item "$ArtifactFullPath" "$PackageFullName" -Force | Out-Null
     $7za = Join-Path (Get-PackageDir "7-Zip.CommandLine") "tools\7za.exe"

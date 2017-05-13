@@ -54,7 +54,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$private:CurrentLocation = Get-Location
+$private:OriginalLocation = Get-Location
 $private:ScriptFullPath = if ($PSScriptRoot -ne $null) { $PSScriptRoot } else { Split-Path $MyInvocation.MyCommand.Path -Parent }
 
 # Default parameters
@@ -86,7 +86,7 @@ Set-BuildProperty -Name TestResultsFullPath -Value (Join-Path $BuildOutputFullPa
 if(-not (Test-Path $SolutionFullName)) { Write-Error "Cannot find '$SolutionName' solution in '$SolutionFullPath'" }
 
 # Restore NuGet packages marked as development-only-dependency
-Write-BuildMessage -Message "Restore NuGet development dependencies" -ForegroundColor "Cyan"
+Write-BuildMessage "Restore NuGet development dependencies" -ForegroundColor "Cyan"
 Restore-NuGetDevelopmentPackages
 
 # Create the build script
@@ -105,7 +105,7 @@ try {
 
     # Invoke the build
     if ($Tree) {
-        Write-BuildMessage -Message "Show build task tree" -ForegroundColor "Cyan"
+        Write-BuildMessage "Show build task tree" -ForegroundColor "Cyan"
         Import-Script Show-BuildTree
         Show-BuildTree -File $BuildScript.FullName -Task $private:PaskTask
     } else {
@@ -121,5 +121,5 @@ try {
 } finally {
     Remove-Item $BuildScript.FullName -Force
     # By dot-sourcing Invoke-Build, the current location changes to $BuildRoot
-    Set-Location -Path $private:CurrentLocation.Path
+    Set-Location -Path $private:OriginalLocation.Path
 }

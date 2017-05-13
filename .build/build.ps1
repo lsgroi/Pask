@@ -6,7 +6,7 @@ Import-Task Clean, Pack-Nuspec, Test-Pester, Push-Local, Push, Version-BuildServ
 Enter-Build {
     # Before the first task in the script scope, remove any Pask package fro mthe pacakges directory,
     # mainly to clean up unecessary dependencies of Pask.NuGet
-    Get-ChildItem (Get-PackagesDir) | Where { $_.Name -match 'Pask.[\d]' } | Select -ExpandProperty FullName | Remove-ItemSilently
+    Get-ChildItem (Get-PackagesDir) | Where { $_.Name -match 'Pask.[\d]' } | Select -ExpandProperty FullName | Remove-PaskItem
 }
 
 # Synopsis: Default task; pack, test and push locally
