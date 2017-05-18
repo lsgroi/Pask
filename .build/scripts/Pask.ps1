@@ -60,10 +60,22 @@ function script:Set-BuildProperty {
 
     $private:PropertyValue = switch ($PsCmdlet.ParameterSetName) {
         "ExplicitValue" { $Value }
-        "ValueOfSessionOrDefault" { Get-BuildProperty $Name $Default }
-        "ValueOfSession" { Get-BuildProperty $Name }
+        "ValueOfSessionOrDefault" { 
+            if (${!BuildProperties!}.Contains($Name)) {
+                ${!BuildProperties!}[$Name]
+            } else {
+                Get-BuildProperty $Name $Default 
+            }
+        }
+        "ValueOfSession" {
+            if (${!BuildProperties!}.Contains($Name)) {
+                ${!BuildProperties!}[$Name]
+            } else {
+                Get-BuildProperty $Name
+            }
+        }
     }
-   
+
     $private:VariableValue = if ($private:PropertyValue -and $private:PropertyValue.GetType() -eq [ScriptBlock]) { 
         & $private:PropertyValue 
     } else { 

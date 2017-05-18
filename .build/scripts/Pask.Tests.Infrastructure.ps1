@@ -12,7 +12,7 @@ function script:Remove-BuildProperty {
     param([Parameter(Mandatory=$true)][string[]]$Name)
 
     $Name | ForEach {
-        Remove-Variable -Name $_ -Scope Script -Force
+        if (Test-Path Variable:Script:$Name) { Remove-Variable -Name $_ -Scope Script -Force }
         ${!BuildProperties!}.Remove($_)
         ${script:!BuildProperties!} = ${!BuildProperties!}
     }

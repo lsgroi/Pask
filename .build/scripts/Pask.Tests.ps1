@@ -17,7 +17,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a build property with static value and default value" {
+    Context "Set a build property to static value and default value" {
         It "should error" {
             { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) -Value "the value" -Default "the default value" } | Should Throw
         }
@@ -27,7 +27,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with value of session which does not exist" {
+    Context "Set a new build property to value of session which does not exist" {
         It "should error" {
             { Set-BuildProperty ([System.IO.Path]::GetRandomFileName()) } | Should Throw
         }
@@ -37,7 +37,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with static value" {
+    Context "Set a new build property to static value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -60,7 +60,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with static empty array value" {
+    Context "Set a new build property to static empty array value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -83,7 +83,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with static value and update all the build properties" {
+    Context "Set a new build property to static value and update all the build properties" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -106,7 +106,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with static script block value" {
+    Context "Set a new build property to static script block value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -130,7 +130,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set an existing build property with static value" {
+    Context "Set an existing build property to static value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -154,7 +154,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set an existing build property with static script block value" {
+    Context "Set an existing build property to static script block value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -179,7 +179,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with existing value of session" {
+    Context "Set a new build property to existing value of session" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -204,7 +204,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set an existing build property with existing value of session" {
+    Context "Set an existing build property to existing value of session" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -228,7 +228,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with existing value of session specifying a default" {
+    Context "Set a new build property to existing value of session specifying a default" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -253,7 +253,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set an existing build property with existing value of session specifying a default" {
+    Context "Set an existing build property to existing value of session specifying a default" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -277,7 +277,61 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with default value" {
+    Context "Set an existing build property (which was defined with script block value) to existing value of session specifying a default" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+            $BasePropertyName = [System.IO.Path]::GetRandomFileName()
+            Set-Variable -Name $BasePropertyName -Value "the base property value" -Scope Script
+            Set-BuildProperty $PropertyName -Default { (Get-Variable -Name $BasePropertyName -ValueOnly) }
+            Set-Variable -Name $BasePropertyName -Value "the new base property value" -Scope Script
+
+            # Act
+            Set-BuildProperty $PropertyName -Default { "the default value" }
+        }
+
+        It "a local variable should have the original script block value evaluated" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new base property value"
+        }
+
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
+        }
+
+        AfterAll {
+            # Cleanup
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
+    Context "Set an existing build property (which was defined with script block value) to existing value of session" {
+        BeforeAll {
+            # Arrange
+            $PropertyName = [System.IO.Path]::GetRandomFileName()
+            $BasePropertyName = [System.IO.Path]::GetRandomFileName()
+            Set-Variable -Name $BasePropertyName -Value "the base property value" -Scope Script
+            Set-BuildProperty $PropertyName -Default { (Get-Variable -Name $BasePropertyName -ValueOnly) }
+            Set-Variable -Name $BasePropertyName -Value "the new base property value" -Scope Script
+
+            # Act
+            Set-BuildProperty $PropertyName
+        }
+
+        It "a local variable should have the original script block value evaluated" {
+            Get-Variable -Name $PropertyName -ValueOnly | Should Be "the new base property value"
+        }
+
+        It "does not update all the build properties" {
+            Assert-MockCalled Update-BuildProperties -Exactly 0
+        }
+
+        AfterAll {
+            # Cleanup
+            Remove-BuildProperty -Name $PropertyName
+        }
+    }
+
+    Context "Set a new build property to default value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -300,7 +354,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with default value of empty array" {
+    Context "Set a new build property to default value of empty array" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -323,7 +377,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set a new build property with default script block value" {
+    Context "Set a new build property to default script block value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -347,7 +401,7 @@ Describe "Set-BuildProperty" {
         }
     }
 
-    Context "Set an exisitng build property with default value" {
+    Context "Set an exisitng build property to default value" {
         BeforeAll {
             # Arrange
             $PropertyName = [System.IO.Path]::GetRandomFileName()
@@ -2323,7 +2377,7 @@ Describe "Set-Project" {
         BeforeAll {
             # Arrange
             Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project1/Project1.csproj") }
-            Set-BuildProperty -Name ArtifactName -Value $null
+            Mock Set-BuildProperty { Set-BuildProperty -Name ArtifactName -Value "Project1" } -ParameterFilter { $Name -eq "ArtifactName" -and $Default -eq "Project1" }
 
             # Act
             Set-Project -Name Foo
@@ -2358,7 +2412,7 @@ Describe "Set-Project" {
         BeforeAll {
             # Arrange
             Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project2/Project2.csproj") }
-            Set-BuildProperty -Name ArtifactName -Value $null
+            Mock Set-BuildProperty { Set-BuildProperty -Name ArtifactName -Value "Project2" } -ParameterFilter { $Name -eq "ArtifactName" -and $Default -eq "Project2" }
 
             # Act
             Set-Project -Name Project2

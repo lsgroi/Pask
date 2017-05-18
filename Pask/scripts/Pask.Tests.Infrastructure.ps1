@@ -295,6 +295,6 @@ function script:Test-PackageInstallation {
             throw
         }
     
-    # Teardown
+    # Cleanup
         $dte.Quit()
 }
