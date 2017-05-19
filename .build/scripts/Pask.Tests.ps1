@@ -2377,7 +2377,8 @@ Describe "Set-Project" {
         BeforeAll {
             # Arrange
             Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project1/Project1.csproj") }
-            Mock Set-BuildProperty { Set-BuildProperty -Name ArtifactName -Value "Project1" } -ParameterFilter { $Name -eq "ArtifactName" -and $Default -eq "Project1" }
+            Mock Set-BuildProperty { Set-BuildProperty -Name ArtifactName -Value "Project1" } `
+                                   -ParameterFilter { $Name -eq "ArtifactName" -and $Default -and $Default.GetType() -eq [ScriptBlock] -and (& $Default) -eq "Project1" }
 
             # Act
             Set-Project -Name Foo
@@ -2412,7 +2413,8 @@ Describe "Set-Project" {
         BeforeAll {
             # Arrange
             Mock Get-ProjectFullName { return (Join-Path $TestDrive "Project2/Project2.csproj") }
-            Mock Set-BuildProperty { Set-BuildProperty -Name ArtifactName -Value "Project2" } -ParameterFilter { $Name -eq "ArtifactName" -and $Default -eq "Project2" }
+            Mock Set-BuildProperty { Set-BuildProperty -Name ArtifactName -Value "Project2" } `
+                                   -ParameterFilter { $Name -eq "ArtifactName" -and $Default -and $Default.GetType() -eq [ScriptBlock] -and (& $Default) -eq "Project2" }
 
             # Act
             Set-Project -Name Project2

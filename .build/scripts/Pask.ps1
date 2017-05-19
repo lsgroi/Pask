@@ -849,7 +849,7 @@ function script:Set-Project {
     }
 
     Set-BuildProperty -Name ProjectFullName -Value (Get-ProjectFullName)
-    Set-BuildProperty -Name ArtifactName -Default $ProjectName
+    Set-BuildProperty -Name ArtifactName -Default { $ProjectName }
     Set-BuildProperty -Name ArtifactFullPath -Value { Join-Path $BuildOutputFullPath $ArtifactName }
 
     Update-Properties
