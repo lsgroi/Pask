@@ -20,7 +20,14 @@
     - path: .build\output\*.nupkg
   deploy: off
   test: off
-
+  skip_commits:
+    files:
+      - appveyor.yml
+      - LICENSE
+      - Pask.pdn
+      - Pask.png
+      - README.md
+      
 # configuration for branches
 # build and test
 -
@@ -38,3 +45,10 @@
     - path: .build\output\*.nupkg
   deploy: off
   test: off
+  skip_commits:
+    files:
+      - appveyor.yml
+      - LICENSE
+      - Pask.pdn
+      - Pask.png
+      - README.md
