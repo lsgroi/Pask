@@ -247,8 +247,8 @@ namespace EnvDteUtils{
 .PARAMETER $SolutionFullPath <string> = $Env:Temp\[guid]::NewGuid()
    The full path of the solution
 
-.PARAMETER InstallationTargetInfo <string> = 'Install in all projects'
-   Message displayed in regards to installation target
+.PARAMETER InstallationTargetProject <string> =
+   Project in which the package should be installed; default to all projects
 
 .PARAMETER Assertion <scriptblock>
    Script block to implement custom assertions
@@ -265,7 +265,7 @@ function script:Test-PackageInstallation {
         [string]$Name = "Pask", 
         [string]$SolutionName = "Application", 
         [string]$SolutionFullPath = (Join-Path $Env:Temp ([guid]::NewGuid())),
-        [string]$InstallationTargetInfo = "Install in all projects",
+        [string]$InstallationTargetProject,
         [scriptblock]$Assertion = {}
     )
 
@@ -280,7 +280,12 @@ function script:Test-PackageInstallation {
             Write-Host "  1 Install the package in Visual Studio via NuGet Package Manager"
             Write-Host "    - Select the " -NoNewline; Write-Host "Local" -ForegroundColor Yellow -NoNewline; Write-Host " NuGet feed"
             Write-Host "    - Search " -NoNewline; Write-Host $Name -ForegroundColor Yellow -NoNewline; Write-Host " package"
-            Write-Host "    - $InstallationTargetInfo"
+            Write-Host "    - Install in " -NoNewline
+            if($InstallationTargetProject) {
+                Write-Host $InstallationTargetProject -ForegroundColor Yellow -NoNewline; Write-Host " project"
+            } else { 
+                Write-Host -ForegroundColor Yellow "all projects" 
+            }
             Write-Host "  2 Continue for validation"
 
     # Act
